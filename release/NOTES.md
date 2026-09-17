@@ -1,6 +1,13 @@
-# NVMatrixEngine 0.1.0 — Water Lab preview
+# NVMatrixEngine 0.1.1 — Sinking-ball default and research discoverability
 
-First public engine-only portfolio release. The main demo is a playable room-scale pool with a wall inlet, glass ball, powered boat, underwater views and spectral illumination.
+Patch release of the native DX12/DXR GPU liquid simulation and path-traced caustics engine. Water Lab remains the main demo: a room-scale pool with a wall inlet, sinking glass ball, powered boat and underwater views.
+
+## Changes in 0.1.1
+
+- Solid glass / Sink is now the physics-object default, not only a UI setting applied after construction. New room/deep-pool sessions use 2,500 kg/m³; Float remains selectable and persists through chamber resets.
+- Native tests verify sinking without any UI/setter call, fresh-session defaults and existing float/boat behavior. Portable checks inspect actual ball density/mass in each packaged rendered scenario.
+- Research-oriented README, algorithm/source entry points, GitHub topics and software citation metadata. No new performance or BDPT claims.
+- Fresh rebuilt portable executable, per-file manifest, archive checksum and verification report. The previous release is preserved.
 
 ## Included
 
@@ -13,7 +20,7 @@ First public engine-only portfolio release. The main demo is a playable room-sca
 
 ## Run
 
-Download **NVMatrixEngine-0.1.0-preview-win64.zip**, extract everything, and open **Play Water Lab.cmd**. Do not download GitHub's source-code ZIP expecting an executable. No installer, administrator access or CUDA Toolkit is needed for the portable build.
+Download **NVMatrixEngine-0.1.1-preview-win64.zip**, extract everything, and open **Play Water Lab.cmd**. Do not download GitHub's source-code ZIP expecting an executable. No installer, administrator access or CUDA Toolkit is needed for the portable build.
 
 Target: Windows 11 x64, high-end NVIDIA RTX GPU and compatible current driver. Tested on **RTX 5090 / driver 616.64**. The executable is unsigned. Fisheye projection pauses frame generation; the default launcher uses the normal lens. See `START-HERE.txt` for controls.
 

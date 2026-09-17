@@ -47,7 +47,7 @@ Node tests require a recent Node.js. The CUDA convenience build targets the main
 ## Portable packaging
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -BuildDir "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build" -Version 0.1.0-preview -OutputDir "$env:USERPROFILE/Downloads"
+powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -BuildDir "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build" -Version 0.1.1-preview -OutputDir "$env:USERPROFILE/Downloads"
 ```
 
 Packaging uses an explicit runtime allowlist, checks NVIDIA/VC runtime signatures, includes dependency notices, writes per-file SHA-256 hashes, and refuses to overwrite an existing archive. It does not include source caches, PDBs, logs, developer captures, credentials or unrelated executables. Test an extracted, relocated copy before uploading. Release acceptance is documented in [VALIDATION.md](VALIDATION.md).

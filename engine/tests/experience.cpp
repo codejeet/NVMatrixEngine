@@ -38,8 +38,16 @@ int main() {
                     ball.step(1.f / 120);
                 }
             };
+            require(!ball.ballFloats() && std::abs(ball.ballDensity() - 2500) < .01f,
+                    "Physics construction must default to solid sinking glass without UI synchronization");
+            ball.place(0, {-1.8f, 1.4f, 3.2f});
+            advance(600);
+            require(std::abs(ball.playerPosition().y - .68f) < .03f,
+                    "Default ball must sink without a density setter call");
+            // Explicitly select Float for the existing moving Float -> Sink test.
+            ball.setBallFloating(true);
             require(ball.ballFloats() && std::abs(ball.ballMass() - 60) < .001f,
-                    "Default ball must retain hollow floating mass");
+                    "Explicit Float must retain hollow floating mass");
             ball.place(0, {-1.8f, 1.4f, 3.2f});
             require(!ball.poseDiscontinuities.empty() && ball.poseDiscontinuities[0],
                     "Explicit placement must notify the fluid boundary consumer");
@@ -84,12 +92,19 @@ int main() {
             ball.load(0);
             require(ball.ballFloats() && std::abs(ball.ballMass() - 60) < .001f,
                     "Chamber reset discarded float preference");
+            Game fresh({lab::makePlayLevel(true, true)});
+            require(!fresh.ballFloats() && std::abs(fresh.ballDensity() - 2500) < .01f,
+                    "A new session inherited another session's Float selection");
+            Game deep({lab::makePlayLevel(true, true, true)});
+            require(!deep.ballFloats() && std::abs(deep.ballDensity() - 2500) < .01f,
+                    "Deep pool must also default to solid sinking glass");
             Game legacy({lab::makePlayLevel()});
             legacy.setBallFloating(false);
             require(std::abs(legacy.ballMass() - 3.95f) < .001f,
                     "Water density option changed non-water gameplay mass");
         }
         Game game({lab::makePlayLevel(true, true)});
+        game.setBallFloating(true); // Boat propulsion fixture uses the lightweight pilot.
         require(game.boatBody == 5 && game.poses().size() == 7, "Boat body/mesh layout");
         auto step = [&] {
             auto water = game.waterQueries();

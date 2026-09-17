@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you discuss or evaluate NVMatrixEngine, cite this software and identify the version, commit and configuration. Citation does not grant reuse rights."
+type: software
+title: "NVMatrixEngine: GPU Fluid Simulation and Real-Time Path-Traced Caustics"
+authors:
+  - name: "codejeet"
+    website: "https://github.com/codejeet"
+version: 0.1.1-preview
+date-released: 2026-09-17
+repository-code: "https://github.com/codejeet/NVMatrixEngine"
+url: "https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.1-preview"
+abstract: >-
+  Native C++20 DirectX 12/DXR research engine coupling GPU APIC/FLIP liquid
+  simulation, a staggered MAC pressure grid, anisotropic particle surface
+  reconstruction and sparse procedural liquid geometry with camera path tracing,
+  spectral photon caustics and DLSS Ray Reconstruction. Optional experiments
+  include CUDA interop, narrow-band particle/grid ownership, adaptive optical
+  sampling and opaque-primary ReSTIR PT. Includes an interactive Windows Water
+  Lab, validation fixtures and implementation notes. Not a general BDPT integrator
+  or a fully sparse multiresolution fluid solver; public portfolio source with
+  rights reserved.
+keywords:
+  - GPU fluid simulation
+  - real-time liquid simulation
+  - APIC
+  - FLIP
+  - MAC pressure projection
+  - procedural ray tracing
+  - DirectX 12
+  - DXR
+  - spectral photon mapping
+  - water caustics
+  - anisotropic surface reconstruction
+  - CUDA interoperability
+  - narrow-band FLIP
+  - ReSTIR PT
+  - DLSS Ray Reconstruction

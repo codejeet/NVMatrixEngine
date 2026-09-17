@@ -30,3 +30,16 @@ test('recording tour drives real movement and jump inputs, with no fake splashes
   assert.doesNotMatch(tour, /game->place|setLinearVelocity|fluid->/);
   assert.match(main, /demoTour && \(!automation/);
 });
+
+test('physics and UI independently default to Sink before session synchronization', () => {
+  assert.match(read('../shared/src/game.h'), /bool ballFloating = false;/);
+  assert.match(read('src/experience.h'), /ballFloats = false;/);
+  assert.match(read('tests/experience.cpp'), /Default ball must sink without a density setter call/);
+});
+
+test('portable validation checks the released physics state, not only the UI label', () => {
+  const pack = read('package-release.ps1');
+  assert.match(pack, /\$g\.ballFloats -ne \$false/);
+  assert.match(pack, /\$g\.ballDensityKgM3 - 2500/);
+  assert.match(pack, /sinkingBallVerified=\$true/);
+});

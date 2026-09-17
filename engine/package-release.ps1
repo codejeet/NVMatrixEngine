@@ -1,7 +1,7 @@
 param(
   [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
-  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.0-preview',
+  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.1-preview',
   [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
   [switch]$AllowUnverifiedFrameGeneration
 )
@@ -79,7 +79,7 @@ Copy-Payload "$deps/agility-1.619.5/LICENSE.txt" 'licenses/Agility-LICENSE.txt'
 Copy-Payload "$deps/agility-1.619.5/LICENSE-CODE.txt" 'licenses/Agility-LICENSE-CODE.txt'
 Copy-Payload "$CudaToolkit/EULA.txt" 'licenses/CUDA-EULA.txt'
 Copy-Payload "$vs/Licenses/1033/Redist.txt" 'licenses/Microsoft-VC-REDIST.txt'
-foreach ($file in @('README.md','COPYRIGHT.md','THIRD_PARTY_NOTICES.md')) { Copy-Payload "$repo/$file" $file }
+foreach ($file in @('README.md','COPYRIGHT.md','THIRD_PARTY_NOTICES.md','CITATION.cff')) { Copy-Payload "$repo/$file" $file }
 foreach ($file in Get-ChildItem "$repo/release" -File | Where-Object { $_.Extension -in '.cmd','.txt' }) { Copy-Payload $file.FullName $file.Name }
 foreach ($file in Get-ChildItem "$repo/docs" -Recurse -File | Where-Object { $_.Extension -in '.md','.png','.gif' }) {
   $relative = $file.FullName.Substring($repo.Length + 1).Replace('\','/')
@@ -149,6 +149,11 @@ function Run-Bounded([string]$Name,[string]$Arguments,[int]$Frames,[switch]$Obse
   if ((Get-Item "$testRoot/$Name.json").LastWriteTimeUtc -lt $started) { throw "Stale test report: $Name" }
   $r = Get-Content "$testRoot/$Name.json" -Raw | ConvertFrom-Json
   if ($r.frames -ne $Frames -or $r.dlssEvaluations -ne $Frames -or !$r.fluidSurface.surfaceBricks -or !$r.waterPhotonEntries) { throw "Incomplete fluid rendering: $Name" }
+  if ((Get-Item "$testRoot/$Name.game.json").LastWriteTimeUtc -lt $started) { throw "Stale gameplay report: $Name" }
+  $g = Get-Content "$testRoot/$Name.game.json" -Raw | ConvertFrom-Json
+  if ($g.ballFloats -ne $false -or [Math]::Abs($g.ballDensityKgM3 - 2500) -gt .01 -or $g.ballMassKg -lt 3000) {
+    throw "Packaged water avatar did not default to solid sinking glass: $Name"
+  }
   Copy-Item "$testRoot/NVMatrixEngine.log" "$work/$Name.log"
   if (Select-String -Path "$work/$Name.log" -Pattern 'SL ERROR:|LAB ERROR:') { throw "Runtime error in $Name log" }
   return $r
@@ -187,6 +192,7 @@ $hash = (Get-FileHash $candidate).Hash.ToLowerInvariant()
 [ordered]@{ archive=$archiveName; sourceCommit=$commit; sha256=$hash; zipBytes=(Get-Item $candidate).Length;
   payloadFiles=$files.Count+1; verifiedUtc=[DateTime]::UtcNow.ToString('o'); adapter=$room.adapter;
   windowsVersion=[Environment]::OSVersion.Version.ToString(); checks=@('ZIP round-trip SHA-256')+$checks;
+  sinkingBallVerified=$true; ballDensityKgM3=2500;
   generatedPresentations=$fg.frameGeneration.extraPresents; frameGenerationOutputVerified=$fgVerified;
   knownIssues=@($(if (!$fgVerified) {'FG enabled with status 0 but no verified extra presentations; also reproduced with the predecessor executable on this PC.'}));
   appLocalModules=@($observed.Keys | Sort-Object);

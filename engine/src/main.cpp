@@ -1841,7 +1841,12 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                        << ",\"gateOpen\":" << (game->gateOpen ? "true" : "false")
                        << ",\"charge\":" << game->charge << ",\"jumps\":" << game->jumps
                        << ",\"throws\":" << game->throws << ",\"tuneMoves\":" << game->tuneMoves
-                       << ",\"tuneTurns\":" << game->tuneTurns << ",\"pose\":\"" << options.pose << "\"}\n";
+                       << ",\"tuneTurns\":" << game->tuneTurns
+                       << ",\"ballFloats\":" << (game->ballFloats() ? "true" : "false")
+                       << ",\"ballMassKg\":" << game->ballMass()
+                       << ",\"ballDensityKgM3\":" << game->ballDensity()
+                       << ",\"ballHeightM\":" << game->playerPosition().y
+                       << ",\"pose\":\"" << options.pose << "\"}\n";
             }
             activeGame = nullptr;
             activeHud = nullptr;

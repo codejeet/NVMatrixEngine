@@ -14,13 +14,19 @@ No published screenshot is an offline or AI-generated substitute: the images are
 
 ## Standalone source checks
 
-- 239 Node reference/contract tests passed.
+- 241 Node reference/contract tests passed.
 - 9 native CTest cases passed: gameplay/audio, orbit input, rolling camera, camera/watercraft, water optics, mesh SDF, complexity policy, collider timeline and submission profiling.
 - The CUDA-enabled Windows Release executable was rebuilt with SM 86/89/120 kernels. Third-party Bullet/RmlUi header warnings remain; this is not a warning-free SDK build.
-- All 374 compiled renderer/compute shader outputs (plus the runtime UI shader source) were rebuilt successfully with the pinned DXC.
+- All 374 renderer/compute shader outputs (plus the runtime UI shader source) were compiled successfully with the pinned DXC for 0.1.0 and are unchanged in 0.1.1.
 - The export removes the shared UI/audio dependency on predecessor renderer/DLSS headers and uses only the included shared support plus downloaded SDKs.
 
 The downloadable `*.verification.json` is the authoritative per-ZIP smoke-test and checksum record. Its source commit identifies the packaged snapshot. Development reports elsewhere in the repository should not be mistaken for newly measured release performance.
+
+## Sinking-ball patch validation
+
+Version 0.1.1 makes solid glass the `Game` constructor default, independent of renderer/UI synchronization. The rebuilt native fixture checks initial 2,500 kg/m³ density, actual descent to the floor without calling the density setter, fresh room/deep-pool defaults, optional Float behavior and reset persistence. The boat propulsion fixture explicitly opts into its lightweight pilot rather than relying on the old default.
+
+Bounded runs now report actual physics mode, mass, density and ball height in `*.game.json`. Packaging rejects rendered room, underwater, CUDA, narrow-band and ReSTIR PT cases unless the packaged executable reports Sink and solid-glass density. The per-ZIP report records `sinkingBallVerified` separately from the unresolved FG-output check.
 
 ## Frame-generation caveat
 

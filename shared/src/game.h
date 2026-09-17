@@ -141,7 +141,9 @@ class Game {
     std::vector<FloatPoint> floatPoints;
     std::vector<XMFLOAT4> waterSamples;
     float waterDensity = 998.207f, waterGravity = 9.81f, waterAge = 100;
-    bool ballFloating = true; // Session preference survives chamber/water resets.
+    // Construct solid glass immediately, even before a renderer/UI exists.
+    // The selected session preference still survives chamber/water resets.
+    bool ballFloating = false;
     void waterForces(float dt);
     std::unique_ptr<btDefaultCollisionConfiguration> config;
     std::unique_ptr<btCollisionDispatcher> dispatcher;

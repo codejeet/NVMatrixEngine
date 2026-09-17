@@ -15,7 +15,9 @@ The default launcher uses DX12 simulation, Balanced DLSS and automatic frame
 generation where supported. Fisheye is optional in settings and pauses FG.
 Change lighting, flashlight, ball sink/float, music volume and water quality
 in Esc. Applying water quality resets the pool. Filling stops at capacity.
-The glass ball starts in Sink mode; choose Float in Esc to use a hollow ball.
+The glass ball is constructed in Sink mode (solid glass, 2500 kg/m^3).
+Choose Float in Esc to use a hollow ball. New sessions always start in Sink;
+chamber resets preserve your current session's selection.
 
 Optional launchers: CUDA water (uniform solver), larger deep pool, experimental
 narrow-band CUDA ownership, and ReSTIR PT indirect lighting. These are not
@@ -29,3 +31,5 @@ Do not copy the executable away from its shaders, assets, DLLs or D3D12 folder.
 README.md has features and links. COPYRIGHT.md and THIRD_PARTY_NOTICES.md describe
 terms; bundled component licenses are in licenses/. No blanket 60 FPS guarantee.
 Generated presentation frames are not extra simulation/rendered frames.
+Known preview limitation: FG loads without errors on the release PC but extra
+presented frames were not verified. See docs/VALIDATION.md and the release report.
