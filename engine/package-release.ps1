@@ -181,7 +181,7 @@ if ($fgVerified) { $checks += 'Actual DLSS 2x generated presentations' }
 $cuda = Run-Bounded 'release-cuda' "$common --fluid-backend=cuda --fluid-cuda-graphs=on --frames=96 --frame-gen=off --name=release-cuda" 96
 if ($cuda.fluid.backend -ne 'cuda' -or !$cuda.fluid.cuda.graphReplays -or $cuda.fluid.cuda.rejectedFrames) { throw 'CUDA graph smoke test failed.' }
 $checks += 'CUDA uniform graph-replay water (96 frames)'
-$narrow = Run-Bounded 'release-narrow' '--fluid-deep-pool --normal-lens --fluid-narrow-band --fluid-validate --width=1280 --height=720 --quality=balanced --frames=96 --frame-gen=off --name=release-narrow' 96
+$narrow = Run-Bounded 'release-narrow' '--fluid-deep-pool --boat --normal-lens --fluid-narrow-band --fluid-validate --width=1280 --height=720 --quality=balanced --frames=96 --frame-gen=off --name=release-narrow' 96
 if (!$narrow.fluid.cuda.narrowBand -or !$narrow.fluid.narrowBandOwnership.gridVolumeM3 -or $narrow.fluid.active -ge $narrow.fluid.particles -or $narrow.fluid.particleAuthority.relativeVolumeError -gt 1e-11 -or $narrow.fluidProbes.badRoots -or $narrow.fluidProbes.truncated) { throw 'Live narrow-band smoke/conservation failed.' }
 $checks += 'Deep-pool CUDA live particle retirement, conservation and optical validation (96 frames)'
 $pt = Run-Bounded 'release-restir' "$common --restir-pt --frames=96 --frame-gen=off --name=release-restir" 96
