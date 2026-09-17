@@ -47,9 +47,11 @@ Node tests require a recent Node.js. The CUDA convenience build targets the main
 ## Portable packaging
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -BuildDir "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build" -Version 0.1.1-preview -OutputDir "$env:USERPROFILE/Downloads"
+powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -BuildDir "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build" -Version 0.1.2-preview -OutputDir "$env:USERPROFILE/Downloads"
 ```
 
-Packaging uses an explicit runtime allowlist, checks NVIDIA/VC runtime signatures, includes dependency notices, writes per-file SHA-256 hashes, and refuses to overwrite an existing archive. It does not include source caches, PDBs, logs, developer captures, credentials or unrelated executables. Test an extracted, relocated copy before uploading. Release acceptance is documented in [VALIDATION.md](VALIDATION.md).
+Packaging uses an explicit runtime allowlist, checks NVIDIA/VC runtime signatures, includes dependency notices, writes per-file SHA-256 hashes, and refuses to overwrite an existing archive. It does not include source caches, PDBs, logs, developer captures, credentials or unrelated executables. By default it tests an extracted, relocated copy before producing the final archive. Release acceptance is documented in [VALIDATION.md](VALIDATION.md).
 
-The first preview uses the explicit `-AllowUnverifiedFrameGeneration` packaging exception described in the validation notes. Without it, packaging rejects an FG run that produces no extra presentations. Do not silently treat that exception as FG certification.
+Add `-SkipValidation` to package the existing build without source/runtime consistency checks, vendor signature checks, extraction checks or test runs. This mode can copy the runtime while the demo remains open. It still requires a clean committed checkout and all packaging inputs, writes the manifest and archive checksum, and marks the verification sidecar `validationStatus: "skipped"` with an empty list of checks. Version 0.1.2 uses this explicitly requested mode; its release notes disclose that no fresh package validation ran.
+
+The first preview used the explicit `-AllowUnverifiedFrameGeneration` packaging exception described in the validation notes. Without it, packaging rejects an FG run that produces no extra presentations. Do not silently treat that exception as FG certification.

@@ -120,6 +120,8 @@ foreach ($stage in @(@('FGComposite','ps_6_6'),@('FGDepth','cs_6_6'))) {
   & $dxc -T $stage[1] -E $stage[0] -HV 2021 -O3 "$PSScriptRoot/shaders/present.hlsl" -Fo "$OutputDir/$($stage[0]).dxil"
   if ($LASTEXITCODE) { throw 'Frame generation handoff compilation failed.' }
 }
+& $dxc -T cs_6_6 -E FGDistortion -HV 2021 -O3 "$PSScriptRoot/shaders/lens-distortion.hlsl" -Fo "$OutputDir/FGDistortion.dxil"
+if ($LASTEXITCODE) { throw 'Frame generation lens distortion compilation failed.' }
 foreach ($entry in 'WhitewaterClear','WhitewaterUpdate','FoamClear','FoamSplat','FoamTransport') {
   & $dxc -T cs_6_6 -E $entry -HV 2021 -O3 "$PSScriptRoot/shaders/fluid/whitewater.hlsl" -Fo "$OutputDir/$entry.dxil"
   if ($LASTEXITCODE) { throw "Whitewater compilation failed: $entry" }

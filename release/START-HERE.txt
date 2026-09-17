@@ -1,9 +1,9 @@
-NVMatrixEngine - Water Lab - research preview
+NVMatrixEngine - Game Engine Preview - Water Lab
 https://github.com/codejeet/NVMatrixEngine
 
 Extract the entire ZIP into a writable folder. Open Play Water Lab.cmd.
 Windows 11 x64 and a compatible high-end NVIDIA RTX GPU/driver are required.
-Validated on RTX 5090; other hardware is not certified. No installer or admin
+Developed on RTX 5090; other hardware is not certified. No installer or admin
 rights are needed. CUDA Toolkit is not needed to run the optional CUDA demo.
 
 Esc: settings. WASD: roll. Space: jump. Right drag: look. Wheel: zoom.
@@ -12,7 +12,10 @@ Boat W/S: thrust, A/D: steer. T: wall inlet. I: inspect inlet.
 P: pause water. Period: one step. B: reset water. U: HUD details. F8: frame gen.
 
 The default launcher uses DX12 simulation, Balanced DLSS and automatic frame
-generation where supported. Fisheye is optional in settings and pauses FG.
+generation where supported. Normal and fisheye lenses both support FG.
+Esc offers DLSS RR Quality, Balanced and Performance without resetting water.
+The HUD separates Render FPS from actual DLSS output FPS, including generated
+presentations. Ray Reconstruction upscaling alone does not add frames.
 Change lighting, flashlight, ball sink/float, music volume and water quality
 in Esc. Applying water quality resets the pool. Filling stops at capacity.
 The glass ball is constructed in Sink mode (solid glass, 2500 kg/m^3).
@@ -31,5 +34,5 @@ Do not copy the executable away from its shaders, assets, DLLs or D3D12 folder.
 README.md has features and links. COPYRIGHT.md and THIRD_PARTY_NOTICES.md describe
 terms; bundled component licenses are in licenses/. No blanket 60 FPS guarantee.
 Generated presentation frames are not extra simulation/rendered frames.
-Known preview limitation: FG loads without errors on the release PC but extra
-presented frames were not verified. See docs/VALIDATION.md and the release report.
+Version 0.1.2 packages the existing build without fresh release validation.
+See docs/VALIDATION.md and the release report for the measurement scope.

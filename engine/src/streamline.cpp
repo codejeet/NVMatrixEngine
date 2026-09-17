@@ -217,14 +217,16 @@ void Streamline::clearFrameGenerationTags() {
     if (!currentToken)
         return;
     const sl::BufferType types[] = {sl::kBufferTypeDepth, sl::kBufferTypeMotionVectors,
-                                    sl::kBufferTypeHUDLessColor, sl::kBufferTypeUIColorAndAlpha};
-    sl::ResourceTag tags[5];
-    for (int i = 0; i < 4; ++i)
+                                    sl::kBufferTypeHUDLessColor, sl::kBufferTypeUIColorAndAlpha,
+                                    sl::kBufferTypeBidirectionalDistortionField};
+    sl::ResourceTag tags[6];
+    for (int i = 0; i < 5; ++i)
         tags[i] = sl::ResourceTag(nullptr, types[i], sl::ResourceLifecycle::eValidUntilPresent);
     sl::Extent output{0, 0, width, height};
-    tags[4] = sl::ResourceTag(nullptr, sl::kBufferTypeBackbuffer, sl::ResourceLifecycle::eValidUntilPresent,
+    tags[5] = sl::ResourceTag(nullptr, sl::kBufferTypeBackbuffer, sl::ResourceLifecycle::eValidUntilPresent,
                               &output);
-    slCheck(tagFn(*currentToken, viewport, tags, 5, nullptr), "Clear DLSS-FG tags");
+    slCheck(tagFn(*currentToken, viewport, tags, 6, nullptr), "Clear DLSS-FG tags");
+    distortionTagged = false;
 }
 void Streamline::suspend() {
     if (fgLoaded && fgEnabled && fgOptionsFn) {
@@ -257,7 +259,8 @@ void Streamline::prepareFrame(bool gameFrame) {
     fgEnabled = true;
 }
 void Streamline::tagFrameGeneration(ID3D12GraphicsCommandList *cmd, ID3D12Resource *depth,
-                                    ID3D12Resource *motion, ID3D12Resource *hudless, ID3D12Resource *ui) {
+                                    ID3D12Resource *motion, ID3D12Resource *hudless, ID3D12Resource *ui,
+                                    ID3D12Resource *distortion) {
     if (!fgEnabled) {
         if (fgLoaded)
             clearFrameGenerationTags();
@@ -268,7 +271,7 @@ void Streamline::tagFrameGeneration(ID3D12GraphicsCommandList *cmd, ID3D12Resour
     const sl::BufferType types[] = {sl::kBufferTypeDepth, sl::kBufferTypeMotionVectors,
                                     sl::kBufferTypeHUDLessColor, sl::kBufferTypeUIColorAndAlpha};
     sl::Resource resources[4];
-    sl::ResourceTag tags[5];
+    sl::ResourceTag tags[6];
     for (int i = 0; i < 4; ++i) {
         resources[i] = sl::Resource(sl::ResourceType::eTex2d, textures[i],
                                     i < 2 ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS
@@ -279,7 +282,17 @@ void Streamline::tagFrameGeneration(ID3D12GraphicsCommandList *cmd, ID3D12Resour
     // Explicit full-backbuffer extent avoids ambiguous optional subrect state.
     tags[4] = sl::ResourceTag(nullptr, sl::kBufferTypeBackbuffer, sl::ResourceLifecycle::eValidUntilPresent,
                               &output);
-    slCheck(tagFn(*currentToken, viewport, tags, 5, cmd), "DLSS-FG depth/motion/HUD inputs");
+    sl::Resource distortionResource(sl::ResourceType::eTex2d, distortion,
+                                     D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    sl::Extent distortionExtent{0, 0, width, height};
+    // Always submit the optional tag, including null in rectilinear mode, so a
+    // cached fisheye map cannot affect frames after switching back.
+    tags[5] = sl::ResourceTag(distortion ? &distortionResource : nullptr,
+                              sl::kBufferTypeBidirectionalDistortionField,
+                              sl::ResourceLifecycle::eValidUntilPresent, &distortionExtent);
+    slCheck(tagFn(*currentToken, viewport, tags, 6, cmd), "DLSS-FG depth/motion/HUD/lens inputs");
+    distortionTagged = distortion != nullptr;
+    distortionFrames += distortionTagged ? 1 : 0;
 }
 void Streamline::endPresent(ID3D12CommandQueue *queue) {
     lastPresented = 1;
@@ -312,6 +325,8 @@ void Streamline::report(std::ostream &out) const {
         << ",\"maximumMultiplier\":" << maxMultiplier << ",\"minimumDimension\":" << minimumDimension
         << ",\"status\":" << fgStatus << ",\"reflex\":" << (reflexAvailable ? "true" : "false")
         << ",\"presentedFrames\":" << presentedFrames << ",\"extraPresents\":" << interpolatedPresents
+        << ",\"distortionTagged\":" << (distortionTagged ? "true" : "false")
+        << ",\"distortionFrames\":" << distortionFrames
         << ",\"frameTokens\":" << frameTokens << ",\"simulationMarkers\":" << simulationMarkers
         << ",\"submissionMarkers\":" << submissionMarkers << ",\"presentMarkers\":" << presentMarkers << "}";
 }

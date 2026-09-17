@@ -9,7 +9,8 @@ $cases=@(
   @('4x',180,'4',''),
   @('controls',180,'2','--frame-gen-test'),
   @('dred',60,'2','--dred'),
-  @('fluid',90,'2','--fluid-validate --fluid-view')
+  @('fluid',90,'2','--fluid-validate --fluid-view'),
+  @('fisheye',180,'2','--fisheye --fluid')
 )
 foreach($case in $cases){
   if($case[0] -notmatch $CaseFilter){continue}
@@ -41,6 +42,7 @@ foreach($case in $cases){
       if(!$g.supported -or !$g.loaded -or !$g.enabled -or $g.extraPresents -lt 20 -or $g.presentedFrames -le $r.frames+20){throw 'No actual generated presentation frames'}
     }
     if($case[0] -eq 'fluid' -and (!$r.fluid.validated -or $r.fluidProbes.glassShellHits -ne 10 -or $r.fluidProbes.badRoots)){throw 'Fluid/glass optical regression'}
+    if($case[0] -eq 'fisheye' -and (!$r.frameGeneration.distortionTagged -or $r.frameGeneration.distortionFrames -ne 178 -or $r.frameGenerationDistortionUpdates -ne 1)){throw 'Missing or uncached fisheye distortion map'}
     Write-Host "PASS $name | $($r.frames) rendered / $($g.presentedFrames) presented | Reflex $($g.reflex) | status $($g.status)"
   }finally{$p.Dispose()}
 }

@@ -2,9 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
-test('default fisheye uses the reduced 120 degree diagonal field of view',()=>{
-  assert.match(read('src/experience.h'),/diagonalDegrees = 120/);
-  assert.match(read('ui/lab.rml'),/id="lens-fov"[^>]*value="120"/);
+test('default lens and UI use a 90 degree diagonal field of view in both lens modes',()=>{
+  const lens=read('src/experience.h');
+  assert.match(lens,/diagonalDegrees = 90/);
+  assert.match(read('ui/lab.rml'),/id="lens-fov"[^>]*value="90"/);
+  const projection=lens.slice(lens.indexOf('float tanHalfVertical'),lens.indexOf('void rectilinear'));
+  assert.doesNotMatch(projection,/return fisheye \?|\.577350/);
+  assert.match(projection,/std::clamp\(diagonalDegrees/);
 });
 test('ball density control connects the menu to live physics without resetting water',()=>{
   assert.match(read('ui/lab.rml'),/id="ball-density" data-action="ball-density"/);
@@ -32,9 +36,9 @@ test('flashlight cone integrates to its radiant flux and photon partitions prese
 });
 test('lens presentation, picking, temporal projection and FG gate share the model',()=>{
   const renderer=read('src/renderer.cpp'),present=read('shaders/present.hlsl'), lens=read('src/experience.h');
-  assert.match(present,/2\*asin/);assert.match(lens,/2 \* std::asin/);
+  assert.match(present,/fisheyeToRectilinearUv/);assert.match(lens,/lensMapping::fisheyeToRectilinearScale/);
   assert.match(renderer,/displayedLens.rectilinear/);
-  assert.match(renderer,/prepareFrame\(!lens.fisheye/);
+  assert.match(renderer,/lens.fisheye \? fgDistortion.Get\(\) : nullptr/);
   assert.match(read('src/streamline.cpp'),/cam.projection._22/);
   assert.match(read('src/main.cpp'),/activeRenderer->displayRay/);
 });

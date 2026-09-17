@@ -14,7 +14,7 @@ cbuffer Frame : register(b0) {
     uint4 FluidBricks,FluidState;
     uint4 PTControls; // enabled, temporal-valid, history cap, spatial neighbors
     float4 PTPreviousCamera;
-    uint4 OpticalControls; // flags: enabled/adaptive/freeze; history valid; max samples; debug/reference flags
+    uint4 OpticalControls; // flags; history valid; max samples; debug/reference bits (256/512/1024/2048)
     float4 OpticalParameters; // dt, reprojection tolerance, variance scale, receiver irradiance scale
     float4 Lighting, FlashlightOrigin, FlashlightDirection;
     uint4 CameraState;

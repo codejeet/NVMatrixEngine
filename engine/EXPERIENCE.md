@@ -1,14 +1,20 @@
 # Camera, lighting controls, and watercraft
 
-The interactive lab uses a full-frame equisolid-angle projection, `r = 2 f sin(theta/2)`,
-with a default **120-degree diagonal** field of view and a 90–160-degree slider.
+The public Water Lab starts with the normal rectilinear lens and a
+**90-degree diagonal** field of view. The 90–160-degree slider controls both lens
+modes. The optional fisheye uses a full-frame equisolid-angle projection,
+`r = 2 f sin(theta/2)`.
 The path tracer and DLSS-RR render a matching wide rectilinear projection; the
 final presentation resamples it to the fisheye sensor. Mouse picking applies the
 same mapping. This models the projection, not a multi-element lens assembly.
 Finite-resolution resampling can soften the centre, especially at very wide FOVs.
-Frame Generation is paused in fisheye mode because its current input contract is
-rectilinear; it remains available with the normal lens. Debug overlays use the
-normal projection. Lens/view changes reset reconstruction history.
+Frame Generation accepts both lens modes. Fisheye supplies DLSS with an exact
+bidirectional UV distortion map: depth/motion stay rectilinear, while the scene
+and final color use the fisheye projection. The HUD remains a separate layer.
+The signed FP16 map uses output resolution to preserve the steep corner mapping
+at 160 degrees, and is cached until FOV or render targets change. Switching back
+to rectilinear explicitly clears the tag. Debug overlays use the normal projection;
+menus and debug views still pause FG. Lens/view changes reset reconstruction history.
 
 Esc exposes neon, single-overhead, white-studio, and blackout lighting presets.
 The ball flashlight is an 8-radiant-watt, 24-degree-half-angle spot source with

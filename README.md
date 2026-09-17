@@ -1,16 +1,16 @@
-# NVMatrixEngine — GPU Fluid Simulation & Real-Time Path Tracing
+# NVMatrixEngine — Real-Time Game Engine
 
-**A C++20 / DirectX 12 research engine for GPU liquid simulation, path-traced water and spectral caustics on NVIDIA RTX GPUs.**
+**A C++20 / DirectX 12 game engine with GPU liquid simulation, path-traced lighting and spectral caustics on NVIDIA RTX GPUs.**
 
-NVMatrixEngine couples **APIC/FLIP fluid simulation** with **DirectX Raytracing (DXR)**: a reconstructed liquid surface participates directly in path-traced reflection, refraction and light-side spectral photon mapping. It includes a staggered MAC pressure grid, anisotropic particle surface reconstruction, sparse procedural water geometry, DLSS Ray Reconstruction, and optional CUDA and ReSTIR PT research modes.
+NVMatrixEngine couples **APIC/FLIP fluid simulation** with **DirectX Raytracing (DXR)**: a reconstructed liquid surface participates directly in path-traced reflection, refraction and light-side spectral photon mapping. It includes rigid-body gameplay, an interactive settings UI, audio, a staggered MAC pressure grid, anisotropic particle surface reconstruction, sparse procedural water geometry, DLSS Ray Reconstruction, and optional CUDA and ReSTIR PT modes.
 
 The flagship **Water Lab** is a playable, room-scale pool: open the wall inlet, roll or dive as a sinking glass ball, propel a buoyant boat, and watch animated water redirect light onto the white grid floor. Source, a portable Windows demo, real engine videos, numerical tests and implementation notes are included.
 
-[Download Water Lab v0.1.1](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.1-preview) · [Research entry points](#for-graphics-and-fluid-simulation-researchers) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
+[Download Water Lab v0.1.2](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.2-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
 
 ![NVMatrixEngine Water Lab: path-traced water, glass and spectral illumination](docs/screenshots/water-room.png)
 
-This is an independently developed **research/portfolio preview**, not a finished middleware product. The source includes the native engine and the shared code needed by its demos; it does not include the predecessor browser renderer or its application. NVIDIA does not sponsor or endorse this project.
+This independently developed **game engine is in preview**. The source includes the native engine and the shared code needed by its demos. NVIDIA does not sponsor or endorse this project.
 
 ## Implemented GPU fluid simulation and rendering algorithms
 
@@ -24,7 +24,7 @@ This is an independently developed **research/portfolio preview**, not a finishe
 | Reconstruction / presentation | DLSS Ray Reconstruction with super resolution, optional DLSS Frame Generation / Multi Frame Generation, and Reflex integration |
 | Interaction | Bullet rigid bodies, glass ball sink/float density, GPU-sampled buoyancy, powered boat, wall emitter, bounded foam/bubbles/spray |
 | Interface | RmlUi settings, lighting presets, flashlight, lens/view modes, simulation sliders, audio, debug overlays and GPU timings |
-| Research modes | CUDA/DX12 interop, graph replay, mixed-resolution pressure, live narrow-band particle/grid ownership, adaptive optical sampling, and RTXDI-based ReSTIR PT |
+| Experimental modes | CUDA/DX12 interop, graph replay, mixed-resolution pressure, live narrow-band particle/grid ownership, adaptive optical sampling, and RTXDI-based ReSTIR PT |
 
 ### Light transport, in plain terms
 
@@ -32,11 +32,11 @@ The renderer traces from **both the camera and the lights**, combining eye-path 
 
 That is a hybrid, two-sided transport architecture—not a claim that general bidirectional path tracing with vertex connection/MIS, or **ReSTIR BDPT**, is complete. The optional **ReSTIR PT** mode is implemented for multi-bounce diffuse indirect lighting from opaque primary surfaces. It does not yet reuse GI behind refractive camera prefixes. [Algorithm details and scope](docs/ARCHITECTURE.md#light-transport).
 
-## For graphics and fluid simulation researchers
+## Engine development
 
-This project is a source-inspectable testbed for **real-time liquid rendering**, **GPU particle-grid simulation**, **refractive caustics**, and the synchronization/latency tradeoffs of a coupled simulation and path tracer. It is particularly relevant when water must appear in reflections, underwater views and light transport—not only in a screen-space effect.
+The engine integrates **real-time liquid rendering**, **GPU particle-grid simulation**, **refractive caustics**, and interactive rigid-body gameplay. Water participates in reflections, underwater views and light transport. These entry points explain how the engine's simulation and renderer work together.
 
-| Research question | Start here |
+| Engine subsystem | Start here |
 | --- | --- |
 | How do APIC/FLIP transfers and incompressible pressure projection map to GPU compute? | [Fluid solver architecture](docs/ARCHITECTURE.md#liquid-solver), [MAC implementation](engine/src/fluid/fluid_mac.cpp), [HLSL kernels](engine/shaders/fluid/) |
 | How can a ray tracer intersect a particle-reconstructed liquid without meshing? | [Anisotropic reconstruction](engine/shaders/fluid/reconstruction.hlsl), [procedural DXR intersection](engine/shaders/fluid/intersection.hlsli), [scalar-field representation](docs/ARCHITECTURE.md#surface-representation-and-intersection) |
@@ -79,14 +79,14 @@ The main release launcher uses the **DX12 uniform-grid baseline**. CUDA and adap
 
 https://github.com/user-attachments/assets/74b52c64-3163-4d68-ab98-331f22f1a4bf
 
-![Larger deep-water pool research scenario](docs/screenshots/deep-pool.png)
+![Larger deep-water pool demo](docs/screenshots/deep-pool.png)
 
 ### Try it
 
-1. Download the ZIP from the [v0.1.1 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.1-preview).
+1. Download the ZIP from the [v0.1.2 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.2-preview).
 2. Extract the **entire** folder to a writable location; do not run inside the ZIP.
 3. Open **Play Water Lab.cmd**, or double-click `NVMatrixFluidLab.exe` for the default water room.
-4. Press **Esc** for lighting, lens, buoyancy, water quality, frame generation, and music settings.
+4. Press **Esc** for DLSS RR Quality/Balanced/Performance, frame generation, lighting, lens, buoyancy, water quality, and music settings.
 
 No installer, administrator access, CUDA Toolkit, Visual Studio, or SDK downloads are required to run the packaged demo. A current compatible NVIDIA graphics driver is required. This preview is unsigned; Windows may display a reputation warning. Only use release assets from this repository and verify the accompanying SHA-256 checksum if needed.
 
@@ -102,20 +102,22 @@ No installer, administrator access, CUDA Toolkit, Visual Studio, or SDK download
 | Esc / U | Settings / additional HUD detail |
 | F8 | Cycle supported frame-generation modes |
 
-The equisolid fisheye is selectable in settings. It models a lens projection, not a full compound lens assembly. **Frame generation pauses in fisheye mode**; the portable launcher starts with the normal lens so FG can operate.
+The camera defaults to a **90° diagonal FOV**, adjustable in settings for both the normal lens and optional equisolid fisheye. The fisheye models a lens projection, not a full compound lens assembly. **Both lens modes support frame generation**; fisheye supplies DLSS with a cached bidirectional distortion map.
 
 The glass ball starts as **solid glass in Sink mode (2,500 kg/m³)** from physics construction onward, including in the packaged demo. Esc → Ball buoyancy switches to the lighter hollow Float mode without resetting the scene. The selected mode survives chamber resets; a new session starts in Sink.
 
 ## Hardware and performance
 
 - Windows 11 x64 and a high-end NVIDIA RTX GPU are the intended platform.
-- The release is validated on an **RTX 5090**. Other GPUs are not certified by this preview.
+- Development runs use an **RTX 5090**. The v0.1.2 package uses the existing build without a fresh release-validation run. Other GPUs are not certified by this preview.
 - DLSS feature availability is queried at runtime. Frame generation depends on GPU, driver, OS configuration, and supported presentation mode; it does not accelerate simulation or raw rendering.
-- **Preview FG caveat:** the release check loaded FG/Reflex without errors but recorded no extra presented frames on the test PC; the predecessor executable reproduced this. FG remains selectable, but generated output is **not verified for this release**. See [validation](docs/VALIDATION.md).
+- Both normal and fisheye lenses support FG. The HUD reports actual presentations so you can see whether extra frames are being generated. See [validation scope](docs/VALIDATION.md).
 - Optional CUDA kernels are built for SM 86, 89, and 120. This is architecture coverage, not evidence of equivalent performance or validation on every card.
 - Resolution, active particles, fluid depth, inlet activity, photon budget, and experimental solvers materially affect frame time. There is **no blanket 60 FPS guarantee**.
 
 The engine reports raw rendering/simulation timings separately from generated presentation frames. See [release validation and measurement scope](docs/VALIDATION.md). The project prioritizes reproducible comparisons over multiplying an FPS counter by the frame-generation factor.
+
+The HUD shows **Render FPS** and **DLSS output FPS** continuously. Output includes actual generated presentations reported by DLSS; the status says when FG is off, paused, generating, or reporting no extra frames. RR upscaling alone does not add frames. Esc → DLSS & Performance changes the upscaling mode immediately and shows the actual input/output resolution; water keeps its current state.
 
 ## Engine map
 
@@ -134,7 +136,7 @@ release/                   Portable launchers and packaging inputs
 
 See [BUILDING.md](docs/BUILDING.md) to build the DX12-only or optional CUDA configuration. Algorithm experiments and their evidence are retained in [the engine notes](engine/README.md); older checkpoint statements describe their date, not necessarily the current integrated feature set.
 
-## Research roadmap: path-tracing and water-simulation optimization
+## Engine roadmap: path-tracing and water-simulation optimization
 
 The next major work is **path-tracing optimization** and **water-simulation optimization**: reduce procedural intersection and photon cost, improve stable reuse through refraction, bound adaptive topology work, and make coarse bulk ownership save actual frame time. Full ReSTIR BDPT, fully sparse multiresolution simulation, and general multiple-scattering liquids remain future work, not shipping claims. [Detailed roadmap and acceptance criteria](docs/ROADMAP.md).
 

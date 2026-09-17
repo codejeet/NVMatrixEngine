@@ -77,6 +77,8 @@ Native DXR HitObject and NVAPI SER shader variants are implemented, but `--ser=a
 
 Camera rays preserve bounded deterministic reflection/refraction splitting at primary dielectric prefixes. Diffuse eye paths do not duplicate photon-owned transmissive caustics. The system supports multi-interface specular photon paths, but it is not a general BDPT vertex-connection/MIS integrator.
 
+With procedural liquid active, diffuse endpoints use contribution-weighted, compensated visibility sampling of point and area lights, testing every nonzero candidate with probability at least 50%. Higher optical sample budgets, collimators and the flashlight retain full visibility. Water shadow queries stop at a proven root bracket; camera and photon queries retain full distance refinement. [Estimator, water behavior and reference switches](../engine/LAMBERTIAN_REDUCTION.md).
+
 ### ReSTIR PT and adaptive optics
 
 `--restir-pt` integrates the pinned NVIDIA RTXDI PT kernels for two-segment diffuse indirect paths originating on opaque primary surfaces. Hybrid replay/reconnection, temporal and spatial reuse, and library MIS reuse entire path candidates rather than blur an already shaded image. Four padded-pixel reservoir buffers and two surface-history buffers add significant memory/work. A fresh-estimator mixture preserves noisy input for RR.

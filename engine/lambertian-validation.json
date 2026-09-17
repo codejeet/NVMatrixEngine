@@ -1,0 +1,199 @@
+{
+  "passed": true,
+  "scope": "Same-binary raw radiance, nine seeded frames; 2% mean RGB gate, exact material/depth/normal/distance guides and photons, motion tolerance 1/8192 pixel, exact water visibility parity. Timings are observations, not universal speed claims.",
+  "results": [
+    {
+      "scene": "diffuse",
+      "relativeRgb": [
+        0,
+        0,
+        0
+      ],
+      "rawRelativeRms": 0,
+      "meanRelativeRms": 0,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 501410089,
+      "cameraRaysReference": 501410089,
+      "cameraMsReduced": 0.94416,
+      "cameraMsReference": 0.99936,
+      "frameMsReduced": 3.9616,
+      "frameMsReference": 4.0504,
+      "temporalReuseFrames": 0,
+      "maxRootError": 0
+    },
+    {
+      "scene": "water",
+      "relativeRgb": [
+        5.264488907918974e-06,
+        5.772898348022082e-06,
+        8.38760775390135e-06
+      ],
+      "rawRelativeRms": 0.007080590744230162,
+      "meanRelativeRms": 0.002692827760426403,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 605848135,
+      "cameraRaysReference": 701182448,
+      "cameraMsReduced": 3.82093,
+      "cameraMsReference": 4.03789,
+      "frameMsReduced": 13.1466,
+      "frameMsReference": 14.3704,
+      "temporalReuseFrames": 0,
+      "maxRootError": 0
+    },
+    {
+      "scene": "underwater",
+      "relativeRgb": [
+        7.894264060892553e-06,
+        -2.989137289299837e-05,
+        -2.4097118261900974e-06
+      ],
+      "rawRelativeRms": 0.008106533641457572,
+      "meanRelativeRms": 0.0029922120855615272,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 676527640,
+      "cameraRaysReference": 769532150,
+      "cameraMsReduced": 3.32538,
+      "cameraMsReference": 3.47203,
+      "frameMsReduced": 12.768,
+      "frameMsReference": 12.9571,
+      "temporalReuseFrames": 0,
+      "maxRootError": 0
+    },
+    {
+      "scene": "fresh-pt",
+      "relativeRgb": [
+        3.98318290684152e-06,
+        8.113965543898871e-06,
+        1.5930978201739165e-05
+      ],
+      "rawRelativeRms": 0.007967246514399515,
+      "meanRelativeRms": 0.0030215255557012126,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 605838025,
+      "cameraRaysReference": 701169646,
+      "cameraMsReduced": 3.98067,
+      "cameraMsReference": 4.22147,
+      "frameMsReduced": 13.2171,
+      "frameMsReference": 13.9852,
+      "temporalReuseFrames": 0,
+      "maxRootError": 0
+    },
+    {
+      "scene": "reused-pt",
+      "relativeRgb": [
+        6.437926640012748e-06,
+        9.141687967728629e-06,
+        8.737754906951167e-06
+      ],
+      "rawRelativeRms": 0.00800271416002806,
+      "meanRelativeRms": 0.0030337014295792725,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 605838025,
+      "cameraRaysReference": 701169646,
+      "cameraMsReduced": 4.3423,
+      "cameraMsReference": 4.34998,
+      "frameMsReduced": 13.8961,
+      "frameMsReference": 13.5936,
+      "temporalReuseFrames": 0,
+      "maxRootError": 0
+    },
+    {
+      "scene": "temporal-pt",
+      "relativeRgb": [
+        -0.0002948170519633253,
+        5.111497743759408e-05,
+        5.3557421711980524e-05
+      ],
+      "rawRelativeRms": 0.018511279603155514,
+      "meanRelativeRms": 0.01251923945909247,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "internalResolution": [
+        557,
+        313
+      ],
+      "outputResolution": [
+        960,
+        540
+      ],
+      "frames": 256,
+      "cameraRaysReduced": 465851095,
+      "cameraRaysReference": 561034572,
+      "cameraMsReduced": 1.89488,
+      "cameraMsReference": 1.67437,
+      "frameMsReduced": 5.1257,
+      "frameMsReference": 5.1448,
+      "temporalReuseFrames": 99,
+      "maxRootError": 0
+    }
+  ],
+  "validatedUtc": "2026-09-17T09:26:11.049537+00:00",
+  "checks": {
+    "nodeTestsPassed": 241,
+    "cpuEstimatorTest": "passed on GCC and MSVC/CTest",
+    "waterPolynomialComparisons": 100008,
+    "transportShaderVariantsCompiled": 6,
+    "movingWaterWhitewaterBoatAdaptiveCapture": "96 frames; finite guides, bounded positive caustics and photon energy accounting passed"
+  },
+  "relevantSourceSha256": {
+    "engine/shaders/transport.hlsl": "5ab79906fa13c6b2851494b02c3dfa7a14207042c2f2a530d6b3f6ee0681e154",
+    "engine/shaders/direct-light.hlsli": "58c1b85d394d6b0e1b168d37fa27b702e23c871c386b791d51495561c361deb9",
+    "engine/shaders/lambertian-sampling.hlsli": "1ce9a874c3282de81f070b88f61b53a77f0edfa4fee5cb0036548511a691e2ec",
+    "engine/shaders/fluid/intersection.hlsli": "31d387af3d590c08d4865d03af1fbb110b92f9ff6a4d31eb5f773bd7e14e8596",
+    "engine/shaders/fluid/liquid-root.hlsli": "54963cbaee66bd4ca95e8d8d64e94a5d7e7743d97456fdc4d4c1d3ab9ab41d38",
+    "engine/shaders/restir-pt.hlsli": "8cf317e5d70cbdd0f551c8ee07d03ed5dcd23545df8c760fbeff326aa66a4e8d",
+    "engine/tests/lambertian.cpp": "8f2975b3b971fec35b88c0ecb13f97a4e30a4370bea8f5fb2f47456bc2d6ff69"
+  },
+  "transportShaderSha256": {
+    "Transport-0-0.dxil": "814fa37478f052301e07f640c643e8932b2970604eda2d9adc47bc609eae57f4",
+    "Transport-0-1.dxil": "6734b4190bf509e7de1c811bd51f88d62d73d4d1403d2f7c7dc954e84acbd5b4",
+    "Transport-1-0.dxil": "a5f1c58c0984b1e9affb4ee6808cd11ad94f2e916ebd4a87cd0a1757f54b9619",
+    "Transport-1-1.dxil": "08fe993cb7e5e3bc26799ee6b8ad53b815e46d6b5ee7db4c7452726b7a0eb6df",
+    "Transport-2-0.dxil": "c3a7cc2659c29ce4bf0ab2bbe9b811d96fc5ea7ed68eccf4417106d77b02cbb4",
+    "Transport-2-1.dxil": "7578d1825e29c46a77c33bf009926dbc7f66621e904eb99bb73d9618766c30de"
+  }
+}

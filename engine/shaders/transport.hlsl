@@ -413,73 +413,7 @@ void PhotonRaygen() {
     ledger(25,energy);Stats.InterlockedAdd(16,1);
 }
 #include "lasers.hlsli"
-float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1) {
-    // Shared local-light NEE oracle; used by baseline and RTXDI PT paths.
-    float3 result=laserIrradiance(h,n);
-    if(FlashlightOrigin.w>0) {
-        float3 delta=FlashlightOrigin.xyz-h.p;float distance=length(delta);float3 wi=delta/max(distance,EPS);
-        float cosine=max(dot(n,wi),0);
-        if(cosine>0&&dot(-wi,FlashlightDirection.xyz)>=FlashlightDirection.w&&
-           !occluded(h.p+n*EPS*2,wi,255,4,distance-EPS*4))
-            result+=FlashlightOrigin.w*cosine/(2*PI*(1-FlashlightDirection.w)*max(distance*distance,1e-5))*
-                    exp(-extinctionRgb(ambientMedium(h.p))*distance);
-    }
-    const float3 positions[2]={float3(-3,4,-3),float3(4,3,3)};
-    const float3 powers[2]={float3(25,4,38),float3(3,25,32)};
-    for(uint i=0;i<2&&Lighting.x>0;++i) {
-        float3 position=positions[i];
-        if(CameraState.w)position=position*float3(4,1,4)+float3(0,8,0);
-        float3 delta=position-h.p; float dist=length(delta),cosine=max(dot(n,delta/dist),0);
-        if(cosine>0 && !occluded(h.p+n*EPS*2,delta/dist,255,i,dist-EPS*4))
-            result+=(Lighting.w==2?float3(80,80,80):powers[i]*(Play.x?8:1))*cosine/(dist*dist*4*PI)*exp(-extinctionRgb(ambientMedium(h.p))*dist);
-    }
-    if(Play.x) {
-        // Actual moving cube emitters: sample a visible face by projected center
-        // area, then a uniform point on it, retaining the face/area PDF.
-        // Use the pixel/path stream, not floating-point hit-position bits. Camera
-        // jitter must not unpredictably reseed all area-light samples at a vertex.
-        for(uint object=3;object<=4&&Lighting.y>0;++object) {
-            if(object==h.object)continue;
-            Object obj=Objects[object];
-            float3 local=mul(h.p-obj.world[3].xyz,transpose((float3x3)obj.world));
-            // Only faces actually visible from the shading point have nonzero cosine.
-            float3 areaWeight=max(abs(local)-.38,0);
-            float sum=areaWeight.x+areaWeight.y+areaWeight.z;
-            if(sum<1e-6)continue;
-            for(uint sampleIndex=0;sampleIndex<areaSamples;++sampleIndex){
-            float choice=random(rng)*sum;
-            uint axis=choice<areaWeight.x?0:(choice<areaWeight.x+areaWeight.y?1:2);
-            float3 ln=0;ln[axis]=local[axis]>0?1:-1;
-            float3 localSample=0;localSample[axis]=ln[axis]*.38;
-            localSample[(axis+1)%3]=(random(rng)*2-1)*.38;localSample[(axis+2)%3]=(random(rng)*2-1)*.38;
-            float3 worldPoint=mul(float4(localSample,1),obj.world).xyz;
-            float3 lightNormal=mul(ln,(float3x3)obj.world);
-            float3 delta=worldPoint-h.p;float distance=length(delta);
-            float3 dir=delta/distance;float cosine=max(dot(n,dir),0);
-            float cosineLight=max(dot(lightNormal,-dir),0),pdf=areaWeight[axis]/(sum*.76*.76);
-            if(cosine>0&&cosineLight>0&&!occluded(h.p+n*EPS*2,dir,255,object,distance-EPS*4))
-                result+=(object==3?float3(5,.12,2.8):float3(.08,3.8,5))*cosine*cosineLight/(distance*distance*pdf*areaSamples)*exp(-Medium.x*distance);
-            }
-        }
-        // Complementary un-refracted collimated illumination. Visibility rejects
-        // any glass hit; refracted source energy is already owned by the atlas.
-        float t=dot(h.p-LightOrigin.xyz,LightDirection.xyz);
-        float3 launch=h.p-LightDirection.xyz*t-LightOrigin.xyz;
-        if(t>0&&abs(dot(launch,LightRight.xyz))<LightRight.w&&abs(dot(launch,LightUp.xyz))<LightUp.w&&
-           !occluded(h.p+n*EPS*2,-LightDirection.xyz,255,0,t-EPS*4))
-            result+=Optics.w/(4*LightRight.w*LightUp.w)*max(dot(n,-LightDirection.xyz),0)*exp(-Medium.x*t);
-        // Matching direct complement of the overhead pool collimator. This was
-        // missing outside its refracted photon paths; no photons double count it.
-        if(Water.x){
-            Source flood=source(3);float distance=flood.o.y-h.p.y;
-            float2 q=abs(h.p.xz-flood.o.xz);
-            if(distance>0&&all(q<flood.halfSize)&&dot(n,-flood.d)>0&&
-               !occluded(h.p+n*EPS*2,-flood.d,255,3,distance-EPS*4))
-                result+=flood.power/(4*flood.halfSize.x*flood.halfSize.y)*dot(n,-flood.d)*exp(-Medium.x*distance);
-        }
-    }
-    return result;
-}
+#include "direct-light.hlsli"
 float3 baseColor(Hit h,float2 footprint=0) {
     if(h.material==15)return float3(.82,.88,.86);
     if(h.material==16)return float3(.95,.24,.035);
@@ -524,7 +458,8 @@ float2 cameraReceiverFootprint(Payload payload,Hit h,float3 direction,float opti
 }
 float3 endpoint(Hit h,float3 n,inout uint rng,float2 footprint=0,uint areaSamples=1) {
     opticalRecordReceiver(h.uv,h.chart);
-    return emission(h)+baseColor(h,footprint)*(directLight(h,n,rng,areaSamples)+causticIrradiance(h.uv,h.chart))/PI;
+    float3 albedo=baseColor(h,footprint);
+    return emission(h)+albedo*(directLight(h,n,rng,areaSamples,albedo)+causticIrradiance(h.uv,h.chart))/PI;
 }
 // Whitted-style specular prefix only (E S* D / E S* L), before any diffuse event.
 // Branch both Fresnel lobes, including repeated internal reflections and exact TIR.
@@ -563,7 +498,7 @@ float3 dielectricView(float3 origin,float3 direction,bool primaryGlass,Payload p
         // light visibility rays even after their contribution is negligible.
         if(max(foamWeight.x,max(foamWeight.y,foamWeight.z))>.001) {
             Hit coating=h;coating.p+=normal*EPS*4;
-            result+=foamWeight*directLight(coating,normal,rng,areaSamples)/PI;
+            result+=foamWeight*directLight(coating,normal,rng,areaSamples,FoamReflectance)/PI;
         }
         // Radiance eta^2 cancels through a complete slab; photon power never gets it.
         float3 tw=weight*(1-F)*(1-h.foam)*eta*eta;
@@ -633,7 +568,7 @@ void CameraRaygen() {
             float3 albedo=baseColor(primary,cameraReceiverFootprint(p,primary,d,p.t));
             Albedo[pixel]=float4(albedo,1);
             if(primary.chart<5)Surface[pixel]=float4(atlasPixel(primary.uv,primary.chart),primary.chart,p.t);
-            radiance=emission(primary)+directLight(primary,n,rng,pixelSamples)*albedo/PI;
+            radiance=emission(primary)+directLight(primary,n,rng,pixelSamples,albedo)*albedo/PI;
             if(Play.x&&primary.chart==0) {
                 // A small polished-floor lobe carries reflected glass/neon appearance.
                 // Its caustics endpoint lookup observes the same atlas, never re-traces L S D.

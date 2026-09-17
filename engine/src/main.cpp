@@ -396,7 +396,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
     HWND window = nullptr;
     try {
         lab::Options options;
-        bool selfTest = false, demoTour = false, underwaterView = false;
+        bool selfTest = false, demoTour = false, underwaterView = false, dlssSettingsTest = false;
         std::string name = "lab";
         int argc = 0;
         std::unique_ptr<wchar_t *, CommandLineDeleter> arguments(
@@ -438,6 +438,18 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             }
             // Keep independent subsystem options outside MSVC's bounded
             // nesting depth for the older monolithic else-if parser.
+            if (arg == "--dlss-settings-test") {
+                dlssSettingsTest = true;
+                continue;
+            }
+            if (arg == "--lambertian-reference") {
+                options.lambertianReference = true;
+                continue;
+            }
+            if (arg == "--water-visibility-reference") {
+                options.waterVisibilityReference = true;
+                continue;
+            }
             if (arg == "--underwater-view") {
                 underwaterView = true;
                 continue;
@@ -852,6 +864,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             logLine("PASS: lab Bullet mechanics, tuning/cancel, grab/throw, receiver charge and exit");
             return 0;
         }
+        if (dlssSettingsTest && (options.frames != 200 || options.fixture || options.quality != 0))
+            throw std::runtime_error("DLSS settings test requires --frames=200, Quality and a gameplay scene");
         if (options.gameplayTest && (!options.frames || options.frames < 360 || options.fixture))
             throw std::runtime_error("Gameplay test needs at least 360 frames and the playable scene");
         if (options.temporalTest && (options.frames != 256 || !options.fixture || options.animate))
@@ -1105,6 +1119,10 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     renderer.setFrameGeneration(uint32_t(hud->requestedFrameMultiplier));
                     hud->requestedFrameMultiplier = -1;
                 }
+                if (hud && hud->requestedDlssQuality >= 0) {
+                    renderer.setDlssQuality(hud->requestedDlssQuality);
+                    hud->requestedDlssQuality = -1;
+                }
                 if (pendingWidth && pendingHeight) {
                     renderer.resize(pendingWidth, pendingHeight);
                     pendingWidth = pendingHeight = 0;
@@ -1118,6 +1136,45 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 applyResize();
                 if (!renderer.waitForFrame())
                     continue;
+                if (dlssSettingsTest) {
+                    const auto f = renderer.frame;
+                    if (f == 8 || f == 40 || f == 56 || f == 88 || f == 104 || f == 144)
+                        key(VK_ESCAPE);
+                    if (f == 16 || f == 64 || f == 112 || f == 136) {
+                        const int quality = f == 16 ? 1 : f == 64 ? 2 : 0;
+                        const char *ids[] = {"dlss-quality", "dlss-balanced", "dlss-performance"};
+                        const auto oldWidth = renderer.streamlineState().renderWidth;
+                        const auto oldResets = renderer.rrHistoryResets;
+                        const auto *water = renderer.fluid.get();
+                        const auto particles = water ? water->activeParticles : 0;
+                        const auto seconds = water ? water->advancedSeconds : 0;
+                        hud->testClick(ids[quality]);
+                        require(hud->requestedDlssQuality == quality, "DLSS preset button did not request its mode");
+                        applyResize();
+                        const auto &sl = renderer.streamlineState();
+                        require(renderer.dlssQuality() == quality, "DLSS preset was not applied");
+                        require(f == 136 ? sl.renderWidth == oldWidth
+                                        : quality == 0 ? sl.renderWidth > oldWidth : sl.renderWidth < oldWidth,
+                                "DLSS preset did not change the actual rendering resolution");
+                        require(sl.width == options.width && sl.height == options.height,
+                                "DLSS preset changed the display resolution");
+                        require(renderer.fluid.get() == water &&
+                                    (!water || (water->activeParticles == particles && water->advancedSeconds == seconds)),
+                                "DLSS preset reset the water simulation");
+                        require(renderer.rrHistoryResets == oldResets, "DLSS preset rendered outside the frame boundary");
+                        logLine("PASS DLSS menu preset " + std::to_string(quality) + " at frame " +
+                                std::to_string(f) + "; water preserved");
+                    }
+                    if (f == 160 || f == 184)
+                        hud->testClick("lens");
+                    if (f == 166 || f == 174 || f == 188)
+                        hud->testValue("lens-fov", f == 166 ? 120.f : f == 174 ? 160.f : 90.f);
+                    if (f == 180 || f == 192)
+                        send(WM_SIZE, SIZE_RESTORED,
+                             MAKELPARAM(options.width + (f == 180 ? 1 : 0),
+                                        options.height + (f == 180 ? 1 : 0)));
+                    applyResize();
+                }
                 renderer.beginSimulation();
                 // A ready display event can win the wait while input is queued.
                 // Consume it BEFORE simulation/camera sampling in this same frame.
@@ -1410,8 +1467,6 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                         rotation += .01f * float(renderer.frame - 63);
                 }
                 auto now = std::chrono::steady_clock::now();
-                const double wallFrameMs =
-                    std::chrono::duration<double, std::milli>(now - previousTime).count();
                 float dt = automation ? 1.f / 60
                                       : std::clamp(std::chrono::duration<float>(now - previousTime).count(),
                                                    .0001f, .05f);
@@ -1690,7 +1745,15 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     hud->frameMultiplier = sl.multiplier;
                     hud->maxFrameMultiplier = sl.fgSupported ? sl.maxMultiplier : 1;
                     hud->frameGenActive = sl.fgEnabled;
-                    hud->presentedLastFrame = sl.lastPresented;
+                    hud->renderedFrames = renderer.frame;
+                    hud->presentedFrames = sl.presentedFrames;
+                    hud->dlssQuality = renderer.dlssQuality();
+                    hud->renderWidth = sl.renderWidth;
+                    hud->renderHeight = sl.renderHeight;
+                    hud->outputWidth = sl.width;
+                    hud->outputHeight = sl.height;
+                    hud->frameGenStatus = sl.fgStatus;
+                    hud->frameGenMinimumDimension = sl.minimumDimension;
                     hud->frameGenReason = sl.fgReason;
                     if (renderer.fluid) {
                         hud->fluidRoom = renderer.roomLiquid();
@@ -1765,12 +1828,19 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                         }
                         hud->fluidStatus = status.str();
                     }
-                    hud->update(dt, automation ? renderer.frameMs : wallFrameMs, renderer.receiverWatts);
+                    hud->update(dt, renderer.receiverWatts);
                     if (hud->quit)
                         break;
                 }
                 renderer.endSimulation();
                 renderer.render(rotation, cameraAzimuth, elevation, game.get(), hud.get(), dt);
+                if (dlssSettingsTest && options.capture &&
+                    (renderer.frame == 32 || renderer.frame == 80 || renderer.frame == 128 ||
+                     renderer.frame == 176 || renderer.frame == 182)) {
+                    const auto prefix = folder / (name + "-settings-" + std::to_string(renderer.frame));
+                    renderer.capture(prefix);
+                    renderer.report(prefix.string() + ".json");
+                }
                 if (options.experienceTest &&
                     (renderer.frame == 17 || renderer.frame == 104 || renderer.frame == 140 ||
                      renderer.frame == 186 || renderer.frame == 222)) {

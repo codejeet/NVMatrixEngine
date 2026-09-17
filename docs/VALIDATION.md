@@ -1,10 +1,18 @@
 # Release validation
 
-The public preview is rebuilt from this standalone source tree. It does not ship a renamed stale executable from the predecessor project.
+## Version 0.1.2: validation skipped
 
-Release checks cover native/Node tests, renderer shader compilation, real bounded water renders, and the allowlisted portable package after extraction to a different directory. Exact release results are recorded below before publication and in the downloadable verification report.
+This update packages the existing standalone executable and updated shaders. At the maintainer's request, no new build, test suite, signature check, ZIP extraction check or runtime-validation run was performed for this release. The archive still includes a per-file SHA-256 manifest and has an adjacent archive checksum.
 
-## Scope
+The downloadable `*.verification.json` is the authoritative per-ZIP record. For 0.1.2 it records `validationStatus: "skipped"`, `validationSkipped: true`, no verification timestamp and an empty list of checks. Its source commit identifies the packaged source snapshot; source/runtime consistency was not rechecked during packaging.
+
+Earlier development runs exercised the new Lambertian reduction, separate FPS counters, DLSS presets and fisheye FG; see [engine development records](../engine/VALIDATION.md) and [Lambertian measurements](../engine/LAMBERTIAN_REDUCTION.md). Those results are not fresh validation of the downloadable archive. Fisheye FG is now supported, and the HUD reports actual output presentations.
+
+## Historical release results: 0.1.0–0.1.1
+
+The remaining results below describe the preceding releases. Their checks covered native/Node tests, shader compilation, bounded water renders and the allowlisted portable package after extraction to a different directory.
+
+### Test scope
 
 Test machine: Windows 11, NVIDIA RTX 5090, driver 616.64. CUDA build: Toolkit 13.1, SM 86/89/120. Only the RTX 5090 was physically tested. D3D12 debug-layer/GPU validation was unavailable on this machine, so passing numerical/render checks is not a debug-layer certification.
 
@@ -12,7 +20,7 @@ The source retains dated numerical and image-validation records in `engine/`. Th
 
 No published screenshot is an offline or AI-generated substitute: the images are lossless conversions of the executable's final-frame captures. Frame generation is disabled for documentation captures; any validation of generated presentations is a separate run.
 
-## Standalone source checks
+### Standalone source checks
 
 - 241 Node reference/contract tests passed.
 - 9 native CTest cases passed: gameplay/audio, orbit input, rolling camera, camera/watercraft, water optics, mesh SDF, complexity policy, collider timeline and submission profiling.
@@ -22,14 +30,14 @@ No published screenshot is an offline or AI-generated substitute: the images are
 
 The downloadable `*.verification.json` is the authoritative per-ZIP smoke-test and checksum record. Its source commit identifies the packaged snapshot. Development reports elsewhere in the repository should not be mistaken for newly measured release performance.
 
-## Sinking-ball patch validation
+### Sinking-ball patch validation
 
 Version 0.1.1 makes solid glass the `Game` constructor default, independent of renderer/UI synchronization. The rebuilt native fixture checks initial 2,500 kg/m³ density, actual descent to the floor without calling the density setter, fresh room/deep-pool defaults, optional Float behavior and reset persistence. The boat propulsion fixture explicitly opts into its lightweight pilot rather than relying on the old default.
 
 Bounded runs now report actual physics mode, mass, density and ball height in `*.game.json`. Packaging rejects rendered room, underwater, CUDA, narrow-band and ReSTIR PT cases unless the packaged executable reports Sink and solid-glass density. The per-ZIP report records `sinkingBallVerified` separately from the unresolved FG-output check.
 
-## Frame-generation caveat
+### Frame-generation results in 0.1.0–0.1.1
 
-Fresh checks on the release machine reported FG supported/loaded/enabled, Reflex active and SDK status 0, but **zero extra presented frames**. This reproduced in the predecessor executable, in foreground/topmost runs, at 720p and 1080p, and in the interactive VSync/lifecycle fixture. The cause is unresolved; it is not established as an export-only regression or a specific driver defect. Earlier development reports of working FG are not fresh release certification.
+Checks for those releases on the development machine reported FG supported/loaded/enabled, Reflex active and SDK status 0, but **zero extra presented frames**. This reproduced in the predecessor executable, in foreground/topmost runs, at 720p and 1080p, and in the interactive VSync/lifecycle fixture. The cause is unresolved; it is not established as an export-only regression or a specific driver defect. Earlier development reports of working FG are not fresh release certification.
 
-The integration and production DLLs remain available, but this preview does **not** claim verified generated output. Use the raw-render FPS for comparisons. Packaging normally rejects this outcome; the preview explicitly uses `-AllowUnverifiedFrameGeneration`, records `frameGenerationOutputVerified: false`, and preserves the warning in the release report. This exception does not bypass DLL loading/signature, SDK error, rendering, CUDA or conservation checks.
+The integration and production DLLs remain available, but those previews did **not** claim verified generated output. Use the raw-render FPS for comparisons. Packaging normally rejects this outcome; those previews explicitly used `-AllowUnverifiedFrameGeneration`, recorded `frameGenerationOutputVerified: false`, and preserved the warning in the release report. This exception does not bypass DLL loading/signature, SDK error, rendering, CUDA or conservation checks.

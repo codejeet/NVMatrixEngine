@@ -1,35 +1,26 @@
-# NVMatrixEngine 0.1.1 — Sinking-ball default and research discoverability
+# NVMatrixEngine 0.1.2 — Fisheye DLSS and lighting improvements
 
-Patch release of the native DX12/DXR GPU liquid simulation and path-traced caustics engine. Water Lab remains the main demo: a room-scale pool with a wall inlet, sinking glass ball, powered boat and underwater views.
+NVMatrixEngine is a C++20 / DirectX 12 game engine with GPU liquid simulation, path-traced lighting and spectral caustics. Water Lab is the playable demo: a pool with a wall inlet, sinking glass ball, powered boat and underwater views.
 
-## Changes in 0.1.1
+## Changes in 0.1.2
 
-- Solid glass / Sink is now the physics-object default, not only a UI setting applied after construction. New room/deep-pool sessions use 2,500 kg/m³; Float remains selectable and persists through chamber resets.
-- Native tests verify sinking without any UI/setter call, fresh-session defaults and existing float/boat behavior. Portable checks inspect actual ball density/mass in each packaged rendered scenario.
-- Research-oriented README, algorithm/source entry points, GitHub topics and software citation metadata. No new performance or BDPT claims.
-- Fresh rebuilt portable executable, per-file manifest, archive checksum and verification report. The previous release is preserved.
-
-## Included
-
-- Native DX12/DXR camera path tracing and light-side spectral photon caustics.
-- GPU APIC / FLIP-PIC liquid, continuous anisotropic scalar-field reconstruction and procedural DXR water geometry.
-- Dielectric reflection/refraction, depth-dependent absorption, lasers, surface foam and secondary bubbles/spray.
-- DLSS Ray Reconstruction / super resolution, optional frame generation and Reflex.
-- RmlUi settings for lighting, camera, flashlight, sink/float density, simulation quality and audio.
-- Optional CUDA graph-replay solver, deep-pool narrow-band ownership and ReSTIR PT modes.
+- **Fisheye frame generation:** both normal and fisheye cameras support DLSS FG. A cached bidirectional lens-distortion map supplies the fisheye projection to DLSS while preserving the separate HUD composition.
+- **Separate FPS counters:** the HUD shows Render FPS and DLSS output FPS using actual presented-frame counts, plus RR/FG status.
+- **DLSS presets in Esc:** switch Ray Reconstruction upscaling between Quality, Balanced and Performance without resetting the water. The settings display the actual input/output resolution.
+- **Cheaper diffuse lighting:** contribution-weighted Lambertian visibility sampling reduces shadow-ray work with probability compensation. Water shadow intersections can stop once a surface crossing is established; camera and photon intersections retain refined roots. See the [implementation and earlier measurements](https://github.com/codejeet/NVMatrixEngine/blob/v0.1.2-preview/engine/LAMBERTIAN_REDUCTION.md).
+- **Camera and launcher:** 90° default diagonal FOV, shared forward/inverse fisheye mapping, and a development launcher that handles WSL UNC paths and locates the available CUDA build.
+- **Game-engine branding:** updated README, bundled instructions and software citation metadata.
 
 ## Run
 
-Download **NVMatrixEngine-0.1.1-preview-win64.zip**, extract everything, and open **Play Water Lab.cmd**. Do not download GitHub's source-code ZIP expecting an executable. No installer, administrator access or CUDA Toolkit is needed for the portable build.
+Download **NVMatrixEngine-0.1.2-preview-win64.zip**, extract the entire folder, and open **Play Water Lab.cmd**. The portable build includes its runtime dependencies; no installer, administrator access or CUDA Toolkit is required. GitHub's source-code ZIP does not contain the executable.
 
-Target: Windows 11 x64, high-end NVIDIA RTX GPU and compatible current driver. Tested on **RTX 5090 / driver 616.64**. The executable is unsigned. Fisheye projection pauses frame generation; the default launcher uses the normal lens. See `START-HERE.txt` for controls.
+Target: Windows 11 x64, a high-end NVIDIA RTX GPU and compatible driver. The default launcher uses DX12 water simulation, Balanced DLSS and automatic frame generation where supported. Both lens modes are available in Esc. See `START-HERE.txt` for controls.
 
-**Known FG limitation:** the release machine reported FG enabled with no SDK error, but zero extra presented frames. The predecessor build reproduced this. The feature remains selectable, but generated output is **not verified in this preview**; the download's verification report records this explicitly. Raw rendering and DLSS Ray Reconstruction are separate checks.
+## Packaging and scope
 
-## Scope
+**Release validation was skipped for this update.** This archive packages the existing executable and updated shaders without a new build, relocated-extraction test or runtime-validation run. The adjacent `.verification.json` explicitly records `validationStatus: "skipped"`; earlier development results are not fresh validation of this ZIP.
 
-This is a research preview, not production middleware or a blanket 60 FPS claim. CUDA/adaptive modes are experimental and not demonstrated faster than the default DX12 solver. ReSTIR PT covers opaque-primary diffuse indirect paths; **ReSTIR BDPT is not implemented**. Camera + photon transport is not a claim of general unbiased BDPT.
+The ZIP includes dependency notices, a per-file manifest and the custom soundtrack. Its source commit and SHA-256 checksum identify the package. Development has used an RTX 5090; this release does not certify other hardware or a clean Windows installation.
 
-The ZIP includes dependency notices, a per-file manifest and the custom soundtrack. The adjacent `.sha256` and `.verification.json` describe the exact archive and relocated-extraction smoke checks. Testing on the development RTX 5090 is not a clean-OS, other-GPU or D3D12 debug-layer certification.
-
-Future work focuses on raw path-tracing latency, stable refractive reuse, and reducing dense/synchronization costs in adaptive water simulation. See the repository roadmap.
+Frame generation adds presentation frames; it does not accelerate simulation or raw rendering. Performance varies with resolution, active particles, fluid depth and lighting. CUDA/adaptive modes remain experimental, and ReSTIR PT currently covers opaque-primary diffuse indirect paths. Full ReSTIR BDPT remains future work.

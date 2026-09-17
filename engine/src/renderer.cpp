@@ -566,6 +566,9 @@ void Renderer::pipelines() {
     fg.pRootSignature = presentRoot.Get();
     fg.CS = {depthCs.data(), depthCs.size()};
     check(device->CreateComputePipelineState(&fg, IID_PPV_ARGS(&fgPrepareDepth)), "FG clip-depth PSO");
+    auto distortionCs = bytes(folder / "shaders/FGDistortion.dxil");
+    fg.CS = {distortionCs.data(), distortionCs.size()};
+    check(device->CreateComputePipelineState(&fg, IID_PPV_ARGS(&fgPrepareDistortion)), "FG lens distortion PSO");
 }
 void Renderer::createSwapchain() {
     DXGI_SWAP_CHAIN_DESC1 sc{};
@@ -991,6 +994,8 @@ void Renderer::targets() {
     fgHudless.Reset();
     fgUi.Reset();
     fgDepth.Reset();
+    fgDistortion.Reset();
+    fgDistortionFov = -1;
     if (dlss.fgLoaded) {
         fgHudless = texture(options.width, options.height, DXGI_FORMAT_R8G8B8A8_UNORM,
                             D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
@@ -1012,6 +1017,14 @@ void Renderer::targets() {
         u.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
         u.Format = DXGI_FORMAT_R32_FLOAT;
         device->CreateUnorderedAccessView(fgDepth.Get(), nullptr, &u, cpu(20));
+        // Match output pixel centres: half-resolution fields with clamped edge
+        // sampling can miss by 5 pixels at 160 degrees. The map is cached, so
+        // full resolution adds memory rather than recurring lens-evaluation work.
+        fgDistortion = texture(options.width, options.height,
+                               DXGI_FORMAT_R16G16B16A16_FLOAT);
+        fgDistortion->SetName(L"DLSS-FG equisolid bidirectional UV displacement");
+        u.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        device->CreateUnorderedAccessView(fgDistortion.Get(), nullptr, &u, cpu(21));
     }
     for (UINT i = 0; i < 2; ++i) {
         check(swapchain->GetBuffer(i, IID_PPV_ARGS(&backbuffers[i])), "Backbuffer");
@@ -1020,6 +1033,19 @@ void Renderer::targets() {
         device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, h);
     }
     reset = true;
+}
+void Renderer::setDlssQuality(int quality) {
+    if (quality < 0 || quality > 2)
+        throw std::runtime_error("Invalid DLSS quality mode");
+    if (quality == options.quality)
+        return;
+    // The old RR/FG inputs can still be in use on the GPU. Reconfigure only at
+    // the frame boundary, after both rendering and interpolation have drained.
+    dlss.suspend();
+    wait();
+    dlss.free();
+    options.quality = quality;
+    targets(); // Rebuild resolution-dependent guides/reservoirs and reset history.
 }
 void Renderer::resize(uint32_t w, uint32_t h) {
     if (!w || !h || (w == options.width && h == options.height))
@@ -1115,7 +1141,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         reset = true;
     displayedLens = lens;
     previousFirstPerson = game && game->firstPerson;
-    dlss.prepareFrame(!lens.fisheye && frame >= 2 && !IsIconic(window) &&
+    dlss.prepareFrame(frame >= 2 && !IsIconic(window) &&
                       (!game || (!game->paused && !game->won)) && (!fluid || !fluid->debugVisible) &&
                       (!fluidComplexity || !fluidComplexity->debugMode) &&
                       (!fluid || !fluid->cutCells || !fluid->cutCells->debugVisible) && !options.opticalView);
@@ -1427,7 +1453,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     c.opticalControls = {
         optical ? (1u | (options.adaptiveRays ? 2u : 0u) | (options.opticalFreeze ? 4u : 0u)) : 0u,
         frame && !reset && lightHash == lastLightHash ? 1u : 0u, options.opticalSamples,
-        options.opticalView | (options.opticalUniform ? 256u : 0u) | (options.retracePrimary ? 512u : 0u)};
+        options.opticalView | (options.opticalUniform ? 256u : 0u) | (options.retracePrimary ? 512u : 0u) |
+            (options.lambertianReference ? 1024u : 0u) | (options.waterVisibilityReference ? 2048u : 0u)};
     c.opticalParameters = {delta, .015f, .0008f, .25f};
     if (optical && optical->world)
         c.opticalControls.x |= 8u;
@@ -1493,6 +1520,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                   reset, frame);
     gpu::stamp(timeline, gpu::SubmissionStage::RRRecorded);
     commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 5);
+    XMFLOAT4 lensConstants{float(options.width), float(options.height), lens.fisheye ? 1.f : 0.f,
+                           lens.diagonalDegrees * XM_PI / 360};
     if (fgDepth) {
         ID3D12DescriptorHeap *fgHeaps[] = {heap.Get()};
         commands->SetDescriptorHeaps(1, fgHeaps);
@@ -1502,6 +1531,18 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         commands->SetComputeRootDescriptorTable(2, gpu(20));
         commands->Dispatch((renderWidth + 7) / 8, (renderHeight + 7) / 8, 1);
         uav(commands.Get(), fgDepth.Get());
+    }
+    if (dlss.fgEnabled && lens.fisheye && fgDistortionFov != lens.diagonalDegrees) {
+        // Lens geometry is independent of moving water, reflection motion and
+        // camera pose. Recompute only after a lens/FOV or target-size change.
+        commands->SetComputeRootSignature(presentRoot.Get());
+        commands->SetPipelineState(fgPrepareDistortion.Get());
+        commands->SetComputeRootDescriptorTable(2, gpu(21));
+        commands->SetComputeRoot32BitConstants(3, 4, &lensConstants, 0);
+        commands->Dispatch((options.width + 7) / 8, (options.height + 7) / 8, 1);
+        uav(commands.Get(), fgDistortion.Get());
+        fgDistortionFov = lens.diagonalDegrees;
+        ++fgDistortionUpdates;
     }
     for (int i = 0; i < 7; ++i)
         transition(commands.Get(), guides[i].Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
@@ -1516,8 +1557,6 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     commands->SetGraphicsRootSignature(presentRoot.Get());
     commands->SetPipelineState(present.Get());
     commands->SetGraphicsRootDescriptorTable(0, gpu(14));
-    XMFLOAT4 lensConstants{float(options.width), float(options.height), lens.fisheye ? 1.f : 0.f,
-                           lens.diagonalDegrees * XM_PI / 360};
     commands->SetGraphicsRoot32BitConstants(3, 4, &lensConstants, 0);
     D3D12_VIEWPORT vp{0, 0, float(options.width), float(options.height), 0, 1};
     D3D12_RECT rect{0, 0, LONG(options.width), LONG(options.height)};
@@ -1581,7 +1620,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         commands->RSSetScissorRects(1, &rect);
         commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         commands->DrawInstanced(3, 1, 0, 0);
-        dlss.tagFrameGeneration(commands.Get(), fgDepth.Get(), guides[1].Get(), fgHudless.Get(), fgUi.Get());
+        dlss.tagFrameGeneration(commands.Get(), fgDepth.Get(), guides[1].Get(), fgHudless.Get(), fgUi.Get(),
+                                lens.fisheye ? fgDistortion.Get() : nullptr);
     } else if (hud)
         hud->render(commands.Get(), int(options.width), int(options.height));
     transition(commands.Get(), bb, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -1699,6 +1739,8 @@ void Renderer::report(const std::filesystem::path &path) {
         out << "null";
     out << ",\n  \"adaptiveRays\": " << (options.adaptiveRays ? "true" : "false")
         << ",\n  \"opticalUniform\": " << (options.opticalUniform ? "true" : "false")
+        << ",\n  \"lambertianReduction\": " << (options.lambertianReference ? "false" : "true")
+        << ",\n  \"waterVisibilityBracket\": " << (options.waterVisibilityReference ? "false" : "true")
         << ",\n  \"opticalMaxSamples\": " << options.opticalSamples
         << ",\n  \"primaryTraceReused\": " << (options.retracePrimary ? "false" : "true")
         << ",\n  \"experience\": {\"fisheye\":" << (displayedLens.fisheye ? "true" : "false")
@@ -1778,6 +1820,8 @@ void Renderer::report(const std::filesystem::path &path) {
     out << "\n  ]";
     out << ",\n  \"frameGeneration\":";
     dlss.report(out);
+    out << ",\n  \"frameGenerationDistortionUpdates\":" << fgDistortionUpdates;
+    out << ",\n  \"frameGenerationDistortionFov\":" << fgDistortionFov;
     if (latency) {
         out << ",\n  \"latency\":";
         latency->report(out);
@@ -1822,16 +1866,19 @@ void Renderer::capture(const std::filesystem::path &prefix) {
         UINT rows;
         UINT64 rowBytes;
     };
-    std::array<ID3D12Resource *, 11> resources{};
+    std::array<ID3D12Resource *, 12> resources{};
     for (int i = 0; i < 8; ++i)
         resources[i] = guides[i].Get();
     resources[8] = caustics.Get();
     resources[9] = backbuffers[lastBuffer].Get();
-    resources[10] = fluidCaustics.Get();
-    const int resourceCount = fluidSurface ? 11 : 10;
-    std::array<Readback, 11> read{};
+    resources[10] = fluidSurface ? fluidCaustics.Get() : nullptr;
+    resources[11] = fgDistortionFov >= 0 ? fgDistortion.Get() : nullptr;
+    const int resourceCount = resources[11] ? 12 : fluidSurface ? 11 : 10;
+    std::array<Readback, 12> read{};
     begin();
     for (int i = 0; i < resourceCount; ++i) {
+        if (!resources[i])
+            continue;
         auto desc = resources[i]->GetDesc();
         UINT64 size;
         auto &r = read[i];
@@ -1860,11 +1907,26 @@ void Renderer::capture(const std::filesystem::path &prefix) {
     raw.write(reinterpret_cast<char *>(&count), 4);
     ppm << "P6\n" << options.width << " " << options.height << "\n255\n";
     for (int i = 0; i < resourceCount; ++i) {
+        if (!resources[i])
+            continue;
         auto &r = read[i];
         void *ptr;
         D3D12_RANGE range{0, SIZE_T(r.buffer.resource->GetDesc().Width)};
         check(r.buffer.resource->Map(0, &range, &ptr), "Map capture");
-        if (i != 9) {
+        if (i == 11) {
+            // Optional diagnostic beside the existing capture format. Read the
+            // actual GPU map, including FP16 quantization and row pitch.
+            std::ofstream distortion(prefix.string() + ".distortion", std::ios::binary);
+            distortion.write("FGLENS01", 8);
+            const uint32_t size[] = {r.footprint.Footprint.Width, r.footprint.Footprint.Height};
+            distortion.write(reinterpret_cast<const char *>(size), sizeof(size));
+            distortion.write(reinterpret_cast<const char *>(&fgDistortionFov), sizeof(fgDistortionFov));
+            for (UINT y = 0; y < r.rows; ++y)
+                distortion.write(static_cast<char *>(ptr) + r.footprint.Offset +
+                                     size_t(y) * r.footprint.Footprint.RowPitch, r.rowBytes);
+            if (!distortion)
+                throw std::runtime_error("Cannot finish lens distortion capture");
+        } else if (i != 9) {
             uint32_t header[] = {uint32_t(i == 10 ? 9 : i), r.footprint.Footprint.Width,
                                  r.footprint.Footprint.Height, uint32_t(r.footprint.Footprint.Format),
                                  uint32_t(r.rowBytes)};

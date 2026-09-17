@@ -39,7 +39,7 @@ class Streamline {
     void suspend();
     void prepareFrame(bool gameFrame);
     void tagFrameGeneration(ID3D12GraphicsCommandList *, ID3D12Resource *depth, ID3D12Resource *motion,
-                            ID3D12Resource *hudless, ID3D12Resource *ui);
+                            ID3D12Resource *hudless, ID3D12Resource *ui, ID3D12Resource *distortion);
     void inputMessage(UINT message, bool click);
     void report(std::ostream &) const;
     bool fgSupported = false, fgLoaded = false, fgEnabled = false, reflexAvailable = false;
@@ -47,6 +47,8 @@ class Streamline {
     uint32_t multiplier = 1, maxMultiplier = 1, minimumDimension = 0;
     uint32_t lastPresented = 1, fgStatus = 0;
     uint64_t presentedFrames = 0, interpolatedPresents = 0;
+    bool distortionTagged = false;
+    uint64_t distortionFrames = 0;
     std::string fgReason;
 
   private:

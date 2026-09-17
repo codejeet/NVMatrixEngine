@@ -278,6 +278,73 @@ D3D12 debug-layer/GBV validation remains unavailable on this Windows setup;
 process-local DRED and the numerical/readback checks are not substitutes.
 Mainline native sources, executable and portable ZIP are unchanged.
 
+## Fisheye Frame Generation inputs — 2026-09-17
+
+Fisheye no longer disables FG. The SDK's optional bidirectional distortion tag
+maps the postprocessed equisolid scene to the unchanged rectilinear depth/motion
+guides. Picking, presentation and the map share the same analytic lens functions.
+The HUD remains separate and undistorted. Normal-lens frames explicitly null the
+distortion tag; menus/debug views still suspend FG.
+
+The field uses output-resolution RGBA16F and explicit nearest rounding before
+storage. This avoids half-resolution edge interpolation errors (about 5 pixels
+at the corners for the 160-degree lens at 720p), without repeating the lens
+calculation every frame. The field is cached across camera/water motion, using
+8 bytes per output pixel while the FG plugin is loaded.
+
+Validation: all 241 Node checks passed. The actual shared lens code passed GCC
+and MSVC/CTest across 90/120/160-degree lenses, portrait, square and ultrawide
+aspects; maximum float math error was 0.00138 pixels at 4K. Native camera/watercraft
+and FPS accounting tests also passed. The extended `test-dlss-settings.ps1`
+passed with FG Off and 2x, including live RR presets, water preservation,
+90/120/160-degree changes, lens toggles and odd-size 1281×721 resizing.
+Four necessary map builds were observed across the 200-frame 2x sequence.
+Captured guides/output remained finite with bounded caustics and valid histories.
+
+`check-lens-distortion.mjs` reads the actual GPU field and compares all four
+channels against an independent double-precision model, retaining signed and
+offscreen inverse coordinates. At 160 degrees it passed with maximum errors
+of 0.15658 pixels (1280×720) and 0.15674 pixels (1281×721).
+
+The final strict `test-frame-gen.ps1 -CaseFilter '^fisheye$'` run **passed:
+180 rendered frames / 358 actual presents / 178 generated presentations**,
+Reflex active and SDK status zero. All 178 eligible fisheye frames carried the
+distortion tag and the map was built once. This is the expected 2x presentation
+count after two real-only startup frames; it is not a claim that simulation runs
+twice as fast. Earlier automated attempts reported zero extras, so retain the
+actual counters when checking other runtime conditions. No presentation-count
+requirements were relaxed to obtain the passing result.
+
+A 96-frame startup run with the final rounded shader and process-local DRED
+also produced extra presentations (112 total, 16 extra), SDK status zero, 94
+fisheye tags and one cached map. Its 90-degree GPU field passed with 0.02236-pixel
+maximum error and its guides/output/caustics passed the numerical checks.
+
+## DLSS counters and live RR presets — 2026-09-17
+
+The HUD always separates rendered FPS from actual presented FPS, measured over
+the same 500 ms wall-clock window. It sums the SDK's presentation counts without
+clamping delayed/zero reports or multiplying by the requested FG mode. Status
+distinguishes RR upscaling from FG off, paused, generating, or no extra frames
+reported. Esc exposes Quality/Balanced/Performance with the actual resolutions.
+
+`test-dlss-settings.ps1 -BuildDir "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build"`
+passed both 200-frame runs with moving water and ReSTIR PT, FG Off and 2x.
+Menu selections produced 853×480 / 742×418 / 640×360 inputs at 1280×720 output.
+Each change reset RR history once, clicking the selected preset was a no-op,
+and water allocation, particle count and simulation time survived each switch.
+FG suspended for menus/fisheye and resumed afterwards. Ten captured checkpoints
+passed finite guide/output, caustic energy and history checks. The FPS accounting
+test passed GCC and MSVC/CTest; all 241 existing Node tests passed.
+
+This runtime reported **200 actual presents for 200 renders even at 2x**, with
+FG enabled, Reflex active and SDK status zero. These runs verify controls and
+honest telemetry, not successful interpolation; the HUD exposes the missing
+extra presentations. The earlier interpolation results below are historical.
+A subsequent 180-frame steady run with process-local DRED also completed with
+180 renders / 180 actual presents and no runtime errors. Its captured HUD read
+70 render FPS / 70 output FPS and "FG 2x: no extra frames reported".
+
 ## DLSS Frame Generation / glass fluid pit — 2026-09-12
 
 Windows Release and shaders built on the RTX 5090 setup with pinned Streamline

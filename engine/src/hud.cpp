@@ -1,6 +1,7 @@
 #include "hud.h"
 #include <RmlUi/Core/Elements/ElementFormControl.h>
 #include <algorithm>
+#include <chrono>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -143,6 +144,8 @@ void Hud::ProcessEvent(Rml::Event &event) {
     if (!e || event.GetType() != "click")
         return;
     auto action = e->GetAttribute<Rml::String>("data-action", "");
+    if (action == "dlss-quality")
+        requestedDlssQuality = e->GetAttribute<int>("data-quality", 0);
     if (action == "environment")
         settings.environment = (settings.environment + 1) % 4;
     if (action == "flashlight")
@@ -173,7 +176,7 @@ void Hud::ProcessEvent(Rml::Event &event) {
     game.clearInput();
     audio.play(Sound::Click);
 }
-void Hud::update(float dt, double ms, float watts) {
+void Hud::update(float dt, float watts) {
     audio.update(dt, musicVolume, .45f, GetForegroundWindow() == window);
     if (game.jumps > jumps)
         audio.play(Sound::Jump);
@@ -196,20 +199,52 @@ void Hud::update(float dt, double ms, float watts) {
     turns = game.tuneTurns;
     gate = game.gateOpen;
     won = game.won;
-    // Display throughput over a short wall-clock interval. Do not rebuild text
-    // geometry at rendering frequency; raw GPU/frame samples remain unsmoothed.
-    if (ms > 0) {
-        fpsTime += ms;
-        ++fpsFrames;
-        displayedFrames += presentedLastFrame;
+    // Separate measured render and output throughput, including CPU/simulation
+    // and display pacing. Start a fresh window when the rendering mode changes.
+    const auto mode = std::to_string(dlssQuality) + "/" + std::to_string(frameMultiplier) +
+                      (frameGenActive ? "/on/" : "/off/") + std::to_string(outputWidth) + "x" +
+                      std::to_string(outputHeight);
+    if (rateMode != mode) {
+        rateMode = mode;
+        frameRates = {};
+        text("render-fps", "Render: -- FPS");
+        text("output-fps", "DLSS output: -- FPS");
     }
-    if (fpsTime >= 250) {
-        text("fps", frameGenActive ? std::to_string(int(1000 * displayedFrames / fpsTime)) + " FPS / " +
-                                         std::to_string(int(1000 * fpsFrames / fpsTime)) + " render"
-                                   : std::to_string(int(1000 * fpsFrames / fpsTime)) + " FPS");
-        fpsTime = 0;
-        fpsFrames = 0;
-        displayedFrames = 0;
+    const double nowMs = std::chrono::duration<double, std::milli>(
+                             std::chrono::steady_clock::now().time_since_epoch()).count();
+    if (frameRates.sample(nowMs, renderedFrames, presentedFrames)) {
+        text("render-fps", "Render: " + std::to_string(int(std::round(frameRates.renderFps))) + " FPS");
+        text("output-fps", "DLSS output: " + std::to_string(int(std::round(frameRates.outputFps))) + " FPS");
+    }
+    std::string fgState;
+    if (maxFrameMultiplier < 2)
+        fgState = "FG unavailable";
+    else if (frameMultiplier == 1)
+        fgState = "FG off";
+    else if (frameGenStatus)
+        fgState = "FG error " + std::to_string(frameGenStatus);
+    else if (game.paused || game.won)
+        fgState = "FG paused: menu";
+    else if (outputWidth < frameGenMinimumDimension || outputHeight < frameGenMinimumDimension)
+        fgState = "FG paused: resolution too low";
+    else if (!frameGenActive)
+        fgState = "FG paused / preparing";
+    else
+        fgState = "FG " + std::to_string(frameMultiplier) + "x: " +
+                  (!frameRates.ready ? "measuring" : frameRates.outputFps > frameRates.renderFps
+                                                        ? "generating" : "no extra frames reported");
+    const char *qualityNames[] = {"Quality", "Balanced", "Performance"};
+    text("dlss-status", std::string(renderedFrames ? "RR " : "RR starting: ") +
+                            qualityNames[dlssQuality] + " · " + fgState +
+                            (settings.lens.fisheye ? " · fisheye" : ""));
+    text("dlss-quality-info", std::string("DLSS RR: ") + qualityNames[dlssQuality] + " · " +
+                                  std::to_string(renderWidth) + " × " + std::to_string(renderHeight) +
+                                  " to " + std::to_string(outputWidth) + " × " + std::to_string(outputHeight));
+    if (selectedDlssQuality != dlssQuality) {
+        const char *ids[] = {"dlss-quality", "dlss-balanced", "dlss-performance"};
+        for (int i = 0; i < 3; ++i)
+            document->GetElementById(ids[i])->SetClass("selected", i == dlssQuality);
+        selectedDlssQuality = dlssQuality;
     }
     visible("pause", game.paused || game.won);
     const char *environments[] = {"Neon night", "Single overhead light", "White studio", "Blackout"};
@@ -248,10 +283,11 @@ void Hud::update(float dt, double ms, float watts) {
              : (frameMultiplier == 1 ? "DLSS Frame Generation: Off"
                                      : "DLSS Frame Generation: " + std::to_string(frameMultiplier) + "x"));
     text("frame-gen-info",
-         settings.lens.fisheye ? "Paused for fisheye projection. Select rectilinear to use Frame Generation."
-         : maxFrameMultiplier < 2
+         maxFrameMultiplier < 2 || frameGenStatus
              ? frameGenReason
-             : "Reflex On · F8 toggles 2x / Off · generated frames do not accelerate simulation");
+             : "F8: 2x / Off. Frame Generation resumes after closing this menu. Output FPS counts actual "
+               "presented frames, including generated frames. Both lens modes support Frame Generation; "
+               "RR upscaling alone does not add frames.");
     visible("resume", !game.won);
     text("charge",
          game.gateOpen ? "PORTAL OPEN" : "RECEIVER  /  " + std::to_string(int(game.charge * 100)) + "%");

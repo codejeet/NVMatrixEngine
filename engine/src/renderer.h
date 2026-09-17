@@ -35,6 +35,8 @@ struct Options {
     bool opticalUniform = false, opticalFreeze = false, retracePrimary = false;
     bool opticalControlsTest = false;
     bool opticalEstimatorTest = false;
+    bool lambertianReference = false; // all-light visibility reference for diffuse reduction
+    bool waterVisibilityReference = false; // refine water roots even for boolean shadow rays
     uint32_t opticalSamples = 4, opticalView = 0;
     bool fluidFullBrickTraversal = false;
     bool fluidAdaptive = false, fluidComplexityValidate = false, fluidComplexityFreeze = false;
@@ -176,6 +178,10 @@ class Renderer {
             options.opticalFreeze = !options.opticalFreeze;
     }
     void resize(uint32_t width, uint32_t height);
+    void setDlssQuality(int quality);
+    int dlssQuality() const {
+        return options.quality;
+    }
     bool waitForFrame();
     void beginSimulation() {
         dlss.beginFrame(frame);
@@ -234,7 +240,9 @@ class Renderer {
     std::array<ComPtr<ID3D12Resource>, 2> backbuffers;
     std::array<ComPtr<ID3D12Resource>, 8> guides;
     ComPtr<ID3D12Resource> caustics, fluidCaustics, surfaceMap;
-    ComPtr<ID3D12Resource> fgHudless, fgUi, fgDepth;
+    ComPtr<ID3D12Resource> fgHudless, fgUi, fgDepth, fgDistortion;
+    float fgDistortionFov = -1;
+    uint64_t fgDistortionUpdates = 0;
     Buffer fluidPhotonSum;
     Buffer ptReservoirs, ptSurfaces, ptNeighborOffsets;
     std::unique_ptr<OpticalImportance> optical;
@@ -252,7 +260,8 @@ class Renderer {
     std::vector<float> transportRadii;
     ComPtr<ID3D12RootSignature> root, presentRoot;
     Pipeline transport;
-    ComPtr<ID3D12PipelineState> clear, accumulate, composite, present, fgComposite, fgPrepareDepth;
+    ComPtr<ID3D12PipelineState> clear, accumulate, composite, present, fgComposite, fgPrepareDepth,
+        fgPrepareDistortion;
     ComPtr<ID3D12QueryHeap> queries;
     Buffer timingReadback;
     Camera previousCamera{};

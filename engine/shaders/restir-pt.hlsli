@@ -56,8 +56,8 @@ struct RAB_PathTracerUserData { uint invocation; };
 void RAB_PathTracerUserDataSetPathType(inout RAB_PathTracerUserData u,uint16_t t){u.invocation=t;}
 void RAB_ReconnectionDenoiserCallback(RTXDI_PTReservoir r,RAB_Surface s,inout RAB_PathTracerUserData u){}
 void RAB_LastBounceDenoiserCallback(float3 p,RAB_Surface s,inout RAB_PathTracerUserData u){}
-// This bridge evaluates ALL lab lights at each diffuse vertex with the existing
-// NEE sampler, not RTXDI's optional separately resampled light-ID endpoint API.
+// This bridge integrates all lab lights through the replayable, compensated NEE
+// sampler, not RTXDI's optional separately resampled light-ID endpoint API.
 // These type adapters satisfy that SDK API; no generated reservoir encodes NEE IDs.
 typedef uint RAB_LightInfo;
 struct RAB_LightSample { float4 position,radiance; };

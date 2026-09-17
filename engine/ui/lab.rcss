@@ -2,7 +2,11 @@ body { margin: 0; width: 100%; height: 100%; font-family: Poppins; font-size: 13
 div, p, h1, label { display: block; } div, button { box-sizing: border-box; }
 .eyebrow { font-size: 10dp; letter-spacing: 2dp; color: #72e9df; }
 .title { font-size: 27dp; margin: 6dp 0; } .muted, p { color: #9bb1bf; line-height: 1.7; }
-#fps { position: absolute; z-index: 10; right: 18dp; top: 13dp; padding: 3dp 7dp; font-size: 12dp; background-color: #061019b0; border-radius: 3dp; }
+#fps { position: absolute; z-index: 10; right: 18dp; top: 13dp; padding: 6dp 9dp; font-size: 12dp; background-color: #061019e8; border-radius: 3dp; }
+#render-fps { margin-right: 18dp; } #output-fps { color: #72e9df; }
+#dlss-status { font-size: 10dp; color: #9bb1bf; margin-top: 3dp; }
+#dlss-presets button { display: inline-block; width: 32%; padding: 10dp 0; margin-right: 1%; text-align: center; font-size: 11dp; }
+#dlss-presets button.selected { color: #b9fff2; background-color: #21413f; border-color: #72e9df; }
 #wall-controls { display: none; position: absolute; left: 28dp; top: 145dp; width: 260dp; padding: 14dp; background-color: #071b25e8; border: 1dp #386572; border-top: 2dp #73ecdc; pointer-events: auto; }
 #wall-water { pointer-events: auto; padding: 12dp 8dp; color: #b9fff2; font-size: 12dp; }
 #water-state { font-size: 10dp; color: #9bbcc7; }

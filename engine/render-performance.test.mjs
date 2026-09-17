@@ -28,7 +28,11 @@ test('boolean occlusion agrees with nearest-hit visibility for unordered masked 
   assert.ok(shader.includes('p.object=visibility?0:0xffffffff'));
   assert.ok(shader.includes('void Miss(inout Payload p) { p.t=RayTCurrent(); p.object=0xffffffff'));
   assert.ok(!shader.includes('RAY_FLAG_SKIP_PROCEDURAL_PRIMITIVES'));
-  const lighting=shader.slice(shader.indexOf('float3 directLight('),shader.indexOf('float3 emission('));
-  assert.equal(lighting.split('!occluded(').length-1,5); // Includes the new shadowed flashlight.
+  const lighting=readFileSync(new URL('shaders/direct-light.hlsli',import.meta.url),'utf8');
+  assert.ok(shader.includes('#include "direct-light.hlsli"'));
+  assert.match(lighting,/selectA&&!occluded\(h.p\+n\*EPS\*2,a.direction,255,a.hint,a.distance-EPS\*4\)/);
+  assert.match(lighting,/selectB&&!occluded\(h.p\+n\*EPS\*2,b.direction,255,b.hint,b.distance-EPS\*4\)/);
+  assert.match(lighting,/result\+=a.irradiance\/pa/);
+  assert.match(lighting,/result\+=b.irradiance\/pb/);
   assert.ok(!lighting.includes('trace('));
 });

@@ -1,14 +1,12 @@
+#include "lens-mapping.hlsli"
 Texture2D<float4> Color : register(t0);
 Texture2D<float4> Ui : register(t1);
 RWTexture2D<float> FgDeviceDepth : register(u0);
 cbuffer LensConstants : register(b0) { float2 OutputSize; float Fisheye; float HalfDiagonal; };
 float3 lensColor(float2 pixel) {
     if(!Fisheye) return Color.Load(int3(pixel,0)).rgb;
-    float2 q=pixel/OutputSize*2-1;float aspect=OutputSize.x/OutputSize.y;
-    float r=length(q*float2(aspect,1))/sqrt(1+aspect*aspect);
-    float theta=2*asin(min(r*sin(HalfDiagonal*.5),.99999));
-    q*=r>1e-7?tan(theta)/(tan(HalfDiagonal)*r):1;
-    float2 p=(q*.5+.5)*OutputSize-.5,f=frac(p);int2 a=int2(floor(p));
+    float2 uv=fisheyeToRectilinearUv(pixel/OutputSize,OutputSize.x/OutputSize.y,HalfDiagonal);
+    float2 p=uv*OutputSize-.5,f=frac(p);int2 a=int2(floor(p));
     int2 hi=int2(OutputSize)-1;
     return lerp(lerp(Color.Load(int3(clamp(a,0,hi),0)).rgb,Color.Load(int3(clamp(a+int2(1,0),0,hi),0)).rgb,f.x),
                 lerp(Color.Load(int3(clamp(a+int2(0,1),0,hi),0)).rgb,Color.Load(int3(clamp(a+1,0,hi),0)).rgb,f.x),f.y);

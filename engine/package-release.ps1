@@ -1,13 +1,14 @@
 param(
   [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
-  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.1-preview',
+  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.2-preview',
   [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
-  [switch]$AllowUnverifiedFrameGeneration
+  [switch]$AllowUnverifiedFrameGeneration,
+  [switch]$SkipValidation
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-if (Get-Process NVMatrixFluidLab -ErrorAction SilentlyContinue) { throw 'Close the demo before packaging.' }
+if (!$SkipValidation -and (Get-Process NVMatrixFluidLab -ErrorAction SilentlyContinue)) { throw 'Close the demo before packaging.' }
 $repo = [IO.Path]::GetFullPath((Resolve-Path "$PSScriptRoot/..").ProviderPath)
 $runtime = (Resolve-Path "$BuildDir/bin/Release").Path
 $deps = (Resolve-Path "$repo/shared/.deps").ProviderPath
@@ -41,10 +42,12 @@ foreach ($relative in $payload) {
     throw "Missing runtime input: $relative"
   }
 }
-foreach ($relative in @('ui/lab.rml','ui/lab.rcss')) {
-  if ((Get-FileHash "$PSScriptRoot/$relative").Hash -ne (Get-FileHash "$runtime/$relative").Hash) { throw "Stale runtime UI: $relative" }
+if (!$SkipValidation) {
+  foreach ($relative in @('ui/lab.rml','ui/lab.rcss')) {
+    if ((Get-FileHash "$PSScriptRoot/$relative").Hash -ne (Get-FileHash "$runtime/$relative").Hash) { throw "Stale runtime UI: $relative" }
+  }
+  if ((Get-FileHash "$runtime/assets/CIE_xyz_1931_2deg.csv").Hash.ToLowerInvariant() -ne 'fa663e3535a7e0763a745993a1f0a192eb0275ac46ad2d1befd7626841e713c1') { throw 'CIE dataset differs from its licensed source.' }
 }
-if ((Get-FileHash "$runtime/assets/CIE_xyz_1931_2deg.csv").Hash.ToLowerInvariant() -ne 'fa663e3535a7e0763a745993a1f0a192eb0275ac46ad2d1befd7626841e713c1') { throw 'CIE dataset differs from its licensed source.' }
 
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
@@ -53,8 +56,10 @@ $redist = (Get-Content "$vs/VC/Auxiliary/Build/Microsoft.VCRedistVersion.default
 $crt = "$vs/VC/Redist/MSVC/$redist/x64/Microsoft.VC143.CRT"
 $vc = @('concrt140.dll','msvcp140.dll','msvcp140_1.dll','msvcp140_2.dll','msvcp140_atomic_wait.dll',
   'msvcp140_codecvt_ids.dll','vccorlib140.dll','vcruntime140.dll','vcruntime140_1.dll','vcruntime140_threads.dll')
-foreach ($file in @($nvidia | ForEach-Object { "$runtime/$_" }) + @($vc | ForEach-Object { "$crt/$_" })) {
-  if ((Get-AuthenticodeSignature -LiteralPath $file).Status -ne 'Valid') { throw "Vendor signature invalid: $file" }
+if (!$SkipValidation) {
+  foreach ($file in @($nvidia | ForEach-Object { "$runtime/$_" }) + @($vc | ForEach-Object { "$crt/$_" })) {
+    if ((Get-AuthenticodeSignature -LiteralPath $file).Status -ne 'Valid') { throw "Vendor signature invalid: $file" }
+  }
 }
 
 $work = Join-Path ([IO.Path]::GetTempPath()) ('NVMatrix-release-' + [Guid]::NewGuid().ToString('N'))
@@ -104,6 +109,27 @@ try {
     $null = [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip,$file.FullName,$relative,[IO.Compression.CompressionLevel]::Optimal)
   }
 } finally { $zip.Dispose() }
+if ($SkipValidation) {
+  # Package the existing build without extracting it or launching test processes.
+  # Hashes identify the payload; they do not certify its runtime behavior.
+  $hash = (Get-FileHash $candidate).Hash.ToLowerInvariant()
+  "$hash  $archiveName" | Set-Content "$candidate.sha256" -Encoding ASCII
+  [ordered]@{ archive=$archiveName; sourceCommit=$commit; sha256=$hash; zipBytes=(Get-Item $candidate).Length;
+    payloadFiles=$files.Count+1; validationStatus='skipped'; validationSkipped=$true; verifiedUtc=$null;
+    windowsVersion=[Environment]::OSVersion.Version.ToString(); checks=@();
+    sinkingBallVerified=$null; generatedPresentations=$null; frameGenerationOutputVerified=$null;
+    appLocalModules=@(); limitations='Packaged the existing build with -SkipValidation. No fresh source/runtime consistency, vendor signature, ZIP round-trip or runtime checks were performed.' } |
+    ConvertTo-Json -Depth 6 | Set-Content "$candidate.verification.json" -Encoding UTF8
+  New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($archive)) | Out-Null
+  foreach ($suffix in @('.sha256','.verification.json','')) {
+    if (Test-Path "$archive$suffix") { throw 'Destination appeared during packaging; refusing overwrite.' }
+    Copy-Item "$candidate$suffix" "$archive$suffix"
+  }
+  Write-Host "READY (validation skipped): $archive"
+  Write-Host "SHA256: $hash"
+  Write-Host "Packaging workspace: $work"
+  return
+}
 $extracted = Join-Path $work 'relocated playtest with spaces'
 [IO.Compression.ZipFile]::ExtractToDirectory($candidate,$extracted)
 $testRoot = Join-Path $extracted 'NVMatrixEngine'

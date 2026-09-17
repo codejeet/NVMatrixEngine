@@ -4,24 +4,31 @@
 #include <cstdint>
 
 namespace lab {
+namespace lensMapping {
+using std::asin;
+using std::atan;
+using std::sin;
+using std::tan;
+#include "../shaders/lens-mapping.hlsli"
+} // namespace lensMapping
 // A full-frame equisolid-angle lens: r = 2 f sin(theta/2).
 // Ray reconstruction sees a matching rectilinear image; presentation resamples
 // it into this calibrated sensor projection. Not a polynomial barrel effect.
 struct Lens {
     bool fisheye = false;
-    float diagonalDegrees = 120;
+    float diagonalDegrees = 90;
     float tanHalfVertical(float aspect) const {
-        return fisheye ? std::tan(std::clamp(diagonalDegrees, 90.f, 160.f) * .00872664626f) /
-                             std::sqrt(1 + aspect * aspect)
-                       : .57735026919f;
+        // Both lens modes use the selected diagonal FOV. Fisheye changes the
+        // sensor mapping below, not whether the FOV control affects the camera.
+        return std::tan(std::clamp(diagonalDegrees, 90.f, 160.f) * .00872664626f) /
+               std::sqrt(1 + aspect * aspect);
     }
     void rectilinear(float &x, float &y, float aspect) const {
         if (!fisheye)
             return;
         float r = std::sqrt(x * x * aspect * aspect + y * y) / std::sqrt(1 + aspect * aspect);
         float halfAngle = std::clamp(diagonalDegrees, 90.f, 160.f) * .00872664626f;
-        float theta = 2 * std::asin(std::clamp(r * std::sin(halfAngle * .5f), 0.f, .99999f));
-        float scale = r > 1e-7f ? std::tan(theta) / (std::tan(halfAngle) * r) : 1;
+        float scale = lensMapping::fisheyeToRectilinearScale(r, halfAngle);
         x *= scale;
         y *= scale;
     }

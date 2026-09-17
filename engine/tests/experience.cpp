@@ -9,8 +9,22 @@ void require(bool ok, const char *message) {
 }
 int main() {
     try {
-        require(lab::Lens{}.diagonalDegrees == 120, "Default fisheye FOV regressed");
+        require(lab::Lens{}.diagonalDegrees == 90, "Default starting FOV regressed");
         require(!lab::ExperienceSettings{}.ballFloats, "Water Lab must default to solid sinking glass");
+        for (float aspect : {1.f, 16.f / 9, 32.f / 9}) {
+            lab::Lens lens;
+            require(!lens.fisheye, "Default launch must retain the normal lens");
+            for (float fov : {90.f, 120.f, 160.f}) {
+                lens.diagonalDegrees = fov;
+                const float diagonal = 2 * std::atan(lens.tanHalfVertical(aspect) *
+                                                     std::sqrt(1 + aspect * aspect));
+                require(std::abs(diagonal - fov * XM_PI / 180) < 1e-5,
+                        "Normal camera ignored the selected diagonal FOV");
+                float x = .6f, y = -.4f;
+                lens.rectilinear(x, y, aspect);
+                require(x == .6f && y == -.4f, "Normal lens warped picking coordinates");
+            }
+        }
         for (float aspect : {1.f, 16.f / 9, 32.f / 9})
             for (float fov : {90.f, 140.f, 160.f}) {
                 lab::Lens lens{true, fov};
