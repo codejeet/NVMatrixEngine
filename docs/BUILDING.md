@@ -51,3 +51,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -
 ```
 
 Packaging uses an explicit runtime allowlist, checks NVIDIA/VC runtime signatures, includes dependency notices, writes per-file SHA-256 hashes, and refuses to overwrite an existing archive. It does not include source caches, PDBs, logs, developer captures, credentials or unrelated executables. Test an extracted, relocated copy before uploading. Release acceptance is documented in [VALIDATION.md](VALIDATION.md).
+
+The first preview uses the explicit `-AllowUnverifiedFrameGeneration` packaging exception described in the validation notes. Without it, packaging rejects an FG run that produces no extra presentations. Do not silently treat that exception as FG certification.

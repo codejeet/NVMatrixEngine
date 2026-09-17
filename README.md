@@ -92,6 +92,7 @@ The glass ball starts as **solid glass in Sink mode**. Esc → Ball buoyancy swi
 - Windows 11 x64 and a high-end NVIDIA RTX GPU are the intended platform.
 - The release is validated on an **RTX 5090**. Other GPUs are not certified by this preview.
 - DLSS feature availability is queried at runtime. Frame generation depends on GPU, driver, OS configuration, and supported presentation mode; it does not accelerate simulation or raw rendering.
+- **Preview FG caveat:** the release check loaded FG/Reflex without errors but recorded no extra presented frames on the test PC; the predecessor executable reproduced this. FG remains selectable, but generated output is **not verified for this release**. See [validation](docs/VALIDATION.md).
 - Optional CUDA kernels are built for SM 86, 89, and 120. This is architecture coverage, not evidence of equivalent performance or validation on every card.
 - Resolution, active particles, fluid depth, inlet activity, photon budget, and experimental solvers materially affect frame time. There is **no blanket 60 FPS guarantee**.
 

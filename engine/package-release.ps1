@@ -2,7 +2,8 @@ param(
   [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
   [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.0-preview',
-  [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1'
+  [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
+  [switch]$AllowUnverifiedFrameGeneration
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -163,9 +164,15 @@ $checks += 'Sinking-ball roll/jump recording tour (240 frames)'
 $underwater = Run-Bounded 'release-underwater' "$common --underwater-view --fluid-depth=1.4 --fluid-particles=400000 --frames=120 --frame-gen=off --name=release-underwater" 120
 $checks += 'Underwater first-person room rendering (120 frames)'
 $fg = Run-Bounded 'release-fg' "$common --frames=120 --frame-gen=2 --name=release-fg" 120 -ObserveModules
-if (!$fg.frameGeneration.enabled -or $fg.frameGeneration.extraPresents -lt 20 -or $fg.frameGeneration.status -or !$fg.frameGeneration.reflex) { throw 'Frame generation did not produce valid extra presentations.' }
+if (!$fg.frameGeneration.enabled -or $fg.frameGeneration.status -or !$fg.frameGeneration.reflex) { throw 'Invalid frame-generation / Reflex runtime state.' }
+$fgVerified = $fg.frameGeneration.extraPresents -ge 20
+if (!$fgVerified) {
+  if (!$AllowUnverifiedFrameGeneration) { throw 'Frame generation did not produce valid extra presentations.' }
+  Write-Warning 'FG output is UNVERIFIED: enabled without errors, but insufficient extra presentations. Disclose this in the release notes.'
+}
 foreach ($module in $requiredModules) { if (!$observed.ContainsKey($module)) { throw "Did not observe packaged module: $module" } }
-$checks += 'Actual DLSS 2x generated presentations / Reflex and app-local vendor DLL loading'
+$checks += 'DLSS FG / Reflex initialization and app-local vendor DLL loading'
+if ($fgVerified) { $checks += 'Actual DLSS 2x generated presentations' }
 $cuda = Run-Bounded 'release-cuda' "$common --fluid-backend=cuda --fluid-cuda-graphs=on --frames=96 --frame-gen=off --name=release-cuda" 96
 if ($cuda.fluid.backend -ne 'cuda' -or !$cuda.fluid.cuda.graphReplays -or $cuda.fluid.cuda.rejectedFrames) { throw 'CUDA graph smoke test failed.' }
 $checks += 'CUDA uniform graph-replay water (96 frames)'
@@ -180,7 +187,9 @@ $hash = (Get-FileHash $candidate).Hash.ToLowerInvariant()
 [ordered]@{ archive=$archiveName; sourceCommit=$commit; sha256=$hash; zipBytes=(Get-Item $candidate).Length;
   payloadFiles=$files.Count+1; verifiedUtc=[DateTime]::UtcNow.ToString('o'); adapter=$room.adapter;
   windowsVersion=[Environment]::OSVersion.Version.ToString(); checks=@('ZIP round-trip SHA-256')+$checks;
-  generatedPresentations=$fg.frameGeneration.extraPresents; appLocalModules=@($observed.Keys | Sort-Object);
+  generatedPresentations=$fg.frameGeneration.extraPresents; frameGenerationOutputVerified=$fgVerified;
+  knownIssues=@($(if (!$fgVerified) {'FG enabled with status 0 but no verified extra presentations; also reproduced with the predecessor executable on this PC.'}));
+  appLocalModules=@($observed.Keys | Sort-Object);
   narrowBand=[ordered]@{ activeParticles=$narrow.fluid.active; gridVolumeM3=$narrow.fluid.narrowBandOwnership.gridVolumeM3; relativeVolumeError=$narrow.fluid.particleAuthority.relativeVolumeError };
   limitations='Same RTX 5090 development PC, relocated extraction. Not clean-OS, cross-GPU, performance or D3D12 debug-layer certification.' } |
   ConvertTo-Json -Depth 6 | Set-Content "$candidate.verification.json" -Encoding UTF8

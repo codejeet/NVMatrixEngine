@@ -17,6 +17,8 @@ Download **NVMatrixEngine-0.1.0-preview-win64.zip**, extract everything, and ope
 
 Target: Windows 11 x64, high-end NVIDIA RTX GPU and compatible current driver. Tested on **RTX 5090 / driver 616.64**. The executable is unsigned. Fisheye projection pauses frame generation; the default launcher uses the normal lens. See `START-HERE.txt` for controls.
 
+**Known FG limitation:** the release machine reported FG enabled with no SDK error, but zero extra presented frames. The predecessor build reproduced this. The feature remains selectable, but generated output is **not verified in this preview**; the download's verification report records this explicitly. Raw rendering and DLSS Ray Reconstruction are separate checks.
+
 ## Scope
 
 This is a research preview, not production middleware or a blanket 60 FPS claim. CUDA/adaptive modes are experimental and not demonstrated faster than the default DX12 solver. ReSTIR PT covers opaque-primary diffuse indirect paths; **ReSTIR BDPT is not implemented**. Camera + photon transport is not a claim of general unbiased BDPT.

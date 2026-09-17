@@ -21,3 +21,9 @@ No published screenshot is an offline or AI-generated substitute: the images are
 - The export removes the shared UI/audio dependency on predecessor renderer/DLSS headers and uses only the included shared support plus downloaded SDKs.
 
 The downloadable `*.verification.json` is the authoritative per-ZIP smoke-test and checksum record. Its source commit identifies the packaged snapshot. Development reports elsewhere in the repository should not be mistaken for newly measured release performance.
+
+## Frame-generation caveat
+
+Fresh checks on the release machine reported FG supported/loaded/enabled, Reflex active and SDK status 0, but **zero extra presented frames**. This reproduced in the predecessor executable, in foreground/topmost runs, at 720p and 1080p, and in the interactive VSync/lifecycle fixture. The cause is unresolved; it is not established as an export-only regression or a specific driver defect. Earlier development reports of working FG are not fresh release certification.
+
+The integration and production DLLs remain available, but this preview does **not** claim verified generated output. Use the raw-render FPS for comparisons. Packaging normally rejects this outcome; the preview explicitly uses `-AllowUnverifiedFrameGeneration`, records `frameGenerationOutputVerified: false`, and preserves the warning in the release report. This exception does not bypass DLL loading/signature, SDK error, rendering, CUDA or conservation checks.
