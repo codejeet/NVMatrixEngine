@@ -6,7 +6,7 @@ authors:
   - name: "codejeet"
     website: "https://github.com/codejeet"
 version: 0.1.1-preview
-date-released: 2026-09-17
+date-released: "2026-09-17"
 repository-code: "https://github.com/codejeet/NVMatrixEngine"
 url: "https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.1-preview"
 abstract: >-
