@@ -91,6 +91,7 @@ $files = @(Get-ChildItem $stage -Recurse -File | Sort-Object FullName | ForEach-
   createdUtc=[DateTime]::UtcNow.ToString('o'); files=$files } | ConvertTo-Json -Depth 6 |
   Set-Content "$stage/release-manifest.json" -Encoding UTF8
 
+Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $candidate = Join-Path $work $archiveName
 # Create entries explicitly: ZipFile on .NET Framework can emit backslashes,
