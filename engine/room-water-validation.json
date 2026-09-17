@@ -1,0 +1,786 @@
+{
+  "context": "RTX 5090; 1280x720 Balanced; 100k initial APIC, 120 Hz, two substeps/rendered frame, 120 pressure/60 density iterations. FG off except explicit FG test. 32-frame warmup. Bounded validation includes root probes; medians are not guaranteed interactive frame rates.",
+  "runs": [
+    {
+      "name": "still",
+      "frames": 240,
+      "particles": 100000,
+      "volume": 46.2583,
+      "restVolume": 48.1184,
+      "renderedVolume": 46.3091,
+      "roomQuadrants": [
+        25339,
+        25446,
+        24758,
+        24457
+      ],
+      "whitewater": null,
+      "whitewaterProbes": null,
+      "medianMs": {
+        "photons": 0.468864,
+        "atlasEma": 0.010272,
+        "camera": 4.74339,
+        "composite": 0.004288,
+        "dlssRR": 0.466912,
+        "frame": 9.9235,
+        "fluidSimulation": 1.89683,
+        "fluidReconstruction": 0.939552,
+        "fluidBlas": 0.127136,
+        "whitewaterSimulation": 0,
+        "whitewaterBlas": 0
+      },
+      "frameP95Ms": 12.8318,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "capture": {
+        "powerXYZ": [
+          44.44615588039176,
+          49.9611917909042,
+          44.35833536587249
+        ],
+        "nonzeroTexels": 29018,
+        "maxIrradiance": 544.466552734375,
+        "atlasAge": 32,
+        "motionMax": 0.32373046875
+      }
+    },
+    {
+      "name": "flow",
+      "frames": 240,
+      "particles": 104719,
+      "volume": 48.5769,
+      "restVolume": 50.3891,
+      "renderedVolume": 48.0279,
+      "roomQuadrants": [
+        26174,
+        27194,
+        23475,
+        27876
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 801,
+        "bubbles": 116,
+        "spray": 0,
+        "bornLastFrame": 8,
+        "expiredLastFrame": 10,
+        "invalid": 0,
+        "simulationMs": 0.0328,
+        "blasMs": 0.244992,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 1283,
+        "bubbles": 232,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.49968,
+        "atlasEma": 0.010176,
+        "camera": 6.38163,
+        "composite": 0.004288,
+        "dlssRR": 0.467552,
+        "frame": 12.5066,
+        "fluidSimulation": 1.93846,
+        "fluidReconstruction": 1.02694,
+        "fluidBlas": 0.127936,
+        "whitewaterSimulation": 0.02896,
+        "whitewaterBlas": 0.199712
+      },
+      "frameP95Ms": 14.7934,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "capture": {
+        "powerXYZ": [
+          45.22221595927852,
+          50.80215137402205,
+          45.18072123019714
+        ],
+        "nonzeroTexels": 79650,
+        "maxIrradiance": 544.32080078125,
+        "atlasAge": 32,
+        "motionMax": 4.4296875
+      }
+    },
+    {
+      "name": "flow-no-whitewater",
+      "frames": 240,
+      "particles": 104719,
+      "volume": 48.5784,
+      "restVolume": 50.3891,
+      "renderedVolume": 48.0872,
+      "roomQuadrants": [
+        26140,
+        27277,
+        23467,
+        27835
+      ],
+      "whitewater": null,
+      "whitewaterProbes": null,
+      "medianMs": {
+        "photons": 0.490048,
+        "atlasEma": 0.010048,
+        "camera": 5.77626,
+        "composite": 0.004192,
+        "dlssRR": 0.466688,
+        "frame": 11.3819,
+        "fluidSimulation": 1.93264,
+        "fluidReconstruction": 1.02627,
+        "fluidBlas": 0.128352,
+        "whitewaterSimulation": 0,
+        "whitewaterBlas": 0
+      },
+      "frameP95Ms": 14.48,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "capture": {
+        "powerXYZ": [
+          45.22166190880898,
+          50.80475322184268,
+          45.18691275740174
+        ],
+        "nonzeroTexels": 80554,
+        "maxIrradiance": 544.5148315429688,
+        "atlasAge": 32,
+        "motionMax": 4.375
+      }
+    },
+    {
+      "name": "inlet-view",
+      "frames": 240,
+      "particles": 104719,
+      "volume": 48.5737,
+      "restVolume": 50.3891,
+      "renderedVolume": 48.0361,
+      "roomQuadrants": [
+        26136,
+        27209,
+        23477,
+        27897
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 790,
+        "bubbles": 112,
+        "spray": 0,
+        "bornLastFrame": 8,
+        "expiredLastFrame": 12,
+        "invalid": 0,
+        "simulationMs": 0.034784,
+        "blasMs": 0.199456,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 1239,
+        "bubbles": 224,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.493952,
+        "atlasEma": 0.009984,
+        "camera": 6.97018,
+        "composite": 0.004736,
+        "dlssRR": 0.466144,
+        "frame": 12.539,
+        "fluidSimulation": 1.93462,
+        "fluidReconstruction": 1.02614,
+        "fluidBlas": 0.127232,
+        "whitewaterSimulation": 0.028864,
+        "whitewaterBlas": 0.20128
+      },
+      "frameP95Ms": 14.2565,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "capture": {
+        "powerXYZ": [
+          45.2235539118797,
+          50.807159443933955,
+          45.18128897285717
+        ],
+        "nonzeroTexels": 79789,
+        "maxIrradiance": 544.9146118164062,
+        "atlasAge": 32,
+        "motionMax": 8.59375
+      }
+    },
+    {
+      "name": "controls",
+      "frames": 180,
+      "particles": 101376,
+      "volume": 46.9189,
+      "restVolume": 48.7805,
+      "renderedVolume": 48.0311,
+      "roomQuadrants": [
+        26019,
+        25467,
+        25310,
+        24580
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 230,
+        "bubbles": 53,
+        "spray": 0,
+        "bornLastFrame": 7,
+        "expiredLastFrame": 1,
+        "invalid": 0,
+        "simulationMs": 0.026816,
+        "blasMs": 0.132896,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 429,
+        "bubbles": 106,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.478464,
+        "atlasEma": 0.0104,
+        "camera": 5.2929,
+        "composite": 0.004512,
+        "dlssRR": 0.468224,
+        "frame": 10.6518,
+        "fluidSimulation": 1.9143,
+        "fluidReconstruction": 0.943264,
+        "fluidBlas": 0.12976,
+        "whitewaterSimulation": 0.024352,
+        "whitewaterBlas": 0.115136
+      },
+      "frameP95Ms": 18.1661,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 180,
+        "extraPresents": 0,
+        "frameTokens": 180,
+        "simulationMarkers": 180,
+        "submissionMarkers": 180,
+        "presentMarkers": 180
+      },
+      "capture": {
+        "powerXYZ": [
+          44.17623827881374,
+          49.66225543679462,
+          44.040112774185545
+        ],
+        "nonzeroTexels": 26880,
+        "maxIrradiance": 530.962646484375,
+        "atlasAge": 32,
+        "motionMax": 3.81640625
+      }
+    },
+    {
+      "name": "capacity",
+      "frames": 60,
+      "particles": 100064,
+      "volume": 46.2597,
+      "restVolume": 48.1492,
+      "renderedVolume": 47.556,
+      "roomQuadrants": [
+        25862,
+        25532,
+        24241,
+        24429
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 14,
+        "bubbles": 2,
+        "spray": 0,
+        "bornLastFrame": 0,
+        "expiredLastFrame": 0,
+        "invalid": 0,
+        "simulationMs": 0.022784,
+        "blasMs": 0.081344,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 26,
+        "bubbles": 4,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.464224,
+        "atlasEma": 0.010176,
+        "camera": 5.40714,
+        "composite": 0.00432,
+        "dlssRR": 0.467616,
+        "frame": 10.8801,
+        "fluidSimulation": 1.87482,
+        "fluidReconstruction": 0.937536,
+        "fluidBlas": 0.124224,
+        "whitewaterSimulation": 0.023424,
+        "whitewaterBlas": 0.081344
+      },
+      "frameP95Ms": 13.2269,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 60,
+        "extraPresents": 0,
+        "frameTokens": 60,
+        "simulationMarkers": 60,
+        "submissionMarkers": 60,
+        "presentMarkers": 60
+      },
+      "capture": {
+        "powerXYZ": [
+          44.32310389775369,
+          49.81585875320779,
+          44.191604479966045
+        ],
+        "nonzeroTexels": 17897,
+        "maxIrradiance": 565.7063598632812,
+        "atlasAge": 32,
+        "motionMax": 0.59814453125
+      }
+    },
+    {
+      "name": "already-full",
+      "frames": 60,
+      "particles": 100000,
+      "volume": 46.2373,
+      "restVolume": 48.1184,
+      "renderedVolume": 47.5408,
+      "roomQuadrants": [
+        25824,
+        25535,
+        24324,
+        24317
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 1,
+        "bubbles": 0,
+        "spray": 0,
+        "bornLastFrame": 0,
+        "expiredLastFrame": 0,
+        "invalid": 0,
+        "simulationMs": 0.023648,
+        "blasMs": 0.06256,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 2,
+        "bubbles": 0,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.467936,
+        "atlasEma": 0.010528,
+        "camera": 4.88224,
+        "composite": 0.004256,
+        "dlssRR": 0.4632,
+        "frame": 10.4508,
+        "fluidSimulation": 1.87853,
+        "fluidReconstruction": 0.930336,
+        "fluidBlas": 0.125152,
+        "whitewaterSimulation": 0.023552,
+        "whitewaterBlas": 0.0624
+      },
+      "frameP95Ms": 12.6366,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 60,
+        "extraPresents": 0,
+        "frameTokens": 60,
+        "simulationMarkers": 60,
+        "submissionMarkers": 60,
+        "presentMarkers": 60
+      },
+      "capture": {
+        "powerXYZ": [
+          44.32156291994592,
+          49.815435170289646,
+          44.192001638441056
+        ],
+        "nonzeroTexels": 17808,
+        "maxIrradiance": 565.818603515625,
+        "atlasAge": 32,
+        "motionMax": 0.59814453125
+      }
+    },
+    {
+      "name": "fixed",
+      "frames": 90,
+      "particles": 101769,
+      "volume": 47.1034,
+      "restVolume": 48.9696,
+      "renderedVolume": 47.9204,
+      "roomQuadrants": [
+        26102,
+        25600,
+        25506,
+        24561
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 260,
+        "bubbles": 80,
+        "spray": 0,
+        "bornLastFrame": 4,
+        "expiredLastFrame": 1,
+        "invalid": 0,
+        "simulationMs": 0.02528,
+        "blasMs": 0.143552,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 477,
+        "bubbles": 157,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 3.86493,
+        "atlasEma": 0.010912,
+        "camera": 5.22784,
+        "composite": 0.004192,
+        "dlssRR": 0.462688,
+        "frame": 14.123,
+        "fluidSimulation": 1.9145,
+        "fluidReconstruction": 0.956416,
+        "fluidBlas": 0.129792,
+        "whitewaterSimulation": 0.02576,
+        "whitewaterBlas": 0.134176
+      },
+      "frameP95Ms": 17.5547,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 90,
+        "extraPresents": 0,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "capture": {
+        "powerXYZ": [
+          44.40061624010813,
+          49.90123956185443,
+          44.27495546937638
+        ],
+        "nonzeroTexels": 56910,
+        "maxIrradiance": 535.9537963867188,
+        "atlasAge": 32,
+        "motionMax": 4.23046875
+      }
+    },
+    {
+      "name": "nvapi",
+      "frames": 90,
+      "particles": 101769,
+      "volume": 47.1034,
+      "restVolume": 48.9696,
+      "renderedVolume": 47.9196,
+      "roomQuadrants": [
+        26103,
+        25600,
+        25505,
+        24561
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 260,
+        "bubbles": 81,
+        "spray": 0,
+        "bornLastFrame": 5,
+        "expiredLastFrame": 2,
+        "invalid": 0,
+        "simulationMs": 0.026176,
+        "blasMs": 0.149152,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 475,
+        "bubbles": 159,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.809504,
+        "atlasEma": 0.00992,
+        "camera": 7.71472,
+        "composite": 0.007008,
+        "dlssRR": 0.468864,
+        "frame": 13.8002,
+        "fluidSimulation": 1.92413,
+        "fluidReconstruction": 0.954464,
+        "fluidBlas": 0.129536,
+        "whitewaterSimulation": 0.025952,
+        "whitewaterBlas": 0.136416
+      },
+      "frameP95Ms": 17.8104,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 90,
+        "extraPresents": 0,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "capture": {
+        "powerXYZ": [
+          44.40223524583536,
+          49.902378401949754,
+          44.27598124702071
+        ],
+        "nonzeroTexels": 65060,
+        "maxIrradiance": 535.9022216796875,
+        "atlasAge": 32,
+        "motionMax": 4.2265625
+      }
+    },
+    {
+      "name": "frame-gen",
+      "frames": 90,
+      "particles": 101769,
+      "volume": 47.102,
+      "restVolume": 48.9696,
+      "renderedVolume": 47.921,
+      "roomQuadrants": [
+        26101,
+        25601,
+        25506,
+        24561
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 260,
+        "bubbles": 81,
+        "spray": 0,
+        "bornLastFrame": 5,
+        "expiredLastFrame": 2,
+        "invalid": 0,
+        "simulationMs": 0.026016,
+        "blasMs": 0.150528,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 475,
+        "bubbles": 159,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.477888,
+        "atlasEma": 0.01024,
+        "camera": 7.76624,
+        "composite": 0.004864,
+        "dlssRR": 0.476896,
+        "frame": 14.4671,
+        "fluidSimulation": 1.94237,
+        "fluidReconstruction": 0.958976,
+        "fluidBlas": 0.128352,
+        "whitewaterSimulation": 0.026112,
+        "whitewaterBlas": 0.134784
+      },
+      "frameP95Ms": 18.3284,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": true,
+        "enabled": true,
+        "multiplier": 2,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 178,
+        "extraPresents": 88,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "capture": {
+        "powerXYZ": [
+          44.40277498970012,
+          49.902714768986456,
+          44.27689035037552
+        ],
+        "nonzeroTexels": 65258,
+        "maxIrradiance": 535.9462890625,
+        "atlasAge": 32,
+        "motionMax": 4.2265625
+      }
+    },
+    {
+      "name": "long-flow",
+      "frames": 900,
+      "particles": 117697,
+      "volume": 54.9815,
+      "restVolume": 56.6339,
+      "renderedVolume": 54.6979,
+      "roomQuadrants": [
+        27879,
+        28449,
+        31640,
+        29729
+      ],
+      "whitewater": {
+        "capacity": 8192,
+        "foam": 947,
+        "bubbles": 163,
+        "spray": 0,
+        "bornLastFrame": 13,
+        "expiredLastFrame": 8,
+        "invalid": 0,
+        "simulationMs": 0.032224,
+        "blasMs": 0.227136,
+        "validated": true
+      },
+      "whitewaterProbes": {
+        "foam": 1400,
+        "bubbles": 326,
+        "spray": 0,
+        "bad": 0
+      },
+      "medianMs": {
+        "photons": 0.552736,
+        "atlasEma": 0.010208,
+        "camera": 6.43635,
+        "composite": 0.00416,
+        "dlssRR": 0.467648,
+        "frame": 13.0684,
+        "fluidSimulation": 2.01507,
+        "fluidReconstruction": 1.24314,
+        "fluidBlas": 0.128128,
+        "whitewaterSimulation": 0.030656,
+        "whitewaterBlas": 0.216608
+      },
+      "frameP95Ms": 16.1159,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 900,
+        "extraPresents": 0,
+        "frameTokens": 900,
+        "simulationMarkers": 900,
+        "submissionMarkers": 900,
+        "presentMarkers": 900
+      },
+      "capture": {
+        "powerXYZ": [
+          43.779803711200266,
+          49.40299723066789,
+          43.939722055474874
+        ],
+        "nonzeroTexels": 168025,
+        "maxIrradiance": 545.54833984375,
+        "atlasAge": 32,
+        "motionMax": 4.140625
+      }
+    }
+  ],
+  "shaderSha256": {
+    "Transport-0-1": "e52d7567cb4a51219699b6a5ce6f5313026c70b6028a85906a6bd158b1382bcc",
+    "Transport-1-1": "0e9cc6d6460387afb2a303e97cfa796aff7dc56500e67ecd0afb0b4fa3bbc76f",
+    "Transport-2-1": "816d0730a0aef58804c75cba7fdfd37b2fe542cff0a62706958d6ba979251d05",
+    "FluidInitialize": "fa7c0f855b2d0fc1252b0e1b0e1ab845e1e620230e6f52a2fc58d8e7e75ecab6",
+    "FluidEmit": "1322d8de28d5a4045d0fb29243b634b7a5faccaebbc40cb4d4373093ac0ace59",
+    "FluidCollide": "9ea9a24d4ce1b93c9a31b90a2ff0a013fe287c59c1d4f788e3be52c93e5410a4",
+    "WhitewaterClear": "d607a8519c1266b0f7d04df372fc54e513c23b984266849f6ef310ad6fea97ba",
+    "WhitewaterUpdate": "0b3f13e7e6c7e5e80a7a0c6c5eff3199cf45610e8bc9a00622555d26129fe34e"
+  }
+}

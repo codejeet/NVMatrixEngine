@@ -1,0 +1,519 @@
+{
+  "schema": 1,
+  "date": "2026-09-12",
+  "baseCommit": "7f89656",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Substep-aligned boundaries and bounded GPU error-triggered density repair; full adaptive goal incomplete",
+  "scopedGpuChecksPassed": true,
+  "cases": [
+    {
+      "name": "reference",
+      "frames": 120,
+      "steps": 240,
+      "samples": 95224,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.00002,
+      "postDensity": 1.00002,
+      "peak": {
+        "cell": [
+          23,
+          34,
+          22
+        ],
+        "solidPhi": 2.38673
+      },
+      "auditError": 9.88186e-8,
+      "repaired": false,
+      "meanHeight": 2.78635,
+      "particleMeanHeight": 2.78635,
+      "volume": 5.42286,
+      "penetration": 0
+    },
+    {
+      "name": "reference-long",
+      "frames": 600,
+      "steps": 1200,
+      "samples": 95224,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.00002,
+      "postDensity": 1.00002,
+      "peak": {
+        "cell": [
+          23,
+          34,
+          22
+        ],
+        "solidPhi": 2.38673
+      },
+      "auditError": 2.01464e-7,
+      "repaired": false,
+      "meanHeight": 2.78635,
+      "particleMeanHeight": 2.78635,
+      "volume": 5.42297,
+      "penetration": 0
+    },
+    {
+      "name": "reference-wake",
+      "frames": 180,
+      "steps": 360,
+      "samples": 100000,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.07773,
+      "postDensity": 1.06278,
+      "peak": {
+        "cell": [
+          45,
+          36,
+          31
+        ],
+        "solidPhi": 0.101093
+      },
+      "auditError": 0.00000107495,
+      "repaired": true,
+      "meanHeight": 2.78526,
+      "particleMeanHeight": 2.78526,
+      "volume": 5.7816,
+      "penetration": 1.86265e-8
+    },
+    {
+      "name": "reference-uniform-wake",
+      "frames": 180,
+      "steps": 360,
+      "samples": 100000,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.01056,
+      "postDensity": 1.00713,
+      "peak": {
+        "cell": [
+          39,
+          23,
+          19
+        ],
+        "solidPhi": 0.271476
+      },
+      "auditError": 9.39621e-8,
+      "repaired": true,
+      "meanHeight": 2.78584,
+      "particleMeanHeight": 2.78584,
+      "volume": 5.63072,
+      "penetration": 0
+    },
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "samples": 0,
+      "mass": 0,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 0,
+      "postDensity": 0,
+      "peak": {
+        "cell": [
+          0,
+          0,
+          0
+        ],
+        "solidPhi": 0.0599998
+      },
+      "auditError": 0,
+      "repaired": false,
+      "meanHeight": 0,
+      "particleMeanHeight": 0,
+      "volume": 0,
+      "penetration": 0
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "samples": 93376,
+      "mass": 100000,
+      "owners": 96,
+      "ownerMass": 6624,
+      "restorations": 0,
+      "preDensity": 1.00097,
+      "postDensity": 1.00097,
+      "peak": {
+        "cell": [
+          25,
+          34,
+          20
+        ],
+        "solidPhi": 2.29863
+      },
+      "auditError": 1.55974e-8,
+      "repaired": false,
+      "meanHeight": 2.78636,
+      "particleMeanHeight": 2.78991,
+      "volume": 5.41958,
+      "penetration": 0
+    },
+    {
+      "name": "cycle",
+      "frames": 120,
+      "steps": 221,
+      "samples": 100000,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 96,
+      "preDensity": 1.00002,
+      "postDensity": 1.00002,
+      "peak": {
+        "cell": [
+          19,
+          34,
+          19
+        ],
+        "solidPhi": 2.24154
+      },
+      "auditError": 1.40605e-7,
+      "repaired": false,
+      "meanHeight": 2.78636,
+      "particleMeanHeight": 2.78636,
+      "volume": 5.41846,
+      "penetration": 0
+    },
+    {
+      "name": "calm-long",
+      "frames": 600,
+      "steps": 1200,
+      "samples": 93376,
+      "mass": 100000,
+      "owners": 96,
+      "ownerMass": 6624,
+      "restorations": 0,
+      "preDensity": 1.00097,
+      "postDensity": 1.00097,
+      "peak": {
+        "cell": [
+          25,
+          34,
+          20
+        ],
+        "solidPhi": 2.29863
+      },
+      "auditError": 1.55974e-8,
+      "repaired": false,
+      "meanHeight": 2.78643,
+      "particleMeanHeight": 2.78998,
+      "volume": 5.43203,
+      "penetration": 0
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "samples": 100000,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 96,
+      "preDensity": 1.01375,
+      "postDensity": 1.00962,
+      "peak": {
+        "cell": [
+          33,
+          22,
+          22
+        ],
+        "solidPhi": 0.617577
+      },
+      "auditError": 5.81351e-8,
+      "repaired": true,
+      "meanHeight": 2.78583,
+      "particleMeanHeight": 2.78583,
+      "volume": 5.63242,
+      "penetration": 0
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.30215,
+      "postDensity": 1.15997,
+      "peak": {
+        "cell": [
+          23,
+          1,
+          43
+        ],
+        "solidPhi": 0.1
+      },
+      "auditError": 2.54368e-7,
+      "repaired": true,
+      "meanHeight": 0.702587,
+      "particleMeanHeight": 0.702587,
+      "volume": 7.22257,
+      "penetration": 0
+    },
+    {
+      "name": "room",
+      "frames": 90,
+      "steps": 180,
+      "samples": 101769,
+      "mass": 101769,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.10794,
+      "postDensity": 1.10794,
+      "peak": {
+        "cell": [
+          59,
+          1,
+          46
+        ],
+        "solidPhi": -0.0100001
+      },
+      "auditError": 0.00000146803,
+      "repaired": true,
+      "meanHeight": 0.225535,
+      "particleMeanHeight": 0.225535,
+      "volume": 48.1376,
+      "penetration": 0.00000897422
+    },
+    {
+      "name": "multigrid",
+      "frames": 120,
+      "steps": 240,
+      "samples": 93376,
+      "mass": 100000,
+      "owners": 96,
+      "ownerMass": 6624,
+      "restorations": 0,
+      "preDensity": 1.00097,
+      "postDensity": 1.00097,
+      "peak": {
+        "cell": [
+          25,
+          34,
+          20
+        ],
+        "solidPhi": 2.29863
+      },
+      "auditError": 1.55974e-8,
+      "repaired": false,
+      "meanHeight": 2.78636,
+      "particleMeanHeight": 2.78991,
+      "volume": 5.41958,
+      "penetration": 0
+    },
+    {
+      "name": "bulk",
+      "frames": 120,
+      "steps": 240,
+      "samples": 93376,
+      "mass": 100000,
+      "owners": 96,
+      "ownerMass": 6624,
+      "restorations": 0,
+      "preDensity": 1.00098,
+      "postDensity": 1.00098,
+      "peak": {
+        "cell": [
+          25,
+          34,
+          20
+        ],
+        "solidPhi": 2.29863
+      },
+      "auditError": 1.23021e-7,
+      "repaired": false,
+      "meanHeight": 2.78636,
+      "particleMeanHeight": 2.78991,
+      "volume": 5.41958,
+      "penetration": 0
+    },
+    {
+      "name": "fg",
+      "frames": 60,
+      "steps": 120,
+      "samples": 101179,
+      "mass": 101179,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.1149,
+      "postDensity": 1.11468,
+      "peak": {
+        "cell": [
+          59,
+          1,
+          46
+        ],
+        "solidPhi": -0.0100001
+      },
+      "auditError": 0.00000281613,
+      "repaired": true,
+      "meanHeight": 0.223798,
+      "particleMeanHeight": 0.223798,
+      "volume": 48.1945,
+      "penetration": 0.00000957027
+    },
+    {
+      "name": "pt",
+      "frames": 60,
+      "steps": 120,
+      "samples": 101179,
+      "mass": 101179,
+      "owners": 0,
+      "ownerMass": 0,
+      "restorations": 0,
+      "preDensity": 1.1149,
+      "postDensity": 1.11468,
+      "peak": {
+        "cell": [
+          59,
+          1,
+          46
+        ],
+        "solidPhi": -0.0100001
+      },
+      "auditError": 0.00000200056,
+      "repaired": true,
+      "meanHeight": 0.223798,
+      "particleMeanHeight": 0.223798,
+      "volume": 48.1945,
+      "penetration": 0.00000951067
+    }
+  ],
+  "comparisons": {
+    "calm": {
+      "volumeError": 0.0006048468889110481,
+      "preDelta": 0.0009500000000000064,
+      "postDelta": 0.0009500000000000064
+    },
+    "calm-long": {
+      "volumeError": 0.001670671237347765,
+      "preDelta": 0.0009500000000000064,
+      "postDelta": 0.0009500000000000064
+    },
+    "cycle": {
+      "volumeError": 0.0008113799729294602,
+      "preDelta": 0,
+      "postDelta": 0
+    },
+    "wake": {
+      "volumeError": 0.0003019152080017129,
+      "preDelta": 0.003190000000000026,
+      "postDelta": 0.002489999999999881
+    }
+  },
+  "ordinary": [
+    {
+      "name": "constant",
+      "steps": 0,
+      "particles": 100000,
+      "postDensity": 1.00339
+    },
+    {
+      "name": "affine",
+      "steps": 0,
+      "particles": 100000,
+      "postDensity": 1.00339
+    },
+    {
+      "name": "compression",
+      "steps": 0,
+      "particles": 100000,
+      "postDensity": 1.00339
+    },
+    {
+      "name": "roundtrip",
+      "steps": 0,
+      "particles": 100000,
+      "postDensity": 1.00339
+    },
+    {
+      "name": "controls",
+      "steps": 3,
+      "particles": 257,
+      "postDensity": 0.208773
+    },
+    {
+      "name": "apic-long",
+      "steps": 2400,
+      "particles": 100000,
+      "postDensity": 1.01432
+    }
+  ],
+  "optical": [
+    {
+      "name": "colliders",
+      "frames": 180,
+      "roots": 6310
+    },
+    {
+      "name": "surface-controls",
+      "frames": 12,
+      "roots": 1452
+    }
+  ],
+  "temporal": [
+    {
+      "frame": 128,
+      "rrResets": 1,
+      "atlasResets": 10
+    },
+    {
+      "frame": 176,
+      "rrResets": 1,
+      "atlasResets": 10
+    },
+    {
+      "frame": 224,
+      "rrResets": 1,
+      "atlasResets": 10
+    },
+    {
+      "frame": 272,
+      "rrResets": 1,
+      "atlasResets": 10
+    },
+    {
+      "frame": 320,
+      "rrResets": 1,
+      "atlasResets": 58
+    }
+  ],
+  "profile": {
+    "scene": "room, inlet, foam, orbit; 1080p Balanced; FG off; no invariant snapshots",
+    "measuredFrames": 804,
+    "rawFrameMs": 12.567450000000001,
+    "p95Ms": 15.567,
+    "simulationMs": 2.95683,
+    "reconstructionMs": 1.159265,
+    "runMedians": [
+      12.5526,
+      12.4348,
+      12.8489
+    ],
+    "note": "Current operating point, not a controlled old/new speedup comparison"
+  },
+  "exeSha256": "110621682be523ad466a16fe1aafea09b5cadf111c6e86f17b0811ad65711d7e",
+  "shaderSetSha256": "4dbcbb69682aa46dd8192c2577ab1c2d57da9096c7f37298795a685e9ed3bef2",
+  "debugLayer": {
+    "gpuBasedValidationExecuted": false,
+    "previousInitializationError": "0x887A002D"
+  }
+}

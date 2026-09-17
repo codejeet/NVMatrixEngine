@@ -1,0 +1,503 @@
+{
+  "baselineCommit": "035bf21ab2b967c4da9feba191b362b85142466f",
+  "context": "RTX 5090, serial unpaced 1080p Balanced, 100k particles, 120 Hz APIC, 120 pressure/60 density iterations, two substeps per real frame, FG off; 32 warmup + 328 samples/run. Renderer frame interval includes submission/present/fence, excludes outer game update. Median columns need not sum.",
+  "comparisons": [
+    {
+      "view": "pool",
+      "before": {
+        "names": [
+          "fluid-perf-baseline-pool-1",
+          "fluid-perf-baseline-pool-2"
+        ],
+        "samples": 656,
+        "medianMs": {
+          "photons": 0.716224,
+          "atlasEma": 0.010272,
+          "camera": 9.64026,
+          "composite": 0.00752,
+          "dlssRR": 0.725728,
+          "frame": 18.2379
+        },
+        "frameP95Ms": 28.4165,
+        "reciprocalMedianRenderFps": 54.83087416862687,
+        "perRun": [
+          {
+            "medianMs": [
+              0.71136,
+              0.010208,
+              9.65152,
+              0.00752,
+              0.725216,
+              18.2294
+            ],
+            "frameP95Ms": 28.339
+          },
+          {
+            "medianMs": [
+              0.722752,
+              0.0104,
+              9.64026,
+              0.007488,
+              0.726464,
+              18.3045
+            ],
+            "frameP95Ms": 28.021
+          }
+        ]
+      },
+      "after": {
+        "names": [
+          "fluid-perf-optimized-pool-1",
+          "fluid-perf-optimized-pool-2"
+        ],
+        "samples": 656,
+        "medianMs": {
+          "photons": 0.647296,
+          "atlasEma": 0.010112,
+          "camera": 7.29901,
+          "composite": 0.007616,
+          "dlssRR": 0.728064,
+          "frame": 14.2806,
+          "fluidSimulation": 2.04592,
+          "fluidReconstruction": 2.33994,
+          "fluidBlas": 0.122848
+        },
+        "frameP95Ms": 20.5396,
+        "reciprocalMedianRenderFps": 70.02506897469294,
+        "perRun": [
+          {
+            "medianMs": [
+              0.652064,
+              0.01008,
+              7.30138,
+              0.007744,
+              0.727424,
+              14.2889,
+              2.04294,
+              2.3481,
+              0.122304
+            ],
+            "frameP95Ms": 20.2803
+          },
+          {
+            "medianMs": [
+              0.642784,
+              0.010176,
+              7.31344,
+              0.007328,
+              0.729376,
+              14.2745,
+              2.04813,
+              2.34118,
+              0.123424
+            ],
+            "frameP95Ms": 20.5645
+          }
+        ]
+      },
+      "frameTimeReduction": 0.21698221834750708,
+      "renderFpsGain": 0.27711020545355236
+    },
+    {
+      "view": "play",
+      "before": {
+        "names": [
+          "fluid-perf-baseline-play-1",
+          "fluid-perf-baseline-play-2"
+        ],
+        "samples": 656,
+        "medianMs": {
+          "photons": 0.703008,
+          "atlasEma": 0.010208,
+          "camera": 7.05238,
+          "composite": 0.00784,
+          "dlssRR": 0.72368,
+          "frame": 15.7551
+        },
+        "frameP95Ms": 20.9537,
+        "reciprocalMedianRenderFps": 63.47151081237187,
+        "perRun": [
+          {
+            "medianMs": [
+              0.709024,
+              0.010208,
+              7.05238,
+              0.00784,
+              0.723712,
+              15.7582
+            ],
+            "frameP95Ms": 20.8655
+          },
+          {
+            "medianMs": [
+              0.70096,
+              0.010272,
+              7.07098,
+              0.00784,
+              0.723712,
+              15.7716
+            ],
+            "frameP95Ms": 20.9537
+          }
+        ]
+      },
+      "after": {
+        "names": [
+          "fluid-perf-optimized-play-1",
+          "fluid-perf-optimized-play-2"
+        ],
+        "samples": 656,
+        "medianMs": {
+          "photons": 0.614784,
+          "atlasEma": 0.01008,
+          "camera": 4.24864,
+          "composite": 0.00784,
+          "dlssRR": 0.7248,
+          "frame": 11.787,
+          "fluidSimulation": 2.05536,
+          "fluidReconstruction": 2.32419,
+          "fluidBlas": 0.123264
+        },
+        "frameP95Ms": 15.3141,
+        "reciprocalMedianRenderFps": 84.83922965979468,
+        "perRun": [
+          {
+            "medianMs": [
+              0.624992,
+              0.010048,
+              4.34861,
+              0.007936,
+              0.72448,
+              11.8186,
+              2.05699,
+              2.32419,
+              0.122496
+            ],
+            "frameP95Ms": 15.3141
+          },
+          {
+            "medianMs": [
+              0.606592,
+              0.010144,
+              4.14874,
+              0.007744,
+              0.725184,
+              11.7818,
+              2.0553,
+              2.33133,
+              0.124672
+            ],
+            "frameP95Ms": 15.2124
+          }
+        ]
+      },
+      "frameTimeReduction": 0.2518613020545728,
+      "renderFpsGain": 0.3366505472130312
+    }
+  ],
+  "originalSolverTimingControl": [
+    {
+      "names": [
+        "fluid-perf-render-pool-1",
+        "fluid-perf-render-pool-2"
+      ],
+      "samples": 656,
+      "medianMs": {
+        "photons": 0.708768,
+        "atlasEma": 0.0104,
+        "camera": 9.11923,
+        "composite": 0.007488,
+        "dlssRR": 0.72496,
+        "frame": 17.7043,
+        "fluidSimulation": 3.05037,
+        "fluidReconstruction": 2.34973,
+        "fluidBlas": 0.117536
+      },
+      "frameP95Ms": 26.8387,
+      "reciprocalMedianRenderFps": 56.48345317239315,
+      "perRun": [
+        {
+          "medianMs": [
+            0.707616,
+            0.010304,
+            8.92362,
+            0.007488,
+            0.724288,
+            17.5512,
+            3.04288,
+            2.34954,
+            0.11744
+          ],
+          "frameP95Ms": 27.6376
+        },
+        {
+          "medianMs": [
+            0.713792,
+            0.010464,
+            9.46957,
+            0.00752,
+            0.725536,
+            18.0561,
+            3.06269,
+            2.35712,
+            0.118208
+          ],
+          "frameP95Ms": 25.9186
+        }
+      ]
+    },
+    {
+      "names": [
+        "fluid-perf-render-play-1",
+        "fluid-perf-render-play-2"
+      ],
+      "samples": 656,
+      "medianMs": {
+        "photons": 0.69664,
+        "atlasEma": 0.01024,
+        "camera": 6.25827,
+        "composite": 0.00784,
+        "dlssRR": 0.723392,
+        "frame": 14.8633,
+        "fluidSimulation": 3.07686,
+        "fluidReconstruction": 2.31094,
+        "fluidBlas": 0.116768
+      },
+      "frameP95Ms": 20.1367,
+      "reciprocalMedianRenderFps": 67.27981000181656,
+      "perRun": [
+        {
+          "medianMs": [
+            0.706848,
+            0.01024,
+            6.30579,
+            0.007808,
+            0.72208,
+            14.8633,
+            3.08035,
+            2.32499,
+            0.117024
+          ],
+          "frameP95Ms": 20.9358
+        },
+        {
+          "medianMs": [
+            0.695616,
+            0.01024,
+            6.1825,
+            0.00784,
+            0.724448,
+            14.8703,
+            3.07498,
+            2.30877,
+            0.116352
+          ],
+          "frameP95Ms": 19.5286
+        }
+      ]
+    }
+  ],
+  "parity": [
+    {
+      "kind": "sphere",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 1.544734140009958e-8,
+          "maxAbs": 0.001190185546875
+        },
+        {
+          "index": 1,
+          "relativeL1": 0.000005417494245344875,
+          "maxAbs": 0.000003337860107421875
+        },
+        {
+          "index": 2,
+          "relativeL1": 7.040468163959166e-12,
+          "maxAbs": 0.000013828277587890625
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 7.700090756478026e-9,
+          "maxAbs": 0.000244140625
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0018635227799086464,
+          "maxAbs": 1.8984375
+        },
+        {
+          "index": 8,
+          "relativeL1": 1.982904971827719e-10,
+          "maxAbs": 0.00006103515625
+        },
+        {
+          "index": 9,
+          "relativeL1": 5.282113871865215e-9,
+          "maxAbs": 0.0003990083932876587
+        }
+      ],
+      "beforeProbes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 2664826,
+        "intersections": 401417
+      },
+      "afterProbes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1608107,
+        "intersections": 249219
+      }
+    },
+    {
+      "kind": "sheet",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 1.4104738446786134e-7,
+          "maxAbs": 0.0143585205078125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0.00001541831128653723,
+          "maxAbs": 0.000003933906555175781
+        },
+        {
+          "index": 2,
+          "relativeL1": 1.0080144529202127e-11,
+          "maxAbs": 0.000011920928955078125
+        },
+        {
+          "index": 3,
+          "relativeL1": 3.362739198538987e-9,
+          "maxAbs": 0.00048828125
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 8.577840740208983e-10,
+          "maxAbs": 0.000030517578125
+        },
+        {
+          "index": 6,
+          "relativeL1": 8.017583044765071e-9,
+          "maxAbs": 0.0009765625
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0018263559230724791,
+          "maxAbs": 3.25
+        },
+        {
+          "index": 8,
+          "relativeL1": 1.9263888745429065e-10,
+          "maxAbs": 0.00006103515625
+        },
+        {
+          "index": 9,
+          "relativeL1": 5.511464820578934e-8,
+          "maxAbs": 0.006304726004600525
+        }
+      ],
+      "beforeProbes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1956617,
+        "intersections": 317362
+      },
+      "afterProbes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 962404,
+        "intersections": 170857
+      }
+    },
+    {
+      "kind": "play",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 5.525196857382746e-11,
+          "maxAbs": 0.0000152587890625
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 7.887416584644928e-11,
+          "maxAbs": 0.000030517578125
+        },
+        {
+          "index": 8,
+          "relativeL1": 9.228390049993165e-10,
+          "maxAbs": 0.00018310546875
+        }
+      ]
+    }
+  ],
+  "optimizedShaderSha256": {
+    "Transport-0-1": "ad054461120e836b1dbe688b8b96d55417fc800215e51d41a9ca63738f41666e",
+    "Transport-1-1": "5a210c4a856a8ef9949a73dd544847758cf621b1d6e984bb035bdaab834911ec",
+    "Transport-2-1": "e1483907c4895a31352455c76c9ac8c4c03d375f825cd22a9bbc2dcfd102186d",
+    "Clear": "5aff3a97a649733327cd2a6fe623541ed3a439941e564c059d1cdcf525563984",
+    "FluidSurfaceBounds": "d6c11a28e7039ce8d7fb02b2361564f5c081126019540698707db09d3b5f23dd",
+    "FluidJacobi": "52b0d15afd67175e83995daed1b9145920663c6545b07bf0acf565b146d62aab",
+    "FluidDensityJacobi": "98fbad192d9ff9d83301f4aa8a9c1c726b0b4c197e6b65c62846bb7fcbf3e4c7"
+  }
+}

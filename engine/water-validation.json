@@ -1,0 +1,613 @@
+{
+  "date": "2026-09-11",
+  "baseline": "57c6aef",
+  "scope": "Spectral laser and static-water optical transport in the experimental lab",
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "defaultPhotonBudget": 65536,
+  "defaultSourcePowerWatts": {
+    "prismWhite": 40,
+    "prismLaser": 1.5,
+    "waterLaser": 1.5,
+    "waterWhite": 28
+  },
+  "internalYRadianceCdPerSquareMetre": 182.4581482125,
+  "atlasUnitNote": "XYZ irradiance and integrated pool Y are exposure-scaled; multiply by 182.4581482125 for photometric SI units.",
+  "waterGeometry": {
+    "triangles": 8960,
+    "manifold": true,
+    "animated": false,
+    "buoyancy": false
+  },
+  "cpuTests": {
+    "ctestPassed": 4,
+    "opticsAndSourcePassed": 19
+  },
+  "timingContext": {
+    "waterMatrixOutput": [
+      1280,
+      720
+    ],
+    "waterMatrixInternal": [
+      853,
+      480
+    ],
+    "rollingAndOrbitOutput": [
+      1920,
+      1080
+    ],
+    "rollingAndOrbitInternal": [
+      1280,
+      720
+    ],
+    "columns": [
+      "photonAndBeamRaygen",
+      "atlasEma",
+      "camera",
+      "composite",
+      "dlssRR",
+      "renderWall"
+    ],
+    "note": "Bounded unpaced medians. renderWall excludes simulation, HUD update and display pacing; not interactive FPS or a mainline comparison.",
+    "developmentDefaultMedianMs": [
+      0.15488,
+      0.005984,
+      0.865056,
+      0.005152,
+      0.503968,
+      1.975
+    ]
+  },
+  "fixedFloatRelativeL1": 0.000053317643589694055,
+  "runs": [
+    {
+      "name": "green",
+      "waterFloorWatts": 20.2526,
+      "waterEntries": 23307,
+      "beamSegments": 13,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 985,
+      "ledgerErrorWatts": 0.00018000000000029104,
+      "poolPhotometricY": 27.410631382734845,
+      "interiorMeanIrradiance": 5.274796220454938,
+      "interiorCoefficientOfVariation": 4.414252721083109,
+      "medianMs": [
+        0.163584,
+        0.00608,
+        1.18397,
+        0.005152,
+        0.502368,
+        2.5141
+      ],
+      "powerXYZ": [
+        42.350321401920276,
+        48.526824218050876,
+        44.72910663156206
+      ],
+      "nonzeroTexels": 44082,
+      "maxIrradiance": 637.0053100585938,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "blue",
+      "waterFloorWatts": 20.3014,
+      "waterEntries": 23306,
+      "beamSegments": 13,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 985,
+      "ledgerErrorWatts": 0.00006999999999379725,
+      "poolPhotometricY": 23.531343384495568,
+      "interiorMeanIrradiance": 3.7932684042072875,
+      "interiorCoefficientOfVariation": 0.42579395482452265,
+      "medianMs": [
+        0.146816,
+        0.006016,
+        1.16928,
+        0.005152,
+        0.50208,
+        2.4307
+      ],
+      "powerXYZ": [
+        43.444668274236115,
+        42.56398160885023,
+        57.26362916998788
+      ],
+      "nonzeroTexels": 44083,
+      "maxIrradiance": 1316.59716796875,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "red",
+      "waterFloorWatts": 19.9496,
+      "waterEntries": 23310,
+      "beamSegments": 13,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 985,
+      "ledgerErrorWatts": 0.0004799999999818283,
+      "poolPhotometricY": 24.010437959973927,
+      "interiorMeanIrradiance": 3.97623804934817,
+      "interiorCoefficientOfVariation": 1.0023804348933767,
+      "medianMs": [
+        0.156288,
+        0.006048,
+        1.17376,
+        0.005088,
+        0.5024,
+        2.4701
+      ],
+      "powerXYZ": [
+        43.884741281010456,
+        43.42038638642248,
+        44.46892382891427
+      ],
+      "nonzeroTexels": 44082,
+      "maxIrradiance": 335.04632568359375,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "flat",
+      "waterFloorWatts": 19.0574,
+      "waterEntries": 31901,
+      "beamSegments": 0,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 984,
+      "ledgerErrorWatts": 0.014070000000003802,
+      "poolPhotometricY": 23.36388897067474,
+      "interiorMeanIrradiance": 3.649389540757604,
+      "interiorCoefficientOfVariation": 0.022028892388462208,
+      "medianMs": [
+        0.12736,
+        0.005792,
+        0.55008,
+        0.005088,
+        0.501888,
+        1.6911
+      ],
+      "powerXYZ": [
+        41.03459153820133,
+        42.30316619403821,
+        44.46051661208658
+      ],
+      "nonzeroTexels": 43735,
+      "maxIrradiance": 9.70149040222168,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "no-laser",
+      "waterFloorWatts": 19.0517,
+      "waterEntries": 31898,
+      "beamSegments": 0,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 985,
+      "ledgerErrorWatts": 0.00046000000000390173,
+      "poolPhotometricY": 23.358068781337547,
+      "interiorMeanIrradiance": 3.724963228018688,
+      "interiorCoefficientOfVariation": 0.3347723239502789,
+      "medianMs": [
+        0.12688,
+        0.005632,
+        0.552832,
+        0.005152,
+        0.502176,
+        1.7518
+      ],
+      "powerXYZ": [
+        41.02730912024605,
+        42.29734598927888,
+        44.45865836900677
+      ],
+      "nonzeroTexels": 43694,
+      "maxIrradiance": 11.01415729522705,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "off",
+      "waterFloorWatts": 0,
+      "waterEntries": 0,
+      "beamSegments": 10,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 984,
+      "ledgerErrorWatts": 0.01682000000000272,
+      "poolPhotometricY": 0,
+      "interiorMeanIrradiance": 0,
+      "interiorCoefficientOfVariation": 0,
+      "medianMs": [
+        0.146176,
+        0.005856,
+        1.13312,
+        0.00512,
+        0.500672,
+        2.3975
+      ],
+      "powerXYZ": [
+        19.393869741608338,
+        21.121998301168084,
+        18.83539063591316
+      ],
+      "nonzeroTexels": 11656,
+      "maxIrradiance": 528.663818359375,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "fixed",
+      "waterFloorWatts": 20.2526,
+      "waterEntries": 23307,
+      "beamSegments": 13,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 985,
+      "ledgerErrorWatts": 0.00018000000000029104,
+      "poolPhotometricY": 27.40930214083749,
+      "interiorMeanIrradiance": 5.274588508750027,
+      "interiorCoefficientOfVariation": 4.414438345027736,
+      "medianMs": [
+        1.84883,
+        0.00608,
+        1.18173,
+        0.005152,
+        0.504608,
+        4.5937
+      ],
+      "powerXYZ": [
+        42.34885637594013,
+        48.52452029539545,
+        44.72813063658971
+      ],
+      "nonzeroTexels": 43486,
+      "maxIrradiance": 637.0061645507812,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    },
+    {
+      "name": "no-haze",
+      "waterFloorWatts": 21.1083,
+      "waterEntries": 23307,
+      "beamSegments": 13,
+      "beamTruncated": 0,
+      "photonTruncated": 0,
+      "cameraTruncated": 990,
+      "ledgerErrorWatts": 0.0005400000000008731,
+      "poolPhotometricY": 28.56429900121819,
+      "interiorMeanIrradiance": 5.495075067353188,
+      "interiorCoefficientOfVariation": 4.40822608137549,
+      "medianMs": [
+        0.147872,
+        0.006016,
+        1.05635,
+        0.00512,
+        0.500608,
+        2.277
+      ],
+      "powerXYZ": [
+        46.85203542332479,
+        53.50133929501441,
+        49.24793590794266
+      ],
+      "nonzeroTexels": 44082,
+      "maxIrradiance": 662.7396850585938,
+      "atlasAge": 32,
+      "motionMax": 0.000022709369659423828
+    }
+  ],
+  "otherRuns": [
+    {
+      "name": "water-dxr",
+      "frames": 48,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 48,
+      "waterFloorWatts": 20.2644,
+      "beamSegments": 13,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.200736,
+        0.00576,
+        1.58653,
+        0.008672,
+        0.50928,
+        3.574
+      ],
+      "powerXYZ": [
+        42.3579827265435,
+        48.53146062827272,
+        44.720563965581825
+      ],
+      "nonzeroTexels": 42524,
+      "maxIrradiance": 637.7391967773438,
+      "atlasAge": 32,
+      "motionMax": 0.000038743019104003906
+    },
+    {
+      "name": "water-nvapi",
+      "frames": 48,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 48,
+      "waterFloorWatts": 20.2644,
+      "beamSegments": 13,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.215456,
+        0.008864,
+        1.68835,
+        0.014688,
+        0.587104,
+        3.3236
+      ],
+      "powerXYZ": [
+        42.35798280579662,
+        48.531460207533236,
+        44.720563932601394
+      ],
+      "nonzeroTexels": 42524,
+      "maxIrradiance": 637.7391357421875,
+      "atlasAge": 32,
+      "motionMax": 0.000038743019104003906
+    },
+    {
+      "name": "play-initial",
+      "frames": 180,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 180,
+      "waterFloorWatts": 20.2816,
+      "beamSegments": 13,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.155872,
+        0.006144,
+        1.20067,
+        0.00512,
+        0.502464,
+        2.5036
+      ],
+      "powerXYZ": [
+        42.35733608567255,
+        48.53056841312726,
+        44.74629327337422
+      ],
+      "nonzeroTexels": 44023,
+      "maxIrradiance": 637.11572265625,
+      "atlasAge": 32,
+      "motionMax": 0.00003713369369506836
+    },
+    {
+      "name": "play-solved",
+      "frames": 240,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 240,
+      "waterFloorWatts": 20.3601,
+      "beamSegments": 18,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.185952,
+        0.005344,
+        1.18045,
+        0.005152,
+        0.511808,
+        3.8989
+      ],
+      "powerXYZ": [
+        39.84359603807702,
+        45.25109105497857,
+        41.040851365990626
+      ],
+      "nonzeroTexels": 75902,
+      "maxIrradiance": 638.644775390625,
+      "atlasAge": 4,
+      "motionMax": 0.00003510713577270508
+    },
+    {
+      "name": "play-blocked",
+      "frames": 240,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 240,
+      "waterFloorWatts": 20.2606,
+      "beamSegments": 4,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.112608,
+        0.006208,
+        1.09942,
+        0.005152,
+        0.502368,
+        2.3126
+      ],
+      "powerXYZ": [
+        22.966373476106224,
+        27.41932246166542,
+        25.886678579739534
+      ],
+      "nonzeroTexels": 32625,
+      "maxIrradiance": 637.5545654296875,
+      "atlasAge": 32,
+      "motionMax": 0.00003510713577270508
+    },
+    {
+      "name": "play-tuning",
+      "frames": 180,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 180,
+      "waterFloorWatts": 20.3812,
+      "beamSegments": 18,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.186176,
+        0.006176,
+        0.852096,
+        0.00512,
+        0.510464,
+        3.9721
+      ],
+      "powerXYZ": [
+        39.81449177149131,
+        45.31107672241416,
+        40.90676817593029
+      ],
+      "nonzeroTexels": 57798,
+      "maxIrradiance": 631.2876586914062,
+      "atlasAge": 1,
+      "motionMax": 0.000012695789337158203
+    },
+    {
+      "name": "play-controls",
+      "frames": 360,
+      "rrHistoryResets": 5,
+      "dlssEvaluations": 360,
+      "waterFloorWatts": 20.3377,
+      "beamSegments": 18,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.179424,
+        0.005408,
+        1.14592,
+        0.005152,
+        0.512352,
+        3.4033
+      ],
+      "powerXYZ": [
+        39.323957063384256,
+        44.74249968291432,
+        40.49780600933561
+      ],
+      "nonzeroTexels": 42972,
+      "maxIrradiance": 638.873291015625,
+      "atlasAge": 32,
+      "motionMax": 0.000012695789337158203
+    },
+    {
+      "name": "rolling",
+      "frames": 300,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 300,
+      "waterFloorWatts": 20.2605,
+      "beamSegments": 13,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.158336,
+        0.00464,
+        1.40781,
+        0.008512,
+        0.85984,
+        3.4931
+      ],
+      "powerXYZ": [
+        42.41792409168209,
+        48.57154148292508,
+        44.75008744036023
+      ],
+      "nonzeroTexels": 38273,
+      "maxIrradiance": 634.8795776367188,
+      "atlasAge": 1,
+      "motionMax": 10.453125
+    },
+    {
+      "name": "orbit-water",
+      "frames": 300,
+      "rrHistoryResets": 1,
+      "dlssEvaluations": 300,
+      "waterFloorWatts": 20.2605,
+      "beamSegments": 13,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "medianMs": [
+        0.154688,
+        0.006464,
+        1.50755,
+        0.009184,
+        0.86464,
+        3.3911
+      ],
+      "powerXYZ": [
+        42.36700195272818,
+        48.53739807558416,
+        44.73281460171121
+      ],
+      "nonzeroTexels": 44347,
+      "maxIrradiance": 638.7828979492188,
+      "atlasAge": 32,
+      "motionMax": 9.21875
+    }
+  ],
+  "interactive": {
+    "frames": 962,
+    "dlssEvaluations": 962,
+    "rrHistoryResets": 3,
+    "pacedPresentation": true
+  },
+  "shaderSha256": {
+    "Accumulate.dxil": "7d3fe9139b3f77bd4113016caa6a1b32ffbe9b626ed65f7e5a522c2e29c094c8",
+    "Clear.dxil": "73d41486aec3dfa91b821da29729df338d69cc2762daa7f5728ef48f3e129b82",
+    "Composite.dxil": "9093d05bd25063899a38c0014cc20624c1133dc8879593db43702512df8d683a",
+    "PS.dxil": "1dd11d296a6f3cb9010b0f8365a47298314dd1f30c348db1b58973ebf44c67a1",
+    "Transport-0-0.dxil": "346be8d12bee8827afce0518ae0255c768811fac18ccabb7755a7b1cfd39c0e2",
+    "Transport-0-1.dxil": "00b2927839a2b1d6ef02e8bea8a8705ca7d2de143a9147ff42f1b329bb7ef3e5",
+    "Transport-1-0.dxil": "c6e63004dac2b5c25c3190229bb2964b3b50ba3b03a906e8a48168cffd5034c2",
+    "Transport-1-1.dxil": "fd38774580bb45d0d7f5ea53f4064a44aaeba5104e8d3a77666a8302a3fcfc48",
+    "Transport-2-0.dxil": "9f24cb2790f905da40c4acf54a23d3181770787fed7c7336a28d667c1d38e5fe",
+    "Transport-2-1.dxil": "a905a67a10d1d9d83b7ce79391400fd79a1eb9f25cef225b3a089e6ca60750e1",
+    "VS.dxil": "5b6d2b4352796532058812dc34a829ba47234d9ccdd82e8806c50935bd1d1562"
+  },
+  "temporal": {
+    "frames": 256,
+    "rrHistoryResets": 1,
+    "atlasResets": 34,
+    "stableSamples": 381853,
+    "meanNoisyLuminanceDelta": 0.008793227125525282,
+    "meanRrLuminanceDelta": 0.00003650755047846604,
+    "rrToNoisyDeltaRatio": 0.004151780678164296,
+    "prismResponse": 0.007204706811598236,
+    "orbitResponse": 0.00629889783074731,
+    "returnError": 0.00022132249201360787
+  },
+  "launcherCases": {
+    "basename": 48,
+    "relative": 48,
+    "foreignWorkingDirectory": 48,
+    "resizeMinimizeRestore": true
+  },
+  "portableZipSha256": "66c789f3d6d84a8e1d74b87c7b5c780730827df1f6b1865d30bbd21e628cf5ed",
+  "limits": [
+    "Static prescribed water, no fluid simulation or buoyancy.",
+    "Spectral photons; 550 nm camera IOR and three-wavelength RGB extinction approximation.",
+    "Narrow cylindrical laser single-scattering envelopes; no coherence, diffraction, speckle or polarization.",
+    "Charted spots are photon-owned; uncharted props use terminal-beam spot approximation.",
+    "Only laser in-scattering is estimated; broad-source and multiple volume scattering remain incomplete.",
+    "Nonzero camera truncation remains reported; no metrology-grade or infinite-bounce convergence claim.",
+    "D3D12 debug-layer validation remains unavailable."
+  ]
+}

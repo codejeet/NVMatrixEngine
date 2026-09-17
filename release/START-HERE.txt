@@ -1,0 +1,31 @@
+NVMatrixEngine - Water Lab - research preview
+https://github.com/codejeet/NVMatrixEngine
+
+Extract the entire ZIP into a writable folder. Open Play Water Lab.cmd.
+Windows 11 x64 and a compatible high-end NVIDIA RTX GPU/driver are required.
+Validated on RTX 5090; other hardware is not certified. No installer or admin
+rights are needed. CUDA Toolkit is not needed to run the optional CUDA demo.
+
+Esc: settings. WASD: roll. Space: jump. Right drag: look. Wheel: zoom.
+Tab: first person. Ctrl: dive. E: interact / board nearby boat / exit boat.
+Boat W/S: thrust, A/D: steer. T: wall inlet. I: inspect inlet.
+P: pause water. Period: one step. B: reset water. U: HUD details. F8: frame gen.
+
+The default launcher uses DX12 simulation, Balanced DLSS and automatic frame
+generation where supported. Fisheye is optional in settings and pauses FG.
+Change lighting, flashlight, ball sink/float, music volume and water quality
+in Esc. Applying water quality resets the pool. Filling stops at capacity.
+The glass ball starts in Sink mode; choose Float in Esc to use a hollow ball.
+
+Optional launchers: CUDA water (uniform solver), larger deep pool, experimental
+narrow-band CUDA ownership, and ReSTIR PT indirect lighting. These are not
+promised speedups. Deep-pool and high particle-count modes are more demanding.
+
+This unsigned preview may receive a Windows reputation warning. Obtain it only
+from the official repository/release. Verify the release ZIP SHA-256 sidecar.
+If startup fails, read NVMatrixEngine.log and lab-error.txt in this folder.
+Do not copy the executable away from its shaders, assets, DLLs or D3D12 folder.
+
+README.md has features and links. COPYRIGHT.md and THIRD_PARTY_NOTICES.md describe
+terms; bundled component licenses are in licenses/. No blanket 60 FPS guarantee.
+Generated presentation frames are not extra simulation/rendered frames.

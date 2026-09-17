@@ -1,0 +1,268 @@
+{
+  "note": "Motion-compensated consecutive real frames, raw and RR separately. Reprojection uses the current primary-surface guide, so this metric also includes refracted parallax mismatch; it is not pure estimator variance. Live phases include genuine surface/light changes. FG is off.",
+  "prefix": "water-temporal-final",
+  "current": {
+    "static": {
+      "samples": 51212.666666666664,
+      "rawDelta": 0.006077176955853154,
+      "rrDelta": 0.0006308867553470993,
+      "meanLuminance": 0.14495460529806478,
+      "atlasRelativeDelta": 0.05025960257334009,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "risingOrbit": {
+      "samples": 79101.66666666667,
+      "rawDelta": 0.004553203608632616,
+      "rrDelta": 0.001297774722947949,
+      "meanLuminance": 0.13499588178530367,
+      "atlasRelativeDelta": 0.007231820941357425,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "topDownOrbit": {
+      "samples": 82516.66666666667,
+      "rawDelta": 0.0038383571732827147,
+      "rrDelta": 0.00047275194637579765,
+      "meanLuminance": 0.13450911118695405,
+      "atlasRelativeDelta": 0.007358808688415464,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "liveWaterOrbit": {
+      "samples": 87878.66666666667,
+      "rawDelta": 0.008578269538902146,
+      "rrDelta": 0.0012546108620792782,
+      "meanLuminance": 0.13440471755892494,
+      "atlasRelativeDelta": 0.061293843482735984,
+      "atlasResets": 10,
+      "fluidSteps": 288,
+      "fluidHistoryResets": 10
+    },
+    "afterRolling": {
+      "samples": 66545.66666666667,
+      "rawDelta": 0.007969846510788062,
+      "rrDelta": 0.0014600670341834805,
+      "meanLuminance": 0.1326885991653097,
+      "atlasRelativeDelta": 0.06035872449508328,
+      "atlasResets": 58,
+      "fluidSteps": 384,
+      "fluidHistoryResets": 10
+    }
+  },
+  "reference": "water-temporal-before",
+  "before": {
+    "static": {
+      "samples": 51241,
+      "rawDelta": 0.008335028686292668,
+      "rrDelta": 0.0005938987616455467,
+      "meanLuminance": 0.14460120411489377,
+      "atlasRelativeDelta": 0.050246481657079546,
+      "atlasResets": 10,
+      "fluidSteps": 192
+    },
+    "risingOrbit": {
+      "samples": 79223,
+      "rawDelta": 0.007943669007154612,
+      "rrDelta": 0.0018181492490596442,
+      "meanLuminance": 0.1345929856302347,
+      "atlasRelativeDelta": 0.007226065296805521,
+      "atlasResets": 10,
+      "fluidSteps": 192
+    },
+    "topDownOrbit": {
+      "samples": 82639,
+      "rawDelta": 0.007328557688593989,
+      "rrDelta": 0.000817194712681547,
+      "meanLuminance": 0.13415775246023764,
+      "atlasRelativeDelta": 0.007343354414146797,
+      "atlasResets": 10,
+      "fluidSteps": 192
+    },
+    "liveWaterOrbit": {
+      "samples": 87826,
+      "rawDelta": 0.012064205790520977,
+      "rrDelta": 0.001935865622854805,
+      "meanLuminance": 0.13404051433890454,
+      "atlasRelativeDelta": 0.06178397979146927,
+      "atlasResets": 10,
+      "fluidSteps": 288
+    },
+    "afterRolling": {
+      "samples": 66635,
+      "rawDelta": 0.03492329180670156,
+      "rrDelta": 0.022616943873794728,
+      "meanLuminance": 0.1318952097675234,
+      "atlasRelativeDelta": 0.3077964113818221,
+      "atlasResets": 58,
+      "fluidSteps": 384
+    }
+  },
+  "changes": {
+    "static": {
+      "rawDeltaReductionPercent": 27.08870977436051,
+      "rrDeltaReductionPercent": -6.227996434791017,
+      "meanChangePercent": 0.24439712333945707
+    },
+    "risingOrbit": {
+      "rawDeltaReductionPercent": 42.68135285430839,
+      "rrDeltaReductionPercent": 28.621111626607963,
+      "meanChangePercent": 0.2993440952233861
+    },
+    "topDownOrbit": {
+      "rawDeltaReductionPercent": 47.62465772417058,
+      "rrDeltaReductionPercent": 42.149412001883,
+      "meanChangePercent": 0.261899681735156
+    },
+    "liveWaterOrbit": {
+      "rawDeltaReductionPercent": 28.894867280511594,
+      "rrDeltaReductionPercent": 35.19122157719222,
+      "meanChangePercent": 0.2717112970034963
+    },
+    "afterRolling": {
+      "rawDeltaReductionPercent": 77.1789940223828,
+      "rrDeltaReductionPercent": 93.54436637270345,
+      "meanChangePercent": 0.6015301080188884
+    }
+  },
+  "foam": {
+    "static": {
+      "samples": 51267,
+      "rawDelta": 0.006120098375557436,
+      "rrDelta": 0.0006260605493424872,
+      "meanLuminance": 0.1449377865693353,
+      "atlasRelativeDelta": 0.05052860000937465,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "risingOrbit": {
+      "samples": 79116.33333333333,
+      "rawDelta": 0.004502488905232731,
+      "rrDelta": 0.0012961528505788147,
+      "meanLuminance": 0.13499229429987847,
+      "atlasRelativeDelta": 0.0072407412408721705,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "topDownOrbit": {
+      "samples": 82522.66666666667,
+      "rawDelta": 0.003825596313398198,
+      "rrDelta": 0.0004724134431258521,
+      "meanLuminance": 0.13449777286302286,
+      "atlasRelativeDelta": 0.007306420578101269,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "liveWaterOrbit": {
+      "samples": 87734.66666666667,
+      "rawDelta": 0.00852138423649248,
+      "rrDelta": 0.0012576714228536515,
+      "meanLuminance": 0.13439786942180929,
+      "atlasRelativeDelta": 0.06142271862358704,
+      "atlasResets": 10,
+      "fluidSteps": 288,
+      "fluidHistoryResets": 10
+    },
+    "afterRolling": {
+      "samples": 66546.33333333333,
+      "rawDelta": 0.00801661864084277,
+      "rrDelta": 0.001455523436090115,
+      "meanLuminance": 0.13260396199896418,
+      "atlasRelativeDelta": 0.06076146547406345,
+      "atlasResets": 58,
+      "fluidSteps": 384,
+      "fluidHistoryResets": 10
+    }
+  },
+  "reports": {
+    "water-temporal-before-320": {
+      "medianMs": [
+        0.64192,
+        0.009728,
+        2.27002,
+        0.003936,
+        0.33632,
+        6.6583,
+        1.87661,
+        0.913664,
+        0.121696,
+        0,
+        0
+      ],
+      "historyResets": 58,
+      "rrHistoryResets": 1
+    },
+    "water-temporal-final-320": {
+      "medianMs": [
+        0.648384,
+        0.009696,
+        2.26739,
+        0.00384,
+        0.335776,
+        6.6331,
+        1.86755,
+        0.91808,
+        0.1232,
+        0,
+        0
+      ],
+      "fluidHistoryResets": 10,
+      "historyResets": 58,
+      "rrHistoryResets": 1
+    },
+    "fluid-render-colliders": {
+      "medianMs": [
+        1.02982,
+        0.006592,
+        4.84755,
+        0.003776,
+        0.359936,
+        12.375,
+        2.39459,
+        2.02486,
+        0.134048,
+        0,
+        0
+      ],
+      "fluidHistoryResets": 127,
+      "historyResets": 127,
+      "rrHistoryResets": 1
+    },
+    "fluid-render-surface-controls": {
+      "medianMs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "fluidHistoryResets": 11,
+      "historyResets": 10,
+      "rrHistoryResets": 7
+    }
+  },
+  "shaderSha256": {
+    "Transport-0-0.dxil": "b9b2aff7170d47190e5a2ed4db4e679920c1ee639270b8caafcc7e96a42a7013",
+    "Transport-0-1.dxil": "364fdbfcdd69a48a7ea4bde8494bba16c2d1662b638a96b2c5a387d0e11c4fc9",
+    "Transport-1-0.dxil": "1d59da9329e64774c1801cfbf1ddcea9f02d49d35233403ca62385652d47f21d",
+    "Transport-1-1.dxil": "7eab4a695b4068381bd9a39606cfd7a4c56ee5a5a5de741ed4ae9ba3183e4abd",
+    "Transport-2-0.dxil": "93f3a560e2a568b9057254e41142d690156890bf5026d5112814f78638187f7b",
+    "Transport-2-1.dxil": "cf14af97014a9aaf88c97991d94081734f872d4273e067e5324cc91403e2f777",
+    "Accumulate.dxil": "f94c1bf0e973ab124db43005561fffec59e8b7f2fd9f429fa419eef4ad494a89",
+    "Composite.dxil": "91a9256ac1f0db25c622201440ff211dfd9d9e1c8a40b811f3153ae3ec6c106d"
+  },
+  "scope": "52 Node tests, 5 Windows CTests; 320-frame final camera/live-water/rolling sequence repeated with whitewater; five current fallback/FG/PT runs (540 frames); collider/reset pit runs (192 frames). RTX 5090. Debug layer unavailable. Mainline and portable ZIP untouched.",
+  "limitations": "Motion-compensated primary-guide luminance metric, not a guarantee of zero visible flicker or a ground-truth optical-flow error. Receiver filtering is a paraxial ray-cone approximation, not full curved-interface differentials. Four-frame water history can retain a brief moving-avatar caustic/shadow trail; other optical changes still hard-reset. Independent per-frame photon sampling and raw RR inputs are retained."
+}

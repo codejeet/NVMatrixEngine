@@ -1,0 +1,100 @@
+{
+  "checkpoint": "Optional active tiled pressure and two-level Galerkin correction",
+  "date": "2026-09-12",
+  "baselineRevision": "3f79289",
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "defaultSolver": "uniform",
+  "actualMacResolution": "uniform",
+  "adaptiveParticleDensity": false,
+  "adaptiveSurfaceResolution": false,
+  "adaptiveRayBudgets": false,
+  "nodeTests": 59,
+  "windowsTests": 6,
+  "debugLayer": "Unavailable on prior explicit attempt: D3D12GetDebugInterface 0x887A002D",
+  "runtimeSha256": {
+    "NVMatrixFluidLab.exe": "196d9c7e633160866c11f4f494ee15281c94d2711888113272a7c4eb3a6caa39",
+    "shaders/PressureTileSmooth.dxil": "8da055dca1124dda0dc92f92157330b62dc649faa6beba2a4baf8d4575a7d705",
+    "shaders/PressureAssemble.dxil": "15fc0489c8d06d76e3e846908912d1097de3913d908e5aa9b11373d376d95332"
+  },
+  "runtimeNote": "Final executable differs from profiled/tested build only in HUD wording: resolution remains uniform. Pressure shaders are unchanged.",
+  "gpuCases": [
+    {"prefix":"pressure-active-compression","frames":1,"particles":100000,"pressureValidated":true,"activeFineCells":11088,"activeFineTiles":168,"activeCoarseCells":0,"pressureLastFrameMs":0.142976,"maxAbsResidual":1483.14,"fluidValidated":true,"divergenceRmsBefore":3,"divergenceRmsAfter":0.775153,"pressureResidualMismatch":0.00000649756,"solidPenetration":0},
+    {"prefix":"pressure-active-empty","frames":4,"particles":0,"pressureValidated":true,"activeFineCells":0,"activeFineTiles":0,"activeCoarseCells":0,"pressureLastFrameMs":0.0848,"maxAbsResidual":0,"fluidValidated":false},
+    {"prefix":"pressure-active-fall","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":18581,"activeFineTiles":667,"activeCoarseCells":0,"pressureLastFrameMs":0.34656,"maxAbsResidual":184.254,"fluidValidated":true,"divergenceRmsBefore":1.64828,"divergenceRmsAfter":0.0245277,"pressureResidualMismatch":0.0000130314,"solidPenetration":0},
+    {"prefix":"pressure-active-room","frames":240,"particles":104719,"pressureValidated":true,"activeFineCells":16067,"activeFineTiles":228,"activeCoarseCells":0,"pressureLastFrameMs":0.300032,"maxAbsResidual":10.7539,"fluidValidated":true,"divergenceRmsBefore":0.436143,"divergenceRmsAfter":0.000802663,"pressureResidualMismatch":0.00000611844,"solidPenetration":0.00000873581},
+    {"prefix":"pressure-active-odd-sweeps","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14861,"activeFineTiles":228,"activeCoarseCells":0,"pressureLastFrameMs":0.298656,"maxAbsResidual":14.3916,"fluidValidated":true,"divergenceRmsBefore":0.464175,"divergenceRmsAfter":0.000560768,"pressureResidualMismatch":0.00000765711,"solidPenetration":0.00000873581},
+    {"prefix":"pressure-active-flip","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":18135,"activeFineTiles":626,"activeCoarseCells":0,"pressureLastFrameMs":0.34704,"maxAbsResidual":145.668,"fluidValidated":true,"divergenceRmsBefore":2.11753,"divergenceRmsAfter":0.0250875,"pressureResidualMismatch":0.0000178592,"solidPenetration":0},
+    {"prefix":"pressure-active-no-capillary","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":13954,"activeFineTiles":220,"activeCoarseCells":0,"pressureLastFrameMs":0.297728,"maxAbsResidual":3.8623,"fluidValidated":true,"divergenceRmsBefore":0.401899,"divergenceRmsAfter":0.000245875,"pressureResidualMismatch":8.28194e-7,"solidPenetration":0.00000772253},
+    {"prefix":"pressure-active-frame-gen","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14922,"activeFineTiles":228,"activeCoarseCells":0,"pressureLastFrameMs":0.298272,"maxAbsResidual":12.8477,"fluidValidated":false},
+    {"prefix":"pressure-active-pt","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14868,"activeFineTiles":228,"activeCoarseCells":0,"pressureLastFrameMs":0.30048,"maxAbsResidual":12.3115,"fluidValidated":false},
+    {"prefix":"pressure-multigrid-compression","frames":1,"particles":100000,"pressureValidated":true,"activeFineCells":11088,"activeFineTiles":168,"activeCoarseCells":1716,"pressureLastFrameMs":0.20592,"maxAbsResidual":1307.27,"fluidValidated":true,"divergenceRmsBefore":3,"divergenceRmsAfter":0.678938,"pressureResidualMismatch":0.0000068121,"solidPenetration":0},
+    {"prefix":"pressure-multigrid-empty","frames":4,"particles":0,"pressureValidated":true,"activeFineCells":0,"activeFineTiles":0,"activeCoarseCells":0,"pressureLastFrameMs":0.165568,"maxAbsResidual":0,"fluidValidated":false},
+    {"prefix":"pressure-multigrid-fall","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":18684,"activeFineTiles":664,"activeCoarseCells":4488,"pressureLastFrameMs":0.46896,"maxAbsResidual":67.2417,"fluidValidated":true,"divergenceRmsBefore":1.84386,"divergenceRmsAfter":0.0146952,"pressureResidualMismatch":0.0000122609,"solidPenetration":0},
+    {"prefix":"pressure-multigrid-room","frames":240,"particles":104719,"pressureValidated":true,"activeFineCells":16336,"activeFineTiles":228,"activeCoarseCells":2943,"pressureLastFrameMs":0.425632,"maxAbsResidual":7.48047,"fluidValidated":true,"divergenceRmsBefore":0.458857,"divergenceRmsAfter":0.000831611,"pressureResidualMismatch":0.0000077602,"solidPenetration":0.00000921264},
+    {"prefix":"pressure-multigrid-odd-sweeps","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14865,"activeFineTiles":228,"activeCoarseCells":2517,"pressureLastFrameMs":0.431872,"maxAbsResidual":14.3652,"fluidValidated":true,"divergenceRmsBefore":0.445293,"divergenceRmsAfter":0.000619917,"pressureResidualMismatch":0.00000621031,"solidPenetration":0.00000855699},
+    {"prefix":"pressure-multigrid-flip","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":18123,"activeFineTiles":626,"activeCoarseCells":4159,"pressureLastFrameMs":0.464928,"maxAbsResidual":97.3242,"fluidValidated":true,"divergenceRmsBefore":2.47557,"divergenceRmsAfter":0.0157162,"pressureResidualMismatch":0.000023888,"solidPenetration":0},
+    {"prefix":"pressure-multigrid-no-capillary","frames":90,"particles":100000,"pressureValidated":true,"activeFineCells":13915,"activeFineTiles":220,"activeCoarseCells":2263,"pressureLastFrameMs":0.417568,"maxAbsResidual":4.20068,"fluidValidated":true,"divergenceRmsBefore":0.408299,"divergenceRmsAfter":0.000377525,"pressureResidualMismatch":0.0000012118,"solidPenetration":0.00000927225},
+    {"prefix":"pressure-multigrid-frame-gen","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14853,"activeFineTiles":228,"activeCoarseCells":2538,"pressureLastFrameMs":0.429184,"maxAbsResidual":14.4297,"fluidValidated":false},
+    {"prefix":"pressure-multigrid-pt","frames":90,"particles":101769,"pressureValidated":true,"activeFineCells":14888,"activeFineTiles":228,"activeCoarseCells":2532,"pressureLastFrameMs":0.417568,"maxAbsResidual":14.3921,"fluidValidated":false}
+  ],
+  "profiles": [
+    {"prefix":"pressure-tiled-uniform-1","rawFrameMedianMs":12.3106,"fluidMedianMs":1.93869,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-uniform-2","rawFrameMedianMs":12.5422,"fluidMedianMs":1.95014,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-uniform-3","rawFrameMedianMs":12.1536,"fluidMedianMs":1.9383,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-active-1","rawFrameMedianMs":11.8189,"fluidMedianMs":1.94426,"pressureMeanMs":0.301095,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-active-2","rawFrameMedianMs":12.2344,"fluidMedianMs":1.9512,"pressureMeanMs":0.302709,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-active-3","rawFrameMedianMs":12.1245,"fluidMedianMs":1.94429,"pressureMeanMs":0.305297,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-multigrid-1","rawFrameMedianMs":12.4681,"fluidMedianMs":2.08499,"pressureMeanMs":0.420613,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-multigrid-2","rawFrameMedianMs":12.2441,"fluidMedianMs":2.08688,"pressureMeanMs":0.421611,"particles":105899,"steps":600},
+    {"prefix":"pressure-tiled-multigrid-3","rawFrameMedianMs":12.17,"fluidMedianMs":2.09523,"pressureMeanMs":0.423384,"particles":105899,"steps":600}
+  ],
+  "profileSettings": {
+    "output": [
+      1920,
+      1080
+    ],
+    "dlss": "Balanced",
+    "frameGeneration": false,
+    "frames": 300,
+    "warmupFrames": 32,
+    "pressureMeanIncludesWarmup": true,
+    "scene": "room, inlet, foam, importance observer, orbit",
+    "order": "rotated modes over three repetitions",
+    "fullValidationReadback": false
+  },
+  "overallFpsImprovementClaimed": false,
+  "temporal": {
+    "reference": "water-temporal-adaptive",
+    "candidate": "water-temporal-pressure-active",
+    "frames": 320,
+    "preservationGatesPassed": true,
+    "rrHistoryResets": 1,
+    "changes": {
+      "static": {
+        "rawDeltaReductionPercent": -0.014202609367641728,
+        "rrDeltaReductionPercent": 1.0121420057461972,
+        "meanChangePercent": 0.027897072194571493
+      },
+      "risingOrbit": {
+        "rawDeltaReductionPercent": 0.35857665556552343,
+        "rrDeltaReductionPercent": 0.36473303254633826,
+        "meanChangePercent": 0.0017623459356741478
+      },
+      "topDownOrbit": {
+        "rawDeltaReductionPercent": 0.42960676096377437,
+        "rrDeltaReductionPercent": -0.4427079405843637,
+        "meanChangePercent": -0.003750218797027305
+      },
+      "liveWaterOrbit": {
+        "rawDeltaReductionPercent": -0.08635639203760093,
+        "rrDeltaReductionPercent": -0.4919148220083658,
+        "meanChangePercent": 0.008258113853853999
+      },
+      "afterRolling": {
+        "rawDeltaReductionPercent": 0.29039297803313824,
+        "rrDeltaReductionPercent": 0.13689414428325053,
+        "meanChangePercent": -0.013176579947526967
+      }
+    }
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "date": "2026-09-10",
+  "scope": "Rolling follow-camera collision recovery; no FPS or GPU speedup claimed",
+  "baseline": "f09d517",
+  "gpu": "NVIDIA RTX 5090",
+  "ctest": {
+    "passed": 3,
+    "total": 3
+  },
+  "opticsAndSourceTests": {
+    "passed": 16,
+    "total": 16
+  },
+  "camera": {
+    "probeRadiusM": 0.3,
+    "recoveryTimeConstantSeconds": 0.1,
+    "maxRecoverySpeedMps": 8,
+    "immediateInwardCollisionProtection": true,
+    "orbitIntegratorUnchanged": true,
+    "physicsInterpolationUnchanged": true,
+    "mainlineDefaultCameraUnchanged": true
+  },
+  "cpuRollingRoutes": [
+    {
+      "hz": 60,
+      "yaw": 0,
+      "maxLegacyCameraRadiusStepM": 0.108752,
+      "maxFollowCameraRadiusStepM": 0.095511,
+      "maxPlayerStepM": 0.0921415
+    },
+    {
+      "hz": 60,
+      "yaw": 0.42,
+      "maxLegacyCameraRadiusStepM": 0.68432,
+      "maxFollowCameraRadiusStepM": 0.10078,
+      "maxPlayerStepM": 0.0987208
+    },
+    {
+      "hz": 60,
+      "yaw": 1.5708,
+      "maxLegacyCameraRadiusStepM": 0.716944,
+      "maxFollowCameraRadiusStepM": 0.123838,
+      "maxPlayerStepM": 0.0986834
+    },
+    {
+      "hz": 60,
+      "yaw": -1.5708,
+      "maxLegacyCameraRadiusStepM": 0.716934,
+      "maxFollowCameraRadiusStepM": 0.123838,
+      "maxPlayerStepM": 0.0986834
+    },
+    {
+      "hz": 60,
+      "yaw": 3.14159,
+      "maxLegacyCameraRadiusStepM": 0,
+      "maxFollowCameraRadiusStepM": 0,
+      "maxPlayerStepM": 0.0985403
+    },
+    {
+      "hz": 144,
+      "yaw": 0,
+      "maxLegacyCameraRadiusStepM": 0.0456128,
+      "maxFollowCameraRadiusStepM": 0.0402741,
+      "maxPlayerStepM": 0.0386447
+    },
+    {
+      "hz": 144,
+      "yaw": 0.42,
+      "maxLegacyCameraRadiusStepM": 0.676582,
+      "maxFollowCameraRadiusStepM": 0.0436172,
+      "maxPlayerStepM": 0.0411338
+    },
+    {
+      "hz": 144,
+      "yaw": 1.5708,
+      "maxLegacyCameraRadiusStepM": 0.670403,
+      "maxFollowCameraRadiusStepM": 0.051403,
+      "maxPlayerStepM": 0.0411181
+    },
+    {
+      "hz": 144,
+      "yaw": -1.5708,
+      "maxLegacyCameraRadiusStepM": 0.623737,
+      "maxFollowCameraRadiusStepM": 0.051403,
+      "maxPlayerStepM": 0.0411181
+    },
+    {
+      "hz": 144,
+      "yaw": 3.14159,
+      "maxLegacyCameraRadiusStepM": 0,
+      "maxFollowCameraRadiusStepM": 0,
+      "maxPlayerStepM": 0.0410609
+    },
+    {
+      "hz": 240,
+      "yaw": 0,
+      "maxLegacyCameraRadiusStepM": 0.0273681,
+      "maxFollowCameraRadiusStepM": 0.0241656,
+      "maxPlayerStepM": 0.0231868
+    },
+    {
+      "hz": 240,
+      "yaw": 0.42,
+      "maxLegacyCameraRadiusStepM": 0.661098,
+      "maxFollowCameraRadiusStepM": 0.0261593,
+      "maxPlayerStepM": 0.0246805
+    },
+    {
+      "hz": 240,
+      "yaw": 1.5708,
+      "maxLegacyCameraRadiusStepM": 0.633112,
+      "maxFollowCameraRadiusStepM": 0.0309877,
+      "maxPlayerStepM": 0.0246711
+    },
+    {
+      "hz": 240,
+      "yaw": -1.5708,
+      "maxLegacyCameraRadiusStepM": 0.661112,
+      "maxFollowCameraRadiusStepM": 0.0309877,
+      "maxPlayerStepM": 0.0246711
+    },
+    {
+      "hz": 240,
+      "yaw": 3.14159,
+      "maxLegacyCameraRadiusStepM": 0,
+      "maxFollowCameraRadiusStepM": 0,
+      "maxPlayerStepM": 0.0246367
+    }
+  ],
+  "runs": [
+    {
+      "name": "rolling",
+      "frames": 300,
+      "dlssEvaluations": 300,
+      "rrHistoryResets": 1,
+      "atlasResets": 300,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.358616750469796,
+        22.388954488342144,
+        22.071980422067163
+      ],
+      "nonzeroTexels": 6504,
+      "maxIrradiance": 14.46881103515625,
+      "atlasAge": 1,
+      "motionMax": 10.453125
+    },
+    {
+      "name": "orbit-rolling-fix",
+      "frames": 300,
+      "dlssEvaluations": 300,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.367472030455502,
+        22.38234922493406,
+        22.137056982823413
+      ],
+      "nonzeroTexels": 10142,
+      "maxIrradiance": 11.32156753540039,
+      "atlasAge": 32,
+      "motionMax": 9.21875
+    },
+    {
+      "name": "play-initial",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.37139416594017,
+        22.393539767883286,
+        22.155684849926413
+      ],
+      "nonzeroTexels": 10075,
+      "maxIrradiance": 11.196121215820312,
+      "atlasAge": 32,
+      "motionMax": 0.00003713369369506836
+    },
+    {
+      "name": "play-solved",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "rrHistoryResets": 1,
+      "atlasResets": 127,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.48912118778293,
+        22.499817412836414,
+        22.24757788850197
+      ],
+      "nonzeroTexels": 44898,
+      "maxIrradiance": 20.240028381347656,
+      "atlasAge": 4,
+      "motionMax": 0.00003510713577270508
+    },
+    {
+      "name": "play-blocked",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        0,
+        0,
+        0
+      ],
+      "nonzeroTexels": 0,
+      "maxIrradiance": 0,
+      "atlasAge": 32,
+      "motionMax": 0.00003510713577270508
+    },
+    {
+      "name": "play-tuning",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "rrHistoryResets": 1,
+      "atlasResets": 79,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.504656682101317,
+        22.52422477385486,
+        22.313798261458093
+      ],
+      "nonzeroTexels": 28071,
+      "maxIrradiance": 22.176958084106445,
+      "atlasAge": 1,
+      "motionMax": 0.000012695789337158203
+    },
+    {
+      "name": "play-controls",
+      "frames": 360,
+      "dlssEvaluations": 360,
+      "rrHistoryResets": 5,
+      "atlasResets": 181,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "powerXYZ": [
+        22.03630036826605,
+        22.040123001212486,
+        21.89050290947089
+      ],
+      "nonzeroTexels": 8116,
+      "maxIrradiance": 19.45323944091797,
+      "atlasAge": 32,
+      "motionMax": 0.000012695789337158203
+    }
+  ],
+  "shaderHashesUnchangedFrom": "f09d517",
+  "interactive": {
+    "frames": 872,
+    "dlssEvaluations": 872,
+    "rrHistoryResets": 3,
+    "pacedPresentation": true
+  },
+  "temporal": {
+    "frames": 256,
+    "rrHistoryResets": 1,
+    "atlasResets": 34,
+    "stableSamples": 381853,
+    "meanNoisyLuminanceDelta": 0.008792729892091082,
+    "meanRrLuminanceDelta": 0.00003765051254790926,
+    "rrToNoisyDeltaRatio": 0.00428200490746057,
+    "prismResponse": 0.0071836291989080215,
+    "orbitResponse": 0.0062989673997163615,
+    "returnError": 0.000218225489767984
+  },
+  "launchCases": {
+    "basenameFrames": 48,
+    "relativeFrames": 48,
+    "foreignWorkingDirectoryFrames": 48,
+    "resizeMinimizeRestorePassed": true
+  },
+  "portableZipSha256": "66c789f3d6d84a8e1d74b87c7b5c780730827df1f6b1865d30bbd21e628cf5ed",
+  "limits": [
+    "Synthetic camera-motion measurements are not GPU/frame-pacing benchmarks.",
+    "Immediate inward camera retraction remains intentional for obstruction safety.",
+    "Primary-guide limitations for multilayer refraction and moving caustic lighting remain.",
+    "D3D12 debug-layer validation was unavailable; no system/driver settings changed."
+  ]
+}

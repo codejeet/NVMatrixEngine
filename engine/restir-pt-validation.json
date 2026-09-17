@@ -1,0 +1,1014 @@
+{
+  "context": "RTX 5090; 1280x720 Balanced; FG off except explicit FG case. 100k starting carriers, 120 Hz / two simulation steps per real frame. Three interleaved same-binary full/tight pairs. Per-cell probes OFF for raw timing claims. Room source is 140 W in BOTH A/B modes. Absolute timings exclude outer game update and are not universal FPS guarantees.",
+  "limitations": "PT scope is opaque-primary diffuse indirect, not refractive-primary GI or unified DI/PT. Single-frame mean-brightness checks are smoke tests, not an equal-time convergence/variance proof. GPU debug layer was unavailable; shaders/build, actual DXR probes, finite raw guide checks and DRED-compatible execution are distinct checks.",
+  "runs": [
+    {
+      "name": "reference",
+      "frames": 180,
+      "pt": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "medianMs": [
+        0.119744,
+        0.004512,
+        0.119072,
+        0.005696,
+        0.441472,
+        0.9506,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286562,
+        "meanRgb": [
+          0.022991246497499368,
+          0.02267677990708873,
+          0.04472623710151231
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.074781500925816,
+          28.083605504348636,
+          27.92354336789618
+        ],
+        "nonzeroTexels": 12104,
+        "maxIrradiance": 19.256277084350586,
+        "atlasAge": 32,
+        "motionMax": 0.0000133514404296875
+      }
+    },
+    {
+      "name": "fresh",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 0,
+        "historyCap": 1,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286562,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0.051552,
+        "spatialMedianMs": 0.0576
+      },
+      "medianMs": [
+        0.123456,
+        0.0048,
+        0.33792,
+        0.007776,
+        0.458048,
+        1.26,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286562,
+        "meanRgb": [
+          0.02329483921822173,
+          0.02285383773185664,
+          0.04484462902918014
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.074781507865964,
+          28.083605474363726,
+          27.923543324676146
+        ],
+        "nonzeroTexels": 12104,
+        "maxIrradiance": 19.25627899169922,
+        "atlasAge": 32,
+        "motionMax": 0.0000133514404296875
+      }
+    },
+    {
+      "name": "spatial",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 1,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286562,
+        "reusedLastFrame": 132459,
+        "temporalMedianMs": 0.050752,
+        "spatialMedianMs": 0.12832
+      },
+      "medianMs": [
+        0.123328,
+        0.004864,
+        0.408224,
+        0.009024,
+        0.459968,
+        1.3021,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286562,
+        "meanRgb": [
+          0.023336967186354682,
+          0.022865847603732836,
+          0.044870473808824286
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.074781542346308,
+          28.083605524052945,
+          27.92354332769719
+        ],
+        "nonzeroTexels": 12104,
+        "maxIrradiance": 19.256277084350586,
+        "atlasAge": 32,
+        "motionMax": 0.0000133514404296875
+      }
+    },
+    {
+      "name": "temporal",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 148,
+        "spatialNeighbors": 0,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286562,
+        "reusedLastFrame": 187265,
+        "temporalMedianMs": 0.10816,
+        "spatialMedianMs": 0.063232
+      },
+      "medianMs": [
+        0.123552,
+        0.005056,
+        0.400864,
+        0.009728,
+        0.458432,
+        1.2995,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286562,
+        "meanRgb": [
+          0.02322307701220863,
+          0.022764271351669457,
+          0.04479120991828566
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.074781510339484,
+          28.083605547751088,
+          27.923543337887693
+        ],
+        "nonzeroTexels": 12104,
+        "maxIrradiance": 19.256277084350586,
+        "atlasAge": 32,
+        "motionMax": 0.0000133514404296875
+      }
+    },
+    {
+      "name": "combined",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 148,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286562,
+        "reusedLastFrame": 199619,
+        "temporalMedianMs": 0.105984,
+        "spatialMedianMs": 0.118496
+      },
+      "medianMs": [
+        0.123232,
+        0.005056,
+        0.454048,
+        0.00944,
+        0.459872,
+        1.3667,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286562,
+        "meanRgb": [
+          0.02337495153032039,
+          0.022933190923282876,
+          0.045035765127970244
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.074781531026353,
+          28.083605527344478,
+          27.923543330357738
+        ],
+        "nonzeroTexels": 12104,
+        "maxIrradiance": 19.256277084350586,
+        "atlasAge": 32,
+        "motionMax": 0.0000133514404296875
+      }
+    },
+    {
+      "name": "moving",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286607,
+        "reusedLastFrame": 132481,
+        "temporalMedianMs": 0.05072,
+        "spatialMedianMs": 0.129248
+      },
+      "medianMs": [
+        0.114464,
+        0.004448,
+        0.410112,
+        0.008896,
+        0.461152,
+        1.3557,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286607,
+        "meanRgb": [
+          0.016670476504476943,
+          0.019343968732035918,
+          0.038443345304777554
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.11621637883813,
+          28.120020325089964,
+          28.086834156275
+        ],
+        "nonzeroTexels": 9729,
+        "maxIrradiance": 16.489974975585938,
+        "atlasAge": 1,
+        "motionMax": 0.1787109375
+      }
+    },
+    {
+      "name": "room-reference",
+      "frames": 240,
+      "pt": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "medianMs": [
+        0.591552,
+        0.010336,
+        5.03306,
+        0.004192,
+        0.465216,
+        10.939,
+        1.94026,
+        1.02934,
+        0.127424,
+        0.028864,
+        0.198464
+      ],
+      "rawOpaque": {
+        "count": 97228,
+        "meanRgb": [
+          0.19778609892474722,
+          0.17446525589495404,
+          0.3398711569204184
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          136.83747453327612,
+          143.92254641907965,
+          140.91224309832737
+        ],
+        "nonzeroTexels": 171804,
+        "maxIrradiance": 541.884521484375,
+        "atlasAge": 32,
+        "motionMax": 4.5
+      }
+    },
+    {
+      "name": "room",
+      "frames": 240,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 97152,
+        "reusedLastFrame": 48828,
+        "temporalMedianMs": 0.05328,
+        "spatialMedianMs": 0.224096
+      },
+      "medianMs": [
+        0.590784,
+        0.010496,
+        5.7801,
+        0.007584,
+        0.469952,
+        12.0461,
+        1.92662,
+        1.02483,
+        0.127808,
+        0.028928,
+        0.201824
+      ],
+      "rawOpaque": {
+        "count": 97152,
+        "meanRgb": [
+          0.20016411568157189,
+          0.17529157628900371,
+          0.3410968994040764
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          136.72072550494363,
+          143.8055230501302,
+          140.81460291303168
+        ],
+        "nonzeroTexels": 173940,
+        "maxIrradiance": 540.5296630859375,
+        "atlasAge": 32,
+        "motionMax": 4.46484375
+      }
+    },
+    {
+      "name": "orbit",
+      "frames": 180,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 24,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 287710,
+        "reusedLastFrame": 201675,
+        "temporalMedianMs": 0.052032,
+        "spatialMedianMs": 0.171264
+      },
+      "medianMs": [
+        0.159264,
+        0.005536,
+        0.94096,
+        0.008064,
+        0.467456,
+        2.03,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 287710,
+        "meanRgb": [
+          0.14675263323627585,
+          0.24573064209551324,
+          0.40004180737031664
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          42.35733604529427,
+          48.53056836852911,
+          44.746293284703626
+        ],
+        "nonzeroTexels": 44023,
+        "maxIrradiance": 637.1156616210938,
+        "atlasAge": 32,
+        "motionMax": 4.3203125
+      }
+    },
+    {
+      "name": "nvapi",
+      "frames": 90,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 58,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286540,
+        "reusedLastFrame": 200530,
+        "temporalMedianMs": 0.222784,
+        "spatialMedianMs": 0.25136
+      },
+      "medianMs": [
+        0.152128,
+        0.005024,
+        0.972,
+        0.009696,
+        0.463136,
+        2.096,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286540,
+        "meanRgb": [
+          0.02330648416732971,
+          0.022856821433992106,
+          0.045004274214920766
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.073502931681237,
+          28.083253480401435,
+          27.927950158356982
+        ],
+        "nonzeroTexels": 11761,
+        "maxIrradiance": 19.24662208557129,
+        "atlasAge": 32,
+        "motionMax": 0.000015616416931152344
+      }
+    },
+    {
+      "name": "fixed",
+      "frames": 90,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 58,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 286540,
+        "reusedLastFrame": 200525,
+        "temporalMedianMs": 0.130496,
+        "spatialMedianMs": 0.132256
+      },
+      "medianMs": [
+        0.31616,
+        0.005248,
+        0.519872,
+        0.00976,
+        0.45952,
+        1.6599,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rawOpaque": {
+        "count": 286540,
+        "meanRgb": [
+          0.023306907076783047,
+          0.02285660032559699,
+          0.04500433152723921
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          28.07278724903338,
+          28.082085794783687,
+          27.92719801181852
+        ],
+        "nonzeroTexels": 11356,
+        "maxIrradiance": 19.246570587158203,
+        "atlasAge": 32,
+        "motionMax": 0.000015616416931152344
+      }
+    },
+    {
+      "name": "frame-gen",
+      "frames": 90,
+      "pt": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 97590,
+        "reusedLastFrame": 49247,
+        "temporalMedianMs": 0.055136,
+        "spatialMedianMs": 0.227328
+      },
+      "medianMs": [
+        0.559328,
+        0.01024,
+        4.62662,
+        0.008,
+        0.471744,
+        11.1083,
+        1.9175,
+        0.930304,
+        0.124032,
+        0.023808,
+        0.062048
+      ],
+      "rawOpaque": {
+        "count": 97590,
+        "meanRgb": [
+          0.19437440972687806,
+          0.17273438927738596,
+          0.342175584056727
+        ]
+      },
+      "capture": {
+        "powerXYZ": [
+          136.6109459920375,
+          143.5956559383987,
+          140.52580425539455
+        ],
+        "nonzeroTexels": 96013,
+        "maxIrradiance": 532.93798828125,
+        "atlasAge": 32,
+        "motionMax": 0.5029296875
+      }
+    }
+  ],
+  "traversal": [
+    {
+      "name": "traversal-full-0",
+      "probes": true,
+      "mode": "full",
+      "medianMs": [
+        0.618752,
+        0.010144,
+        6.22275,
+        0.004256,
+        0.464704,
+        12.8387,
+        1.94682,
+        1.03139,
+        0.12736,
+        0.02912,
+        0.199136
+      ],
+      "cells": 35366977,
+      "intersections": 6523144,
+      "roots": 3788,
+      "capture": {
+        "powerXYZ": [
+          136.7380471507605,
+          143.82146123141524,
+          140.81513581874347
+        ],
+        "nonzeroTexels": 172856,
+        "maxIrradiance": 542.3758544921875,
+        "atlasAge": 32,
+        "motionMax": 4.40625
+      }
+    },
+    {
+      "name": "traversal-tight-0",
+      "probes": true,
+      "mode": "tight",
+      "medianMs": [
+        0.603104,
+        0.01008,
+        5.19146,
+        0.004256,
+        0.46496,
+        11.2747,
+        1.94019,
+        1.02832,
+        0.126592,
+        0.02912,
+        0.222496
+      ],
+      "cells": 24099090,
+      "intersections": 6448562,
+      "roots": 3831,
+      "capture": {
+        "powerXYZ": [
+          136.75078913221392,
+          143.8530088152663,
+          140.80776100202175
+        ],
+        "nonzeroTexels": 175373,
+        "maxIrradiance": 540.682861328125,
+        "atlasAge": 32,
+        "motionMax": 4.484375
+      }
+    },
+    {
+      "name": "traversal-full-1",
+      "probes": true,
+      "mode": "full",
+      "medianMs": [
+        0.617344,
+        0.010176,
+        6.20486,
+        0.004224,
+        0.464928,
+        12.7567,
+        1.93792,
+        1.02458,
+        0.127392,
+        0.028896,
+        0.203872
+      ],
+      "cells": 35401221,
+      "intersections": 6527727,
+      "roots": 3804,
+      "capture": {
+        "powerXYZ": [
+          136.77789496082275,
+          143.8466618758857,
+          140.84098417509185
+        ],
+        "nonzeroTexels": 173829,
+        "maxIrradiance": 541.671142578125,
+        "atlasAge": 32,
+        "motionMax": 4.48046875
+      }
+    },
+    {
+      "name": "traversal-tight-1",
+      "probes": true,
+      "mode": "tight",
+      "medianMs": [
+        0.595008,
+        0.010144,
+        5.14534,
+        0.00432,
+        0.468544,
+        11.242,
+        1.93219,
+        1.02627,
+        0.127936,
+        0.029088,
+        0.19712
+      ],
+      "cells": 24118571,
+      "intersections": 6453775,
+      "roots": 3813,
+      "capture": {
+        "powerXYZ": [
+          136.84539840738697,
+          143.91923106609485,
+          140.912481875524
+        ],
+        "nonzeroTexels": 174652,
+        "maxIrradiance": 540.9580078125,
+        "atlasAge": 32,
+        "motionMax": 4.47265625
+      }
+    },
+    {
+      "name": "traversal-full-2",
+      "probes": true,
+      "mode": "full",
+      "medianMs": [
+        0.606528,
+        0.010368,
+        5.90896,
+        0.004288,
+        0.469664,
+        12.2581,
+        1.94349,
+        1.02093,
+        0.127264,
+        0.02896,
+        0.193472
+      ],
+      "cells": 35288984,
+      "intersections": 6502306,
+      "roots": 3797,
+      "capture": {
+        "powerXYZ": [
+          136.67282928739994,
+          143.78198029005645,
+          140.6987647367203
+        ],
+        "nonzeroTexels": 174239,
+        "maxIrradiance": 541.8555908203125,
+        "atlasAge": 32,
+        "motionMax": 4.50390625
+      }
+    },
+    {
+      "name": "traversal-tight-2",
+      "probes": true,
+      "mode": "tight",
+      "medianMs": [
+        0.58992,
+        0.01024,
+        5.16947,
+        0.004256,
+        0.466208,
+        11.2672,
+        1.93971,
+        1.02496,
+        0.126688,
+        0.028928,
+        0.208704
+      ],
+      "cells": 23997287,
+      "intersections": 6442672,
+      "roots": 3784,
+      "capture": {
+        "powerXYZ": [
+          136.76104312201517,
+          143.84029198188435,
+          140.8637991777825
+        ],
+        "nonzeroTexels": 172821,
+        "maxIrradiance": 541.7764892578125,
+        "atlasAge": 32,
+        "motionMax": 4.41796875
+      }
+    },
+    {
+      "name": "traversal-raw-full-0",
+      "probes": false,
+      "mode": "full",
+      "medianMs": [
+        0.595104,
+        0.010144,
+        4.29878,
+        0.004192,
+        0.46688,
+        10.1964,
+        1.94435,
+        1.02419,
+        0.127232,
+        0.029088,
+        0.197984
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.7031127762921,
+          143.80086299581959,
+          140.77210870181338
+        ],
+        "nonzeroTexels": 174930,
+        "maxIrradiance": 541.33203125,
+        "atlasAge": 32,
+        "motionMax": 4.5390625
+      }
+    },
+    {
+      "name": "traversal-raw-tight-0",
+      "probes": false,
+      "mode": "tight",
+      "medianMs": [
+        0.57584,
+        0.010112,
+        4.08707,
+        0.00416,
+        0.464352,
+        9.833,
+        1.94909,
+        1.02509,
+        0.128288,
+        0.029088,
+        0.194624
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.67822905865867,
+          143.76272427232814,
+          140.7430288217448
+        ],
+        "nonzeroTexels": 170818,
+        "maxIrradiance": 540.4312133789062,
+        "atlasAge": 32,
+        "motionMax": 4.5078125
+      }
+    },
+    {
+      "name": "traversal-raw-full-1",
+      "probes": false,
+      "mode": "full",
+      "medianMs": [
+        0.588896,
+        0.010272,
+        4.3583,
+        0.004224,
+        0.465376,
+        10.1098,
+        1.94512,
+        1.0257,
+        0.12784,
+        0.029024,
+        0.191808
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.7749069448868,
+          143.86433919812825,
+          140.85948868652713
+        ],
+        "nonzeroTexels": 172607,
+        "maxIrradiance": 541.501220703125,
+        "atlasAge": 32,
+        "motionMax": 4.56640625
+      }
+    },
+    {
+      "name": "traversal-raw-tight-1",
+      "probes": false,
+      "mode": "tight",
+      "medianMs": [
+        0.580192,
+        0.010176,
+        4.1303,
+        0.00416,
+        0.464896,
+        9.9391,
+        1.94416,
+        1.02298,
+        0.12624,
+        0.02912,
+        0.186272
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.7275859379993,
+          143.821344524933,
+          140.76190284052498
+        ],
+        "nonzeroTexels": 174906,
+        "maxIrradiance": 541.574951171875,
+        "atlasAge": 32,
+        "motionMax": 4.46484375
+      }
+    },
+    {
+      "name": "traversal-raw-full-2",
+      "probes": false,
+      "mode": "full",
+      "medianMs": [
+        0.59424,
+        0.010208,
+        4.44989,
+        0.00416,
+        0.465024,
+        10.1992,
+        1.94362,
+        1.02579,
+        0.127072,
+        0.029056,
+        0.196032
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.7812299631821,
+          143.85966683063012,
+          140.8673957560234
+        ],
+        "nonzeroTexels": 174243,
+        "maxIrradiance": 541.59619140625,
+        "atlasAge": 32,
+        "motionMax": 4.46484375
+      }
+    },
+    {
+      "name": "traversal-raw-tight-2",
+      "probes": false,
+      "mode": "tight",
+      "medianMs": [
+        0.579968,
+        0.010144,
+        4.16877,
+        0.004224,
+        0.465312,
+        9.9929,
+        1.94714,
+        1.02173,
+        0.128512,
+        0.02912,
+        0.18784
+      ],
+      "cells": 0,
+      "intersections": 0,
+      "roots": 0,
+      "capture": {
+        "powerXYZ": [
+          136.90807491011395,
+          144.00357844034082,
+          140.98260771629145
+        ],
+        "nonzeroTexels": 174368,
+        "maxIrradiance": 542.0245361328125,
+        "atlasAge": 32,
+        "motionMax": 4.48046875
+      }
+    }
+  ],
+  "rawChanges": {
+    "photons": {
+      "fullMedianMs": 0.59424,
+      "tightMedianMs": 0.579968,
+      "reductionPercent": 2.4017232094776464
+    },
+    "camera": {
+      "fullMedianMs": 4.3583,
+      "tightMedianMs": 4.1303,
+      "reductionPercent": 5.231397563270079
+    },
+    "rawFrame": {
+      "fullMedianMs": 10.1964,
+      "tightMedianMs": 9.9391,
+      "reductionPercent": 2.523439645365033
+    },
+    "simulation": {
+      "fullMedianMs": 1.94435,
+      "tightMedianMs": 1.94714,
+      "reductionPercent": -0.14349268393036851
+    },
+    "reconstruction": {
+      "fullMedianMs": 1.0257,
+      "tightMedianMs": 1.02298,
+      "reductionPercent": 0.26518475187676804
+    }
+  },
+  "cellVisitReductionPercent": 31.859909881469374,
+  "shaderSha256": {
+    "Transport-0-1": "54fe5c49eb2d8dab66574e9f50c361cf5ea95d49b743224933ef32259e146249",
+    "Transport-1-1": "bf0d30bc0ef20cee573ca24f58448200afc58cd7967fafd430dba4fe67fdaa67",
+    "Transport-2-1": "0795b9b014e28f406ca3d696b3da3e1472188ae66ec183a7c897cbabe52b8189",
+    "FluidSurfaceBounds": "0e29e120a36bad2d1e448dc2b7b5d862a6ee6471838f401317835fc2f532a7d1"
+  }
+}

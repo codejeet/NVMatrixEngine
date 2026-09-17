@@ -1,0 +1,814 @@
+{
+  "schema": 1,
+  "date": "2026-09-12",
+  "gpu": "NVIDIA RTX 5090",
+  "parentCommit": "553cbec",
+  "scope": "Conservative particle sample adaptation; uniform MAC and canonical surface; full adaptive goal remains incomplete",
+  "nodeTests": 70,
+  "windowsCTests": 6,
+  "debugLayer": {"attempted": true, "available": false, "initializationError": "0x887A002D", "gpuBasedValidationExecuted": false},
+  "cases": [
+    {
+      "name": "empty",
+      "frames": 4,
+      "fluidSteps": 8,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 0,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 4,
+        "activeSamples": 0,
+        "massUnits": 0,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.00912,
+        "meanMs": 0.007816,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 0,
+      "restVolume": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "fluidSteps": 240,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 120,
+        "activeSamples": 95234,
+        "massUnits": 100000,
+        "merged": 4766,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 13,
+        "protectedCells": 10782,
+        "samplesByRequestedLod": [
+          93376,
+          0,
+          0,
+          1858
+        ],
+        "lastMs": 0.04544,
+        "meanMs": 0.0550405,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.41493,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "fluidSteps": 240,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 120,
+        "activeSamples": 100000,
+        "massUnits": 100000,
+        "merged": 176,
+        "split": 176,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 2,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          100000,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.012288,
+        "meanMs": 0.0121213,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.19399,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "long",
+      "frames": 600,
+      "fluidSteps": 1200,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 600,
+        "activeSamples": 100000,
+        "massUnits": 100000,
+        "merged": 176,
+        "split": 176,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 2,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          100000,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.013664,
+        "meanMs": 0.0137685,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.26133,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "room",
+      "frames": 300,
+      "fluidSteps": 600,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 105899,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 300,
+        "activeSamples": 105899,
+        "massUnits": 105899,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          105899,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.014176,
+        "meanMs": 0.0141167,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 49.114,
+      "restVolume": 50.9569,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "freeze",
+      "frames": 90,
+      "fluidSteps": 180,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 90,
+        "activeSamples": 95234,
+        "massUnits": 100000,
+        "merged": 4766,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 13,
+        "protectedCells": 10782,
+        "samplesByRequestedLod": [
+          93376,
+          0,
+          0,
+          1858
+        ],
+        "lastMs": 0.045952,
+        "meanMs": 0.0595061,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.41493,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "reset",
+      "frames": 16,
+      "fluidSteps": 24,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 16,
+        "activeSamples": 100000,
+        "massUnits": 100000,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          100000,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.013408,
+        "meanMs": 0.031072,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 46.2027,
+      "restVolume": 48.1184,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "flip",
+      "frames": 120,
+      "fluidSteps": 240,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 120,
+        "activeSamples": 100000,
+        "massUnits": 100000,
+        "merged": 107,
+        "split": 107,
+        "rejected": 69,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 2,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          100000,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.013248,
+        "meanMs": 0.0135224,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.171,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "multigrid",
+      "frames": 90,
+      "fluidSteps": 180,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 101769,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 90,
+        "activeSamples": 101769,
+        "massUnits": 101769,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          101769,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.013632,
+        "meanMs": 0.0131883,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 47.108,
+      "restVolume": 48.9696,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "bulk",
+      "frames": 90,
+      "fluidSteps": 180,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 100000,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 90,
+        "activeSamples": 100000,
+        "massUnits": 100000,
+        "merged": 176,
+        "split": 176,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 2,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          100000,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.012064,
+        "meanMs": 0.0176327,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 5.0332,
+      "restVolume": 5.41494,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "frame-gen",
+      "frames": 60,
+      "fluidSteps": 120,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 101179,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 60,
+        "activeSamples": 101179,
+        "massUnits": 101179,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          101179,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.013408,
+        "meanMs": 0.0184507,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 46.7996,
+      "restVolume": 48.6857,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "pt",
+      "frames": 60,
+      "fluidSteps": 120,
+      "fluidValidated": true,
+      "complexityValidated": true,
+      "restMassUnits": 101179,
+      "resampling": {
+        "enabled": true,
+        "validated": true,
+        "frames": 60,
+        "activeSamples": 101179,
+        "massUnits": 101179,
+        "merged": 0,
+        "split": 0,
+        "rejected": 0,
+        "starved": 0,
+        "lastMerged": 0,
+        "lastSplit": 0,
+        "binRebuilds": 0,
+        "protectedCells": 0,
+        "samplesByRequestedLod": [
+          101179,
+          0,
+          0,
+          0
+        ],
+        "lastMs": 0.01376,
+        "meanMs": 0.0131621,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "occupiedVolume": 46.799,
+      "restVolume": 48.6857,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "scene": "calm",
+      "mode": "off",
+      "output": [
+        1920,
+        1080
+      ],
+      "quality": "balanced",
+      "frameGeneration": false,
+      "measuredFrames": 804,
+      "medianMs": {
+        "photons": 0.46896,
+        "atlasEma": 0.010272,
+        "camera": 1.85344,
+        "composite": 0.00768,
+        "dlssRR": 0.725568,
+        "frame": 7.4452,
+        "fluidSimulation": 1.63565,
+        "fluidReconstruction": 1.45907,
+        "fluidBlas": 0.103168,
+        "whitewaterSimulation": 0,
+        "whitewaterBlas": 0
+      },
+      "frameP95Ms": 8.5997,
+      "perRunMedianMs": [
+        [
+          0.468896,
+          0.010144,
+          1.86358,
+          0.007584,
+          0.72752,
+          7.4976,
+          1.6472,
+          1.45424,
+          0.104576,
+          0,
+          0
+        ],
+        [
+          0.471296,
+          0.010272,
+          1.84186,
+          0.007552,
+          0.723392,
+          7.4672,
+          1.63222,
+          1.46458,
+          0.103008,
+          0,
+          0
+        ],
+        [
+          0.468096,
+          0.0104,
+          1.85462,
+          0.007808,
+          0.724192,
+          7.4157,
+          1.63101,
+          1.45526,
+          0.102848,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "scene": "calm",
+      "mode": "on",
+      "output": [
+        1920,
+        1080
+      ],
+      "quality": "balanced",
+      "frameGeneration": false,
+      "measuredFrames": 804,
+      "medianMs": {
+        "photons": 0.477568,
+        "atlasEma": 0.01024,
+        "camera": 1.87174,
+        "composite": 0.007712,
+        "dlssRR": 0.72608,
+        "frame": 7.5242,
+        "fluidSimulation": 1.67478,
+        "fluidReconstruction": 1.43779,
+        "fluidBlas": 0.102784,
+        "whitewaterSimulation": 0,
+        "whitewaterBlas": 0
+      },
+      "frameP95Ms": 8.6838,
+      "perRunMedianMs": [
+        [
+          0.475936,
+          0.010048,
+          1.85731,
+          0.007744,
+          0.72528,
+          7.5235,
+          1.6801,
+          1.43338,
+          0.10256,
+          0,
+          0
+        ],
+        [
+          0.4792,
+          0.010176,
+          1.89011,
+          0.007744,
+          0.726592,
+          7.5843,
+          1.6769,
+          1.44141,
+          0.103072,
+          0,
+          0
+        ],
+        [
+          0.477856,
+          0.0104,
+          1.86704,
+          0.007584,
+          0.726112,
+          7.4908,
+          1.66794,
+          1.43894,
+          0.102976,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "scene": "room",
+      "mode": "off",
+      "output": [
+        1920,
+        1080
+      ],
+      "quality": "balanced",
+      "frameGeneration": false,
+      "measuredFrames": 804,
+      "medianMs": {
+        "photons": 0.677888,
+        "atlasEma": 0.010432,
+        "camera": 5.11245,
+        "composite": 0.00832,
+        "dlssRR": 0.730432,
+        "frame": 11.9093,
+        "fluidSimulation": 1.99955,
+        "fluidReconstruction": 1.16579,
+        "fluidBlas": 0.127904,
+        "whitewaterSimulation": 0.029312,
+        "whitewaterBlas": 0.198208
+      },
+      "frameP95Ms": 14.4697,
+      "perRunMedianMs": [
+        [
+          0.675488,
+          0.01056,
+          5.63568,
+          0.008416,
+          0.729312,
+          12.1208,
+          1.99549,
+          1.16579,
+          0.127456,
+          0.029312,
+          0.197248
+        ],
+        [
+          0.679264,
+          0.010272,
+          5.0575,
+          0.008352,
+          0.730816,
+          11.8734,
+          2.00147,
+          1.16128,
+          0.128992,
+          0.02928,
+          0.190752
+        ],
+        [
+          0.683232,
+          0.010272,
+          5.05411,
+          0.008192,
+          0.730848,
+          11.6927,
+          1.9999,
+          1.17389,
+          0.127136,
+          0.029344,
+          0.20544
+        ]
+      ]
+    },
+    {
+      "scene": "room",
+      "mode": "on",
+      "output": [
+        1920,
+        1080
+      ],
+      "quality": "balanced",
+      "frameGeneration": false,
+      "measuredFrames": 804,
+      "medianMs": {
+        "photons": 0.680096,
+        "atlasEma": 0.010336,
+        "camera": 5.248,
+        "composite": 0.008192,
+        "dlssRR": 0.731456,
+        "frame": 12.0455,
+        "fluidSimulation": 2.02544,
+        "fluidReconstruction": 1.14957,
+        "fluidBlas": 0.127424,
+        "whitewaterSimulation": 0.029216,
+        "whitewaterBlas": 0.202656
+      },
+      "frameP95Ms": 14.7152,
+      "perRunMedianMs": [
+        [
+          0.677472,
+          0.010528,
+          5.24118,
+          0.008256,
+          0.730176,
+          11.9744,
+          2.03085,
+          1.15114,
+          0.127136,
+          0.029248,
+          0.205472
+        ],
+        [
+          0.680096,
+          0.01024,
+          5.06675,
+          0.008096,
+          0.733504,
+          12.0052,
+          2.02131,
+          1.14813,
+          0.127104,
+          0.029312,
+          0.207008
+        ],
+        [
+          0.682144,
+          0.010272,
+          5.63075,
+          0.008288,
+          0.730464,
+          12.2335,
+          2.02864,
+          1.15098,
+          0.12784,
+          0.029152,
+          0.19568
+        ]
+      ]
+    }
+  ],
+  "temporal": {
+    "candidate": "water-temporal-resampling",
+    "reference": "water-temporal-adaptive",
+    "frames": 320,
+    "comparison": "--preserve passed",
+    "maximumBrightnessShiftPercent": 0.0206191,
+    "maximumRawDeltaIncreasePercent": 0.121362,
+    "maximumRrDeltaIncreasePercent": 1.134815,
+    "rrResets": 1
+  },
+  "hashes": {
+    "NVMatrixFluidLab.exe": "081b03caab78019d451b122567a6810d2620f15b52eb988f188e05e947c3fad9",
+    "shaders/ResampleMerge.dxil": "1994cf757344b7184e9d4a4a969165ac51d2ca897efe002691e1a3d587353626",
+    "shaders/ResampleSplit.dxil": "f0e1bc6d8af4eadb0b2f0d9c07ca1aca289c760286c02f8f3998140590496102",
+    "shaders/ResamplePlan.dxil": "348a3c3fcedeea28d0f3a9ab4af1512bb418eef9be160f0fc25db7576cf5a693",
+    "shaders/ResampleRebin.dxil": "10876740b4fee843e0a87da9dec6d63b819feef9031aa769b0e13c73ea7057b4",
+    "shaders/FluidP2G.dxil": "e5c444a5548f980036997e7bd4d668bb5db6913f8bb77a7a2a4d0b28e752be5f",
+    "shaders/FluidSurfaceReconstruct.dxil": "e3e2b74aa12212e1176de218fe007e1723c71cf1becb3558ab8928b2b122465e",
+    "shaders/Transport-2-1.dxil": "f1eaaf539e0a0b86dd334df58389ca79c6269f8787a9ac24d20e6feb878f397c"
+  }
+}

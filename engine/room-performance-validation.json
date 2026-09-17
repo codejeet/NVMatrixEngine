@@ -1,0 +1,2001 @@
+{
+  "date": "2026-09-12",
+  "baselineCommit": "e083618306b29b2752c4d26a9e0c6034763e5773",
+  "context": "RTX 5090, 1080p Balanced (1114x626 internal), live room inlet/foam/bubbles, 100k initial / 250k cap, 120 Hz APIC, two substeps per real frame, unchanged 120 pressure / 60 density iterations, 65,536 photons, FG off, no probes. Three interleaved A/B pairs per view; pair order reverses on repeat 2. First 32 frames excluded. Renderer frame interval includes submission/present/fence but not outer gameplay update; reciprocal medians are not displayed-FG FPS. Column medians need not sum. Live simulation summation order can vary between runs.",
+  "manifest": {
+    "tag": "visibility-final",
+    "baselineDirectory": "<LOCALAPPDATA>\\NVMatrixEngine\\build\\bin\\Release\\profile-shaders-e083618-7b67f18e442d4fe0b4f22854bfe53626",
+    "candidateDirectory": "<LOCALAPPDATA>\\NVMatrixEngine\\build\\bin\\Release\\profile-shaders-visibility-final-7b784076c9794065acc30c44199d924b",
+    "executableSha256": "628D69B88C6D7BEB2F0E2112530D1640F54031A0A3BF9200E359F78CB7EA3BE0",
+    "shaderHashes": [
+      {
+        "candidate": "28BF6ABAD18520F7387FF20FB8EB5B81B126BFA1C6ABD7E656C92EF4AD4E8FBB",
+        "name": "Transport-0-0.dxil",
+        "baseline": "B9B2AFF7170D47190E5A2ED4DB4E679920C1EE639270B8CAAFCC7E96A42A7013"
+      },
+      {
+        "candidate": "DC14DB8466547BB3C016979BCE797746D5D5164DF06DB17D1D4E7B93FAA4642C",
+        "name": "Transport-0-1.dxil",
+        "baseline": "364FDBFCDD69A48A7EA4BDE8494BBA16C2D1662B638A96B2C5A387D0E11C4FC9"
+      },
+      {
+        "candidate": "F616E32B4E4F8AE4485BAE87B024A0726C0BD4633B12A569B8B474D1A554DA46",
+        "name": "Transport-1-0.dxil",
+        "baseline": "1D59DA9329E64774C1801CFBF1DDCEA9F02D49D35233403CA62385652D47F21D"
+      },
+      {
+        "candidate": "A9D8085774135B35F22FE85DF9AA1E6418F98EC0D39B432EBF1321B1FD92E82C",
+        "name": "Transport-1-1.dxil",
+        "baseline": "7EAB4A695B4068381BD9A39606CFD7A4C56EE5A5A5DE741ED4AE9BA3183E4ABD"
+      },
+      {
+        "candidate": "F827D01B87912596870F2A0A7BD6B1296A1502C00A16B1F0834CD2F0EE0D0EB0",
+        "name": "Transport-2-0.dxil",
+        "baseline": "93F3A560E2A568B9057254E41142D690156890BF5026D5112814F78638187F7B"
+      },
+      {
+        "candidate": "F1EAAF539E0A0B86DD334DF58389CA79C6269F8787A9AC24D20E6FEB878F397C",
+        "name": "Transport-2-1.dxil",
+        "baseline": "CF14AF97014A9AAF88C97991D94081734F872D4273E067E5324CC91403E2F777"
+      }
+    ],
+    "runs": [
+      "room-perf-visibility-final-before-play-1",
+      "room-perf-visibility-final-after-play-1",
+      "room-perf-visibility-final-before-orbit-1",
+      "room-perf-visibility-final-after-orbit-1",
+      "room-perf-visibility-final-before-rolling-1",
+      "room-perf-visibility-final-after-rolling-1",
+      "room-perf-visibility-final-after-play-2",
+      "room-perf-visibility-final-before-play-2",
+      "room-perf-visibility-final-after-orbit-2",
+      "room-perf-visibility-final-before-orbit-2",
+      "room-perf-visibility-final-after-rolling-2",
+      "room-perf-visibility-final-before-rolling-2",
+      "room-perf-visibility-final-before-play-3",
+      "room-perf-visibility-final-after-play-3",
+      "room-perf-visibility-final-before-orbit-3",
+      "room-perf-visibility-final-after-orbit-3",
+      "room-perf-visibility-final-before-rolling-3",
+      "room-perf-visibility-final-after-rolling-3"
+    ]
+  },
+  "comparisons": [
+    {
+      "view": "play",
+      "before": {
+        "names": [
+          "room-perf-visibility-final-before-play-1",
+          "room-perf-visibility-final-before-play-2",
+          "room-perf-visibility-final-before-play-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.681056,
+          "atlasEma": 0.010272,
+          "camera": 8.01149,
+          "composite": 0.007552,
+          "dlssRR": 0.727904,
+          "frame": 13.5625,
+          "fluidSimulation": 1.94851,
+          "fluidReconstruction": 1.04291,
+          "fluidBlas": 0.128064,
+          "whitewaterSimulation": 0.029792,
+          "whitewaterBlas": 0.196288
+        },
+        "frameP95Ms": 16.4556,
+        "reciprocalMedianRenderFps": 73.73271889400921,
+        "perRun": [
+          {
+            "medianMs": [
+              0.680544,
+              0.010112,
+              8.01155,
+              0.007648,
+              0.727904,
+              13.579,
+              1.9432,
+              1.03965,
+              0.127744,
+              0.030368,
+              0.18784
+            ],
+            "frameP95Ms": 16.4923
+          },
+          {
+            "medianMs": [
+              0.678112,
+              0.01024,
+              8.05853,
+              0.007904,
+              0.728192,
+              13.5753,
+              1.94259,
+              1.04291,
+              0.128576,
+              0.029568,
+              0.207584
+            ],
+            "frameP95Ms": 16.2785
+          },
+          {
+            "medianMs": [
+              0.68736,
+              0.0104,
+              7.8497,
+              0.00736,
+              0.72784,
+              13.4975,
+              1.95981,
+              1.04707,
+              0.12816,
+              0.02944,
+              0.202112
+            ],
+            "frameP95Ms": 16.2789
+          }
+        ]
+      },
+      "after": {
+        "names": [
+          "room-perf-visibility-final-after-play-1",
+          "room-perf-visibility-final-after-play-2",
+          "room-perf-visibility-final-after-play-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.678848,
+          "atlasEma": 0.010048,
+          "camera": 7.80458,
+          "composite": 0.007904,
+          "dlssRR": 0.726944,
+          "frame": 13.5463,
+          "fluidSimulation": 1.95424,
+          "fluidReconstruction": 1.04192,
+          "fluidBlas": 0.127904,
+          "whitewaterSimulation": 0.02976,
+          "whitewaterBlas": 0.203552
+        },
+        "frameP95Ms": 15.2778,
+        "reciprocalMedianRenderFps": 73.82089574274895,
+        "perRun": [
+          {
+            "medianMs": [
+              0.683968,
+              0.010112,
+              7.78771,
+              0.008352,
+              0.726688,
+              13.5707,
+              1.94182,
+              1.04211,
+              0.127968,
+              0.029728,
+              0.200288
+            ],
+            "frameP95Ms": 15.6217
+          },
+          {
+            "medianMs": [
+              0.671808,
+              0.009984,
+              7.87222,
+              0.007712,
+              0.726944,
+              13.558,
+              1.9623,
+              1.03789,
+              0.127776,
+              0.029824,
+              0.210208
+            ],
+            "frameP95Ms": 14.9848
+          },
+          {
+            "medianMs": [
+              0.684704,
+              0.010048,
+              7.7665,
+              0.008,
+              0.72736,
+              13.5105,
+              1.95872,
+              1.0448,
+              0.127968,
+              0.029856,
+              0.201152
+            ],
+            "frameP95Ms": 15.2722
+          }
+        ]
+      },
+      "cameraTimeReductionPercent": 2.5826656464652764,
+      "frameTimeReductionPercent": 0.11944700460828628,
+      "renderFpsGainPercent": 0.11958985110325226
+    },
+    {
+      "view": "orbit",
+      "before": {
+        "names": [
+          "room-perf-visibility-final-before-orbit-1",
+          "room-perf-visibility-final-before-orbit-2",
+          "room-perf-visibility-final-before-orbit-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.67296,
+          "atlasEma": 0.010176,
+          "camera": 6.37187,
+          "composite": 0.008352,
+          "dlssRR": 0.7312,
+          "frame": 12.3662,
+          "fluidSimulation": 1.9624,
+          "fluidReconstruction": 1.0432,
+          "fluidBlas": 0.128064,
+          "whitewaterSimulation": 0.029856,
+          "whitewaterBlas": 0.1992
+        },
+        "frameP95Ms": 15.2013,
+        "reciprocalMedianRenderFps": 80.86558522424028,
+        "perRun": [
+          {
+            "medianMs": [
+              0.6648,
+              0.010016,
+              6.40998,
+              0.00848,
+              0.731328,
+              12.315,
+              1.9624,
+              1.04451,
+              0.127744,
+              0.030048,
+              0.199264
+            ],
+            "frameP95Ms": 15.2013
+          },
+          {
+            "medianMs": [
+              0.679872,
+              0.010304,
+              6.61744,
+              0.008256,
+              0.730272,
+              12.5849,
+              1.9664,
+              1.0407,
+              0.128224,
+              0.02976,
+              0.202656
+            ],
+            "frameP95Ms": 14.6206
+          },
+          {
+            "medianMs": [
+              0.677504,
+              0.010144,
+              6.12899,
+              0.008544,
+              0.731936,
+              12.356,
+              1.96106,
+              1.04646,
+              0.128512,
+              0.029984,
+              0.194048
+            ],
+            "frameP95Ms": 15.3886
+          }
+        ]
+      },
+      "after": {
+        "names": [
+          "room-perf-visibility-final-after-orbit-1",
+          "room-perf-visibility-final-after-orbit-2",
+          "room-perf-visibility-final-after-orbit-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.678272,
+          "atlasEma": 0.010144,
+          "camera": 5.18794,
+          "composite": 0.00816,
+          "dlssRR": 0.730464,
+          "frame": 11.7165,
+          "fluidSimulation": 1.95283,
+          "fluidReconstruction": 1.04589,
+          "fluidBlas": 0.127808,
+          "whitewaterSimulation": 0.029792,
+          "whitewaterBlas": 0.204384
+        },
+        "frameP95Ms": 14.3375,
+        "reciprocalMedianRenderFps": 85.34972047966544,
+        "perRun": [
+          {
+            "medianMs": [
+              0.6696,
+              0.010144,
+              5.17373,
+              0.007936,
+              0.728608,
+              11.6449,
+              1.95683,
+              1.04704,
+              0.127264,
+              0.029792,
+              0.209184
+            ],
+            "frameP95Ms": 14.3375
+          },
+          {
+            "medianMs": [
+              0.680576,
+              0.010016,
+              5.69699,
+              0.008192,
+              0.731424,
+              11.8243,
+              1.95626,
+              1.04554,
+              0.129472,
+              0.029792,
+              0.196864
+            ],
+            "frameP95Ms": 14.3142
+          },
+          {
+            "medianMs": [
+              0.687552,
+              0.010208,
+              5.12022,
+              0.008256,
+              0.730272,
+              11.6055,
+              1.94621,
+              1.04573,
+              0.126912,
+              0.02976,
+              0.20112
+            ],
+            "frameP95Ms": 14.3506
+          }
+        ]
+      },
+      "cameraTimeReductionPercent": 18.58057367774295,
+      "frameTimeReductionPercent": 5.253837072018886,
+      "renderFpsGainPercent": 5.545171339563848
+    },
+    {
+      "view": "rolling",
+      "before": {
+        "names": [
+          "room-perf-visibility-final-before-rolling-1",
+          "room-perf-visibility-final-before-rolling-2",
+          "room-perf-visibility-final-before-rolling-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.734976,
+          "atlasEma": 0.008864,
+          "camera": 6.60464,
+          "composite": 0.0072,
+          "dlssRR": 0.731296,
+          "frame": 12.8415,
+          "fluidSimulation": 1.99226,
+          "fluidReconstruction": 1.21907,
+          "fluidBlas": 0.129536,
+          "whitewaterSimulation": 0.0328,
+          "whitewaterBlas": 0.199552
+        },
+        "frameP95Ms": 15.6272,
+        "reciprocalMedianRenderFps": 77.87252268037223,
+        "perRun": [
+          {
+            "medianMs": [
+              0.737504,
+              0.008704,
+              6.70605,
+              0.0072,
+              0.729984,
+              12.8872,
+              1.99181,
+              1.21824,
+              0.129504,
+              0.033056,
+              0.202528
+            ],
+            "frameP95Ms": 15.7564
+          },
+          {
+            "medianMs": [
+              0.736384,
+              0.00912,
+              6.63523,
+              0.007168,
+              0.730912,
+              12.9257,
+              1.99891,
+              1.21962,
+              0.129568,
+              0.032768,
+              0.199488
+            ],
+            "frameP95Ms": 15.4853
+          },
+          {
+            "medianMs": [
+              0.733696,
+              0.008736,
+              6.42515,
+              0.0072,
+              0.732896,
+              12.7502,
+              1.98592,
+              1.22118,
+              0.129568,
+              0.032768,
+              0.197824
+            ],
+            "frameP95Ms": 15.2333
+          }
+        ]
+      },
+      "after": {
+        "names": [
+          "room-perf-visibility-final-after-rolling-1",
+          "room-perf-visibility-final-after-rolling-2",
+          "room-perf-visibility-final-after-rolling-3"
+        ],
+        "samples": 804,
+        "medianMs": {
+          "photons": 0.728864,
+          "atlasEma": 0.008864,
+          "camera": 6.02515,
+          "composite": 0.007168,
+          "dlssRR": 0.730784,
+          "frame": 12.2732,
+          "fluidSimulation": 1.99085,
+          "fluidReconstruction": 1.21952,
+          "fluidBlas": 0.129088,
+          "whitewaterSimulation": 0.032736,
+          "whitewaterBlas": 0.200288
+        },
+        "frameP95Ms": 14.7923,
+        "reciprocalMedianRenderFps": 81.47834305641561,
+        "perRun": [
+          {
+            "medianMs": [
+              0.7208,
+              0.008672,
+              5.94246,
+              0.007168,
+              0.729408,
+              12.1988,
+              1.99315,
+              1.22266,
+              0.129504,
+              0.032704,
+              0.197568
+            ],
+            "frameP95Ms": 14.9696
+          },
+          {
+            "medianMs": [
+              0.730624,
+              0.009152,
+              6.15056,
+              0.007264,
+              0.729856,
+              12.3402,
+              1.99923,
+              1.21677,
+              0.129056,
+              0.032736,
+              0.202816
+            ],
+            "frameP95Ms": 14.7923
+          },
+          {
+            "medianMs": [
+              0.7368,
+              0.008768,
+              5.8777,
+              0.00704,
+              0.732544,
+              12.2732,
+              1.98365,
+              1.21974,
+              0.128864,
+              0.032864,
+              0.201664
+            ],
+            "frameP95Ms": 14.5476
+          }
+        ]
+      },
+      "cameraTimeReductionPercent": 8.773983139126429,
+      "frameTimeReductionPercent": 4.4254954639255555,
+      "renderFpsGainPercent": 4.6304142358960965
+    }
+  ],
+  "parity": [
+    {
+      "kind": "sphere",
+      "backend": "plain",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 8,
+          "relativeL1": 2.849451297346485e-10,
+          "maxAbs": 0.00006103515625
+        },
+        {
+          "index": 9,
+          "relativeL1": 5.375175493774363e-10,
+          "maxAbs": 0.000091552734375
+        }
+      ],
+      "cameraPathTotals": [
+        974055,
+        4957231,
+        1021554,
+        4605203
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2207,
+        "after": 2207
+      },
+      "probes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1240782,
+        "intersections": 253953
+      }
+    },
+    {
+      "kind": "sphere",
+      "backend": "dxr",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 3.5173731324519904e-10,
+          "maxAbs": 0.0001220703125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0011474144333436167,
+          "maxAbs": 4.65625
+        },
+        {
+          "index": 8,
+          "relativeL1": 3.646070299651878e-10,
+          "maxAbs": 0.00006103515625
+        },
+        {
+          "index": 9,
+          "relativeL1": 6.115763011297938e-10,
+          "maxAbs": 0.0001220703125
+        }
+      ],
+      "cameraPathTotals": [
+        974055,
+        4957243,
+        1021557,
+        4605210
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2190,
+        "after": 2190
+      },
+      "probes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1241263,
+        "intersections": 253978
+      }
+    },
+    {
+      "kind": "sphere",
+      "backend": "nvapi",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 2.0269679511254957e-9,
+          "maxAbs": 0.001953125
+        },
+        {
+          "index": 8,
+          "relativeL1": 3.71628103453075e-10,
+          "maxAbs": 0.000152587890625
+        },
+        {
+          "index": 9,
+          "relativeL1": 6.129595908697045e-10,
+          "maxAbs": 0.0001220703125
+        }
+      ],
+      "cameraPathTotals": [
+        974055,
+        4957231,
+        1021554,
+        4605203
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2189,
+        "after": 2189
+      },
+      "probes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1241238,
+        "intersections": 253970
+      }
+    },
+    {
+      "kind": "sphere",
+      "backend": "fixed",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 8,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 9,
+          "relativeL1": 0,
+          "maxAbs": 0
+        }
+      ],
+      "cameraPathTotals": [
+        974055,
+        4957231,
+        1021554,
+        4605203
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2194,
+        "after": 2194
+      },
+      "probes": {
+        "hits": 794,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 1240807,
+        "intersections": 253958
+      }
+    },
+    {
+      "kind": "sheet",
+      "backend": "plain",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 3.5272725611314158e-9,
+          "maxAbs": 0.00048828125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.001855367031234675,
+          "maxAbs": 15.625
+        },
+        {
+          "index": 8,
+          "relativeL1": 2.965232671703014e-10,
+          "maxAbs": 0.000152587890625
+        },
+        {
+          "index": 9,
+          "relativeL1": 1.3520198811988072e-9,
+          "maxAbs": 0.000244140625
+        }
+      ],
+      "cameraPathTotals": [
+        954231,
+        4657897,
+        1089579,
+        4423754
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2455,
+        "after": 2455
+      },
+      "probes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 516162,
+        "intersections": 178243
+      }
+    },
+    {
+      "kind": "sheet",
+      "backend": "dxr",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 3.033592841995748e-9,
+          "maxAbs": 0.00048828125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0019326367346742671,
+          "maxAbs": 7.25
+        },
+        {
+          "index": 8,
+          "relativeL1": 3.5877055774362774e-10,
+          "maxAbs": 0.00006103515625
+        },
+        {
+          "index": 9,
+          "relativeL1": 1.6843981693078626e-9,
+          "maxAbs": 0.0003662109375
+        }
+      ],
+      "cameraPathTotals": [
+        954231,
+        4657897,
+        1089579,
+        4423754
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2437,
+        "after": 2437
+      },
+      "probes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 516163,
+        "intersections": 178242
+      }
+    },
+    {
+      "kind": "sheet",
+      "backend": "nvapi",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 2.257557872198698e-9,
+          "maxAbs": 0.00048828125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.002140570725830973,
+          "maxAbs": 8.25
+        },
+        {
+          "index": 8,
+          "relativeL1": 3.5063254206881754e-10,
+          "maxAbs": 0.0001220703125
+        },
+        {
+          "index": 9,
+          "relativeL1": 1.6621198364983354e-9,
+          "maxAbs": 0.000244140625
+        }
+      ],
+      "cameraPathTotals": [
+        954231,
+        4657897,
+        1089579,
+        4423754
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2437,
+        "after": 2437
+      },
+      "probes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 516168,
+        "intersections": 178242
+      }
+    },
+    {
+      "kind": "sheet",
+      "backend": "fixed",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 8,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 9,
+          "relativeL1": 0,
+          "maxAbs": 0
+        }
+      ],
+      "cameraPathTotals": [
+        954231,
+        4657897,
+        1089579,
+        4423754
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 2442,
+        "after": 2442
+      },
+      "probes": {
+        "hits": 658,
+        "badRoots": 0,
+        "glassShellHits": 10,
+        "truncated": 0,
+        "cellSteps": 516140,
+        "intersections": 178240
+      }
+    },
+    {
+      "kind": "play",
+      "backend": "plain",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 7.463652391208782e-10,
+          "maxAbs": 0.000244140625
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 3.012095554299164e-10,
+          "maxAbs": 0.000244140625
+        },
+        {
+          "index": 8,
+          "relativeL1": 1.5281170035374118e-9,
+          "maxAbs": 0.00018310546875
+        }
+      ],
+      "cameraPathTotals": [
+        433227,
+        1232821,
+        361312,
+        1317211
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 558,
+        "after": 558
+      }
+    },
+    {
+      "kind": "play",
+      "backend": "dxr",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 5.672376085691648e-9,
+          "maxAbs": 0.001953125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0020230010790975445,
+          "maxAbs": 1.3984375
+        },
+        {
+          "index": 8,
+          "relativeL1": 2.07628165041121e-9,
+          "maxAbs": 0.00018310546875
+        }
+      ],
+      "cameraPathTotals": [
+        433227,
+        1232821,
+        361312,
+        1317211
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 558,
+        "after": 558
+      }
+    },
+    {
+      "kind": "play",
+      "backend": "nvapi",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 8.256665530394582e-10,
+          "maxAbs": 0.0001220703125
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0.0020208787150985683,
+          "maxAbs": 1.640625
+        },
+        {
+          "index": 8,
+          "relativeL1": 2.059217455169592e-9,
+          "maxAbs": 0.000244140625
+        }
+      ],
+      "cameraPathTotals": [
+        433227,
+        1232821,
+        361312,
+        1317211
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 558,
+        "after": 558
+      }
+    },
+    {
+      "kind": "play",
+      "backend": "fixed",
+      "channels": [
+        {
+          "index": 0,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 1,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 2,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 3,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 4,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 5,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 6,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 7,
+          "relativeL1": 0,
+          "maxAbs": 0
+        },
+        {
+          "index": 8,
+          "relativeL1": 0,
+          "maxAbs": 0
+        }
+      ],
+      "cameraPathTotals": [
+        433227,
+        1232821,
+        361312,
+        1317211
+      ],
+      "cameraTruncatedLastFrame": {
+        "before": 558,
+        "after": 558
+      }
+    }
+  ],
+  "temporal": [
+    {
+      "note": "Motion-compensated consecutive real frames, raw and RR separately. Reprojection uses the current primary-surface guide, so this metric also includes refracted parallax mismatch; it is not pure estimator variance. Live phases include genuine surface/light changes. FG is off.",
+      "comparisonMode": "preserve",
+      "prefix": "water-temporal-performance",
+      "current": {
+        "static": {
+          "samples": 51232.666666666664,
+          "rawDelta": 0.006086796684840338,
+          "rrDelta": 0.0006341242053589327,
+          "meanLuminance": 0.144899868810756,
+          "atlasRelativeDelta": 0.05037201948073577,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "risingOrbit": {
+          "samples": 79075.33333333333,
+          "rawDelta": 0.004485880890827805,
+          "rrDelta": 0.001288359793550883,
+          "meanLuminance": 0.13497985329606113,
+          "atlasRelativeDelta": 0.00723336431058372,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "topDownOrbit": {
+          "samples": 82479.66666666667,
+          "rawDelta": 0.0038273655085189037,
+          "rrDelta": 0.000473527987801349,
+          "meanLuminance": 0.13454200159628615,
+          "atlasRelativeDelta": 0.007338674445635702,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "liveWaterOrbit": {
+          "samples": 87837,
+          "rawDelta": 0.008544187019235882,
+          "rrDelta": 0.0012669679526323822,
+          "meanLuminance": 0.13440845853624392,
+          "atlasRelativeDelta": 0.06140453392949063,
+          "atlasResets": 10,
+          "fluidSteps": 288,
+          "fluidHistoryResets": 10
+        },
+        "afterRolling": {
+          "samples": 66747,
+          "rawDelta": 0.008004015579277738,
+          "rrDelta": 0.0014636123757383135,
+          "meanLuminance": 0.13281724356795518,
+          "atlasRelativeDelta": 0.06043641003267752,
+          "atlasResets": 58,
+          "fluidSteps": 384,
+          "fluidHistoryResets": 10
+        }
+      },
+      "reference": "water-temporal-final",
+      "before": {
+        "static": {
+          "samples": 51212.666666666664,
+          "rawDelta": 0.006077176955853154,
+          "rrDelta": 0.0006308867553470993,
+          "meanLuminance": 0.14495460529806478,
+          "atlasRelativeDelta": 0.05025960257334009,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "risingOrbit": {
+          "samples": 79101.66666666667,
+          "rawDelta": 0.004553203608632616,
+          "rrDelta": 0.001297774722947949,
+          "meanLuminance": 0.13499588178530367,
+          "atlasRelativeDelta": 0.007231820941357425,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "topDownOrbit": {
+          "samples": 82516.66666666667,
+          "rawDelta": 0.0038383571732827147,
+          "rrDelta": 0.00047275194637579765,
+          "meanLuminance": 0.13450911118695405,
+          "atlasRelativeDelta": 0.007358808688415464,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "liveWaterOrbit": {
+          "samples": 87878.66666666667,
+          "rawDelta": 0.008578269538902146,
+          "rrDelta": 0.0012546108620792782,
+          "meanLuminance": 0.13440471755892494,
+          "atlasRelativeDelta": 0.061293843482735984,
+          "atlasResets": 10,
+          "fluidSteps": 288,
+          "fluidHistoryResets": 10
+        },
+        "afterRolling": {
+          "samples": 66545.66666666667,
+          "rawDelta": 0.007969846510788062,
+          "rrDelta": 0.0014600670341834805,
+          "meanLuminance": 0.1326885991653097,
+          "atlasRelativeDelta": 0.06035872449508328,
+          "atlasResets": 58,
+          "fluidSteps": 384,
+          "fluidHistoryResets": 10
+        }
+      },
+      "changes": {
+        "static": {
+          "rawDeltaReductionPercent": -0.15829272468230737,
+          "rrDeltaReductionPercent": -0.5131586587282522,
+          "meanChangePercent": -0.037761123350466
+        },
+        "risingOrbit": {
+          "rawDeltaReductionPercent": 1.4785791190442543,
+          "rrDeltaReductionPercent": 0.7254671577883398,
+          "meanChangePercent": -0.011873317193500377
+        },
+        "topDownOrbit": {
+          "rawDeltaReductionPercent": 0.28636378188876543,
+          "rrDeltaReductionPercent": -0.16415404135310396,
+          "meanChangePercent": 0.02445217951547729
+        },
+        "liveWaterOrbit": {
+          "rawDeltaReductionPercent": 0.3973122960487685,
+          "rrDeltaReductionPercent": -0.9849341279115409,
+          "meanChangePercent": 0.0027833675684263426
+        },
+        "afterRolling": {
+          "rawDeltaReductionPercent": -0.4287293167242856,
+          "rrDeltaReductionPercent": -0.2428204645285703,
+          "meanChangePercent": 0.09695211454090469
+        }
+      }
+    },
+    {
+      "note": "Motion-compensated consecutive real frames, raw and RR separately. Reprojection uses the current primary-surface guide, so this metric also includes refracted parallax mismatch; it is not pure estimator variance. Live phases include genuine surface/light changes. FG is off.",
+      "comparisonMode": "preserve",
+      "prefix": "water-temporal-performance-foam",
+      "current": {
+        "static": {
+          "samples": 51234.666666666664,
+          "rawDelta": 0.0060967385891956055,
+          "rrDelta": 0.0006252998743773022,
+          "meanLuminance": 0.14490244558481516,
+          "atlasRelativeDelta": 0.05022671688462324,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "risingOrbit": {
+          "samples": 79224.66666666667,
+          "rawDelta": 0.004537149011026958,
+          "rrDelta": 0.0012963424659317695,
+          "meanLuminance": 0.13498375887107786,
+          "atlasRelativeDelta": 0.007217019676520252,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "topDownOrbit": {
+          "samples": 82637.66666666667,
+          "rawDelta": 0.0038579547357899713,
+          "rrDelta": 0.00047283273970159063,
+          "meanLuminance": 0.134520737080379,
+          "atlasRelativeDelta": 0.007359683195305121,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "liveWaterOrbit": {
+          "samples": 87788.66666666667,
+          "rawDelta": 0.008518971386742296,
+          "rrDelta": 0.0012616517158840995,
+          "meanLuminance": 0.1343525431464799,
+          "atlasRelativeDelta": 0.06158355711246175,
+          "atlasResets": 10,
+          "fluidSteps": 288,
+          "fluidHistoryResets": 10
+        },
+        "afterRolling": {
+          "samples": 66554,
+          "rawDelta": 0.007981292591754466,
+          "rrDelta": 0.0014667778074733534,
+          "meanLuminance": 0.13274663471291318,
+          "atlasRelativeDelta": 0.06075819669917101,
+          "atlasResets": 58,
+          "fluidSteps": 384,
+          "fluidHistoryResets": 10
+        }
+      },
+      "reference": "water-temporal-foam",
+      "before": {
+        "static": {
+          "samples": 51267,
+          "rawDelta": 0.006120098375557436,
+          "rrDelta": 0.0006260605493424872,
+          "meanLuminance": 0.1449377865693353,
+          "atlasRelativeDelta": 0.05052860000937465,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "risingOrbit": {
+          "samples": 79116.33333333333,
+          "rawDelta": 0.004502488905232731,
+          "rrDelta": 0.0012961528505788147,
+          "meanLuminance": 0.13499229429987847,
+          "atlasRelativeDelta": 0.0072407412408721705,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "topDownOrbit": {
+          "samples": 82522.66666666667,
+          "rawDelta": 0.003825596313398198,
+          "rrDelta": 0.0004724134431258521,
+          "meanLuminance": 0.13449777286302286,
+          "atlasRelativeDelta": 0.007306420578101269,
+          "atlasResets": 10,
+          "fluidSteps": 192,
+          "fluidHistoryResets": 10
+        },
+        "liveWaterOrbit": {
+          "samples": 87734.66666666667,
+          "rawDelta": 0.00852138423649248,
+          "rrDelta": 0.0012576714228536515,
+          "meanLuminance": 0.13439786942180929,
+          "atlasRelativeDelta": 0.06142271862358704,
+          "atlasResets": 10,
+          "fluidSteps": 288,
+          "fluidHistoryResets": 10
+        },
+        "afterRolling": {
+          "samples": 66546.33333333333,
+          "rawDelta": 0.00801661864084277,
+          "rrDelta": 0.001455523436090115,
+          "meanLuminance": 0.13260396199896418,
+          "atlasRelativeDelta": 0.06076146547406345,
+          "atlasResets": 58,
+          "fluidSteps": 384,
+          "fluidHistoryResets": 10
+        }
+      },
+      "changes": {
+        "static": {
+          "rawDeltaReductionPercent": 0.38168972013791214,
+          "rrDeltaReductionPercent": 0.12150182054817549,
+          "meanChangePercent": -0.024383554735207813
+        },
+        "risingOrbit": {
+          "rawDeltaReductionPercent": -0.7697988051440952,
+          "rrDeltaReductionPercent": -0.014629088912632149,
+          "meanChangePercent": -0.006322900758803929
+        },
+        "topDownOrbit": {
+          "rawDeltaReductionPercent": -0.845839961692918,
+          "rrDeltaReductionPercent": -0.0887562752160731,
+          "meanChangePercent": 0.017074050274068497
+        },
+        "liveWaterOrbit": {
+          "rawDeltaReductionPercent": 0.028315232399100942,
+          "rrDeltaReductionPercent": -0.31648115383084985,
+          "meanChangePercent": -0.033725441872245465
+        },
+        "afterRolling": {
+          "rawDeltaReductionPercent": 0.4406602168690599,
+          "rrDeltaReductionPercent": -0.7732181498547597,
+          "meanChangePercent": 0.10759310038572778
+        }
+      }
+    }
+  ],
+  "gpuValidation": [
+    {
+      "name": "fixed",
+      "frames": 90,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": false,
+      "photonCounters": [
+        65536,
+        51725,
+        51339,
+        48223,
+        52,
+        0,
+        0,
+        457
+      ],
+      "photonEnergyWatts": [
+        183,
+        127.635,
+        26.9233,
+        12.6305,
+        12.5052,
+        0.0742989,
+        3.23186
+      ],
+      "fluidProbes": {
+        "hits": 3695,
+        "badRoots": 0,
+        "glassShellHits": 0,
+        "truncated": 0,
+        "cellSteps": 21980686,
+        "intersections": 6019715
+      },
+      "whitewaterProbes": {
+        "foam": 474,
+        "bubbles": 157,
+        "spray": 0,
+        "bad": 0
+      },
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 90,
+        "extraPresents": 0,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "restir": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "rrHistoryResets": 1
+    },
+    {
+      "name": "dxr",
+      "frames": 90,
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "photonCounters": [
+        65536,
+        51725,
+        51328,
+        48207,
+        63,
+        0,
+        0,
+        478
+      ],
+      "photonEnergyWatts": [
+        183,
+        127.497,
+        26.9766,
+        12.5615,
+        12.6295,
+        0.103182,
+        3.23186
+      ],
+      "fluidProbes": {
+        "hits": 3695,
+        "badRoots": 0,
+        "glassShellHits": 0,
+        "truncated": 0,
+        "cellSteps": 21954153,
+        "intersections": 6017318
+      },
+      "whitewaterProbes": {
+        "foam": 475,
+        "bubbles": 159,
+        "spray": 0,
+        "bad": 0
+      },
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 90,
+        "extraPresents": 0,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "restir": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "rrHistoryResets": 1
+    },
+    {
+      "name": "nvapi",
+      "frames": 90,
+      "hitMode": 1,
+      "serActive": true,
+      "floatAtomics": true,
+      "photonCounters": [
+        65536,
+        51725,
+        51335,
+        48214,
+        62,
+        0,
+        0,
+        484
+      ],
+      "photonEnergyWatts": [
+        183,
+        127.502,
+        27.0162,
+        12.5101,
+        12.644,
+        0.0954227,
+        3.23186
+      ],
+      "fluidProbes": {
+        "hits": 3691,
+        "badRoots": 0,
+        "glassShellHits": 0,
+        "truncated": 0,
+        "cellSteps": 21954050,
+        "intersections": 6017269
+      },
+      "whitewaterProbes": {
+        "foam": 475,
+        "bubbles": 159,
+        "spray": 0,
+        "bad": 0
+      },
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 90,
+        "extraPresents": 0,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "restir": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "rrHistoryResets": 1
+    },
+    {
+      "name": "frame-gen",
+      "frames": 90,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "photonCounters": [
+        65536,
+        51725,
+        51337,
+        48207,
+        51,
+        0,
+        0,
+        465
+      ],
+      "photonEnergyWatts": [
+        183,
+        127.471,
+        26.9383,
+        12.6797,
+        12.6065,
+        0.0724859,
+        3.23186
+      ],
+      "fluidProbes": {
+        "hits": 3697,
+        "badRoots": 0,
+        "glassShellHits": 0,
+        "truncated": 0,
+        "cellSteps": 21983997,
+        "intersections": 6020871
+      },
+      "whitewaterProbes": {
+        "foam": 474,
+        "bubbles": 157,
+        "spray": 0,
+        "bad": 0
+      },
+      "frameGeneration": {
+        "supported": true,
+        "loaded": true,
+        "enabled": true,
+        "multiplier": 2,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 178,
+        "extraPresents": 88,
+        "frameTokens": 90,
+        "simulationMarkers": 90,
+        "submissionMarkers": 90,
+        "presentMarkers": 90
+      },
+      "restir": {
+        "enabled": false,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 2176,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 0,
+        "reusedLastFrame": 0,
+        "temporalMedianMs": 0,
+        "spatialMedianMs": 0
+      },
+      "rrHistoryResets": 1
+    },
+    {
+      "name": "restir",
+      "frames": 180,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "photonCounters": [
+        65536,
+        52296,
+        52035,
+        48754,
+        51,
+        0,
+        0,
+        610
+      ],
+      "photonEnergyWatts": [
+        183,
+        127.867,
+        27.1616,
+        11.8294,
+        12.7193,
+        0.0442944,
+        3.37762
+      ],
+      "fluidProbes": {
+        "hits": 3723,
+        "badRoots": 0,
+        "glassShellHits": 0,
+        "truncated": 0,
+        "cellSteps": 21735181,
+        "intersections": 5979572
+      },
+      "whitewaterProbes": {
+        "foam": 930,
+        "bubbles": 302,
+        "spray": 0,
+        "bad": 0
+      },
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 180,
+        "extraPresents": 0,
+        "frameTokens": 180,
+        "simulationMarkers": 180,
+        "submissionMarkers": 180,
+        "presentMarkers": 180
+      },
+      "restir": {
+        "enabled": true,
+        "scope": "opaque-primary diffuse indirect paths",
+        "temporalFrames": 0,
+        "spatialNeighbors": 1,
+        "historyCap": 8,
+        "allocatedBytes": 122867200,
+        "invalidLastFrame": 0,
+        "pixelsLastFrame": 97057,
+        "reusedLastFrame": 47693,
+        "temporalMedianMs": 0.052512,
+        "spatialMedianMs": 0.19392
+      },
+      "rrHistoryResets": 1
+    }
+  ],
+  "checks": {
+    "nodeTestsPassed": 54,
+    "windowsCTestPassed": 5,
+    "transportVariantsCompiled": 6,
+    "remainingShaderKernelsCompiled": true,
+    "debugLayerAvailable": false,
+    "mainlineAndPortableReleaseUnchanged": true
+  },
+  "retainedChange": "First-accepted-hit / skip-closest-hit boolean shadow and reconnection rays only; camera/continuation, simulation, reconstruction, optics and temporal settings unchanged.",
+  "rejectedExperiments": [
+    "Shared normal tap caching: slower in this workload.",
+    "Wave-combined camera diagnostics and inline reflection stack: no reliable speedup.",
+    "Primary-hit reuse: small raw-radiance mismatch; discarded."
+  ]
+}

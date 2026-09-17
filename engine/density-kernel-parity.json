@@ -1,0 +1,198 @@
+{
+  "passed": true,
+  "scope": "Exact same-build captured physics/lighting/guide parity for locally cached versus full solid-kernel integration.",
+  "results": [
+    {
+      "scene": "calm",
+      "density": 1.00002,
+      "rebuilt": 0,
+      "reused": 105750,
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "room",
+      "density": 1.07294,
+      "rebuilt": 414,
+      "reused": 123561,
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "wake",
+      "density": 1.00309,
+      "rebuilt": 2443,
+      "reused": 103307,
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "adaptive",
+      "density": 1.04635,
+      "rebuilt": 2736,
+      "reused": 121239,
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "schema": 1,
+  "generatedUtc": "2026-09-14T00:12:04.692Z",
+  "scope": "Live particle authority, fractional mass consumers; no automatic flowing grid ownership",
+  "adapter": "NVIDIA GeForce RTX 5090",
+  "defaultEnabled": false,
+  "performanceMeasured": false,
+  "gpuDebugLayerEnabled": false,
+  "gpuBasedValidationEnabled": false,
+  "executableSha256": "e8092a84aa5058902d327917448d07d740726ab256d30489c48ba9c25af4db08",
+  "hardwareFixtureSha256": "9a62620f6c75c2dd3403b699a2232e312f1f7913c0307d3006c8fab3c93341d5",
+  "sourceSha256": {
+    "engine/src/fluid/fluid_system.cpp": "f41116a22c596ce34dcc30d4dd7f95e7edc30f8d444e869fafc008ad923d81e1",
+    "engine/src/fluid/fluid_system.h": "c19e991a0ed360c3f8a6f443ec997aadfef36c20e43c21d3a3263d4ec32610c8",
+    "engine/src/fluid/fluid_uniforms.h": "b34444db2f05e566399c3108f32d35074917ce7ad448b42bd04257722e4848a5",
+    "engine/src/main.cpp": "0ac2d21366fa1d3d217d3ce97adbd079ead0d0437d823085e4cbbd2f11dbb056",
+    "engine/src/renderer.cpp": "849c1ff14aa1dfc6dcd7f3c31d26053c32339d64c2d24708fa67f0dd0d74fc77",
+    "engine/src/renderer.h": "b58c956f8b76855cfb5df9951bf4206a6000570c60775ae96a0c6895bc6c9f35",
+    "engine/src/hud.cpp": "4decf260317d64791936b8d74781cef502ea98b6d9681eafc4efff093a83601b",
+    "engine/ui/lab.rcss": "885c489bb46ec5e77387b078479650b80acd4e572cf958d9506f8c7c4e3a008d",
+    "engine/src/fluid/fluid_particle_grid_exchange.cpp": "097569f0c19280e577395573620b65c3f1e896d6a50780bcf710f613f5c65f20",
+    "engine/src/fluid/fluid_particle_grid_exchange.h": "91e8af5741c412441fb597475bc6f8cb1feaf4f11eb98a33dfc5eca7e1299b6b",
+    "engine/src/fluid/fluid_work.cpp": "2ef8bfa9488442949f4c580747c48b8ba92907757a523db402debce7f35b01d8",
+    "engine/src/fluid/fluid_work.h": "d25490bd845edda957d73ae4c95fefa945ba412c06a2d5754fc6dcf8501b473e",
+    "engine/src/fluid/fluid_complexity.cpp": "6268caf1bde6019340774fe304ca59ba0060256cc224f8f8404923e0c543c54f",
+    "engine/shaders/fluid/particle-grid-exchange.hlsl": "e0c7b13f63ebf249c0b30747502301aa5574c30076191487ee69f6a58869bf94",
+    "engine/shaders/fluid/binning.hlsl": "6b76ef4338b2c831e8a84e6e1f1c956da544161a0b6a96dafbc3f024d3ff32bc",
+    "engine/shaders/fluid/transfer.hlsl": "ed88296ea3ab335dbf48ae77526acc6449018def437bf1483dd2b3b942cf85f6",
+    "engine/shaders/fluid/common.hlsli": "f42531fa6680e07bd175b2eeebf765d6cdaa06d861704c5d7da71bdf1ea2edc6",
+    "engine/shaders/fluid/complexity.hlsl": "4bc2c7d85e26303e70e8b2001df00a1813516cfb4a49d83b4449efc5105c7ff8",
+    "engine/tests/fluid_exchange_gpu.cpp": "57144993299eb5a962c652881453a161a5743a1a1b62f817a3b51876dd91f650",
+    "engine/test-fluid-owned-particles.ps1": "93c7849d1a9d57e69b1f655654b9fa49c90582207ec1e53edc470388cd88f6de",
+    "engine/compile-fluid-exchange.ps1": "37dd6be2c2a1c7c181e605c395c1494d6acbe240cf22c6bb17ca3bbd24a4d8bb",
+    "engine/particle-grid-exchange.test.mjs": "c8fc2624c89b4501242268c798d0df63835178c4d74140a7cd7848de49c08aea"
+  },
+  "shaderSha256": {
+    "ExchangeReset": "e4ca8839ecd0574cbbcad4efae5a5fe0c963972e50acc4e465f621cd5995eb12",
+    "ExchangeClear": "6681eeddf4ffd02c49e516caf6dd2ffb29f4533b193c1cd6c9aab7fe5cf6544c",
+    "ExchangeSeed": "bd7e15e45f944032d12261a25557081d49d4e5b650d6480d28577d7525bf566c",
+    "ExchangeVelocityDelta": "6d4df6be9ffff35c457a974cb6fd8f1884caaf91cb706f5f634f93fcc1dd38e1",
+    "ExchangeDeposit": "f63b2c397c8461f0d468e266e7de9927020974cf7851b4a87301cb5f295d7ab5",
+    "ExchangeFree": "458006ac8dc2823b01026d6e78707ef0bab2271246d7999337ce0ad55d86d9e6",
+    "ExchangeRestore": "92e86c4ca0caadae542cbf97596a55dfb23cbb87388bf2a15d115f7ce3b29274",
+    "FluidGatherMassAuthority": "7181edff44c21b1a307b1d4de80c7f54562c586b17856800ec176b8307347b89",
+    "FluidP2GAuthority": "3268217fefe0d692bc2ee44504372cef70d339ad56f247158d2bad32ebc52bec",
+    "FluidP2GSparseAuthority": "74aec2d97c74e7c8aabd04bac13915abdf49058df8b020b52df5e0b521127e3e",
+    "FluidClearBins": "563cc89e5defde5f06c3525db8be5e33c99b085d7cdfb9d5fe32ad2d00a062c1",
+    "FluidCountBins": "2e7449189465d6a538648c27c94898bce97c370670975deae0766b3c8141cc55",
+    "FluidScanCells": "552e46df925c63af1a7ce6ed7dfdfa8b63b2cedd5f7b1d1f5896d4ce6b45589a",
+    "FluidScanSums": "d07e23630da257aec1dc8c5439c50c571c92497b72cf0d611ea43f84d7217ae6",
+    "FluidFinishScan": "8001df60f0d117f5df7f1c522a91f3a12e79c718d5b3b861ee0862f8680427dd",
+    "FluidScatter": "bb43c8e666b6253f41ccbaa2f295ae35677fa95c54bccaba9ea22723e4a8a2d9",
+    "ComplexityClassify": "0d8a0a62029dd163f13ab1f9adbea906b7ad98eeaf791de976845da3b39b2b21"
+  },
+  "cases": [
+    {
+      "name": "empty",
+      "frames": 4,
+      "reportSha256": "580d848ae15098b7c289ce495d0436dec4f34c6eab08649d439c28cd150af8fb",
+      "steps": 8,
+      "emitted": 0,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 0,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": {
+        "powerXYZ": [
+          21.10908982248864,
+          26.22930552898987,
+          19.899022269497124
+        ],
+        "nonzeroTexels": 5566,
+        "maxIrradiance": 529.0482177734375,
+        "atlasAge": 1,
+        "motionMax": 0.78759765625
+      }
+    },
+    {
+      "name": "short",
+      "frames": 8,
+      "reportSha256": "be1fdfb1b181a045b5514359d25efa66ba3661da47c4df2c3c7fd0409dde5471",
+      "steps": 16,
+      "emitted": 0,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 48.1184,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": {
+        "powerXYZ": [
+          136.76214755254426,
+          143.74489098055213,
+          140.74293785341217
+        ],
+        "nonzeroTexels": 69726,
+        "maxIrradiance": 536.0379028320312,
+        "atlasAge": 1,
+        "motionMax": 0.246337890625
+      }
+    },
+    {
+      "name": "affine",
+      "frames": 1,
+      "reportSha256": "197c25bdc70e423544976af159393d8a6f0e6f17461a2c2cd23e99a9135b2527",
+      "steps": 0,
+      "emitted": 0,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 1.04858,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": null
+    },
+    {
+      "name": "flip",
+      "frames": 32,
+      "reportSha256": "30fc1f0e65989df1685d07c3f7e73e368bc5da120a6fea25f0c595b2f3005357",
+      "steps": 64,
+      "emitted": 0,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 48.1184,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": {
+        "powerXYZ": [
+          136.51421520669822,
+          143.51944363264283,
+          140.442131217339
+        ],
+        "nonzeroTexels": 83499,
+        "maxIrradiance": 533.7453002929688,
+        "atlasAge": 22,
+        "motionMax": 0.260009765625
+      }
+    },
+    {
+      "name": "inlet",
+      "frames": 64,
+      "reportSha256": "63beaa5033c794650a883febb68f121f485e9bc017d2f9c6d30a697a0f342937",
+      "steps": 128,
+      "emitted": 1258,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 48.7237,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": {
+        "powerXYZ": [
+          135.64983710440004,
+          142.69051156933773,
+          139.66825889422958
+        ],
+        "nonzeroTexels": 118977,
+        "maxIrradiance": 554.5311279296875,
+        "atlasAge": 32,
+        "motionMax": 3.15625
+      }
+    },
+    {
+      "name": "mixed",
+      "frames": 64,
+      "reportSha256": "d683e1794ace06a3ecc9a323aa2e0c59b508e2a0078daf49ecb735a45a79a9a9",
+      "steps": 128,
+      "emitted": 1258,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 48.7237,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 2.26293e-17
+      },
+      "optical": {
+        "powerXYZ": [
+          135.8359257225597,
+          142.842777683708,
+          139.8787210973823
+        ],
+        "nonzeroTexels": 113794,
+        "maxIrradiance": 548.8878173828125,
+        "atlasAge": 32,
+        "motionMax": 3.150390625
+      }
+    },
+    {
+      "name": "reset",
+      "frames": 180,
+      "reportSha256": "809c548b8ed7f84c7b4c655a00d25b2b3cea54a7f80e820176efc9436cf52a59",
+      "steps": 160,
+      "emitted": 1376,
+      "authority": {
+        "validated": true,
+        "inventoryBits": 64,
+        "invalid": 0,
+        "volumeM3": 48.7805,
+        "relativeVolumeError": 0,
+        "massCacheRelativeError": 0,
+        "velocityCacheRelativeError": 0
+      },
+      "optical": {
+        "powerXYZ": [
+          135.53363369076507,
+          142.54142613682012,
+          139.56040352221711
+        ],
+        "nonzeroTexels": 115470,
+        "maxIrradiance": 529.9271850585938,
+        "atlasAge": 32,
+        "motionMax": 2.767578125
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "name": "short",
+      "frames": 8,
+      "referenceReportSha256": "48303b88e95273aa518f7b2d1603bd97821fa4bdeab44a02071bd71235c0b1e2",
+      "candidateReportSha256": "be1fdfb1b181a045b5514359d25efa66ba3661da47c4df2c3c7fd0409dde5471",
+      "inputSha256": "38a54408d5ac41fb02ea219a6d7b71d8edea2be824b9adc99e9f5fb6490553f3",
+      "referenceOutputSha256": "f8436d2ea46bf1326bac98f3ba60c08e672175c0a95ce81bdbf0551e1b002873",
+      "outputSha256": "3f679168c6660898ea55c8b5e9620213650f6daf54f53f02dc05455c6360d3c5",
+      "allRawCapturedChannelsBitIdentical": true,
+      "displayed": {
+        "sceneAndOtherUiBitIdentical": true,
+        "excludedOverlay": "#fps",
+        "excludedRectangle": [
+          880,
+          13,
+          942,
+          34
+        ],
+        "differentFpsPixels": 104
+      }
+    },
+    {
+      "name": "inlet",
+      "frames": 64,
+      "referenceReportSha256": "d619da1ac6c3bd015899b185441ad3ea77cc8242605c8f90d3911c0682d47be7",
+      "candidateReportSha256": "63beaa5033c794650a883febb68f121f485e9bc017d2f9c6d30a697a0f342937",
+      "inputSha256": "b54ff8b4f47517e1741dfc00bfe41fd547b325d93794e76907f202b222666938",
+      "referenceOutputSha256": "87349ddc6814ce8b7196b7f7ec359d447204cc9798956aa7a2d7f5bbb4f1e5f1",
+      "outputSha256": "71b7ea35f984f428ce7bee093e696b61bd2da63a52cd4294d2b8db6e37d7550e",
+      "allRawCapturedChannelsBitIdentical": true,
+      "displayed": {
+        "sceneAndOtherUiBitIdentical": true,
+        "excludedOverlay": "#fps",
+        "excludedRectangle": [
+          880,
+          13,
+          942,
+          34
+        ],
+        "differentFpsPixels": 116
+      }
+    },
+    {
+      "name": "mixed",
+      "frames": 64,
+      "referenceReportSha256": "589a34dabe37a549978db55195618c7a3e413f19b48f162bfa981c5b1cd75f7e",
+      "candidateReportSha256": "d683e1794ace06a3ecc9a323aa2e0c59b508e2a0078daf49ecb735a45a79a9a9",
+      "inputSha256": "939f0ac4ceaa303fa7cde4a809da5774c4ab6f8578db52d5390b952e56c9105f",
+      "referenceOutputSha256": "f96d371e25079cd81dff36351c26a84246ea9fe47529bdedbd7befaaa4565f9d",
+      "outputSha256": "c105f5c923e4a153e3dea6e946075110aece4e19e0940c8e77509098bdd0a76a",
+      "allRawCapturedChannelsBitIdentical": true,
+      "displayed": {
+        "sceneAndOtherUiBitIdentical": true,
+        "excludedOverlay": "#fps",
+        "excludedRectangle": [
+          880,
+          13,
+          942,
+          34
+        ],
+        "differentFpsPixels": 77
+      }
+    }
+  ],
+  "validation": {
+    "javascriptTestsPassed": 205,
+    "nativeTestsPassed": 7,
+    "hardwareOutput": [
+      "PASS production fractional bin/P2G | max mass error 7.06425e-08 | max velocity error 6.5211e-08",
+      "PASS fractional flowing retire/restore | max joint quantity error 2.77556e-17 | live particles 9",
+      "PASS production fractional bin/P2G | max mass error 7.06425e-08 | max velocity error 2.98023e-08",
+      "PASS allocation exhaustion | max joint quantity error 1.73472e-18 | live particles 4",
+      "PASS production fractional bin/P2G | max mass error 2.51664e-08 | max velocity error 5.117e-08",
+      "PASS missing restoration sites | max joint quantity error 1.73472e-18 | live particles 6",
+      "PASS production fractional bin/P2G | max mass error 0 | max velocity error 2.98023e-08",
+      "PASS capacity refusal | max joint quantity error 0 | live particles 5",
+      "PASS production fractional bin/P2G | max mass error 2.51664e-08 | max velocity error 5.117e-08",
+      "PASS invalid restoration sites | max joint quantity error 1.73472e-18 | live particles 6",
+      "PASS production fractional bin/P2G | max mass error 5.96046e-08 | max velocity error 2.98023e-08",
+      "PASS closing grid owner | max joint quantity error 3.46945e-18 | live particles 6",
+      "PASS production fractional bin/P2G | max mass error 7.06425e-08 | max velocity error 2.98023e-08",
+      "PASS reserved future emitter slots | max joint quantity error 1.73472e-18 | live particles 4"
+    ],
+    "legacyAndLauncherRegressions": [
+      {
+        "name": "bulk-coupled-short-time",
+        "frames": 8,
+        "dlssEvaluations": 8,
+        "sha256": "f5a14bad83a421158d0ab2ff91e6241a9a0e99a05eb1ac1f5d0b4cae59e52859",
+        "authorityEnabled": false
+      },
+      {
+        "name": "bulk-coupled-adaptive-time",
+        "frames": 64,
+        "dlssEvaluations": 64,
+        "sha256": "99d78514cf5cb574bec752855a0810ea6f41cab6a4afd69033adcf1b5f86e6e6",
+        "authorityEnabled": false
+      },
+      {
+        "name": "launch-basename",
+        "frames": 48,
+        "dlssEvaluations": 48,
+        "sha256": "91a0e300eaee219493051bbcdfdb34c442b028825493a8f3f8281829e577daf5",
+        "authorityEnabled": false
+      },
+      {
+        "name": "launch-relative",
+        "frames": 48,
+        "dlssEvaluations": 48,
+        "sha256": "aebcdcd7114015f959d95c71e2e5f4b2a76caca76f9c1137ff4a54c31addf61f",
+        "authorityEnabled": false
+      },
+      {
+        "name": "launch-foreign-cwd",
+        "frames": 48,
+        "dlssEvaluations": 48,
+        "sha256": "ce6d7f44b6c8e88f2b0d6d920691cff14f0b79bbbaf9fb51c0ec28daf4f4ab54",
+        "authorityEnabled": false
+      },
+      {
+        "name": "lab",
+        "frames": 192,
+        "dlssEvaluations": 192,
+        "sha256": "32e72493c91333f71549268ff4631cf9d5750eb2a373505c41ccf7404f7d2340",
+        "authorityEnabled": false
+      }
+    ]
+  },
+  "remaining": [
+    "automatic grid-owned flow and band policy",
+    "source allocation shared by grid and particle owners",
+    "affine/angular error-controlled demotion and restoration",
+    "coarse-owned density and canonical DXR coverage",
+    "full narrow-band coupling, sparse physical storage, multirate/async scheduling and budget control"
+  ]
+}

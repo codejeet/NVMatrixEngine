@@ -1,0 +1,516 @@
+{
+  "schema": 1,
+  "date": "2026-09-13T14:26:24.322Z",
+  "baseCommit": "6919305",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Boundary-aware B-spline solid support and local recomputation. Not full adaptive-fluid completion or general conforming particle transport.",
+  "defaultPromotionReady": false,
+  "nodeTests": 133,
+  "windowsCTests": 7,
+  "cases": [
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "coarseLeaves": 0,
+      "kernelError": 3.20099e-8,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000120989,
+      "matrixError": 0,
+      "fluxError": 0,
+      "peakDivergence": 0,
+      "canonicalDivergence": 0,
+      "restMassUnits": 0,
+      "density": 0,
+      "surfaceVolume": 0,
+      "repairs": 0,
+      "optical": {
+        "powerXYZ": [
+          20.26894597824084,
+          25.38264692628026,
+          19.052028362803398
+        ],
+        "nonzeroTexels": 6358,
+        "maxIrradiance": 1072.253173828125,
+        "atlasAge": 1,
+        "motionMax": 0.78759765625
+      }
+    },
+    {
+      "name": "room-short",
+      "frames": 8,
+      "steps": 16,
+      "coarseLeaves": 0,
+      "kernelError": 0.00020274,
+      "rebuilt": 2498,
+      "reused": 121477,
+      "geometryError": 0.0000111194,
+      "matrixError": 1.37503e-7,
+      "fluxError": 2.92054e-8,
+      "peakDivergence": 0.0000790391,
+      "canonicalDivergence": 0.0000620937,
+      "restMassUnits": 100000,
+      "density": 1.04199,
+      "surfaceVolume": 48.1681,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          136.68441715265413,
+          143.68483712485363,
+          140.65548971145088
+        ],
+        "nonzeroTexels": 71195,
+        "maxIrradiance": 536.04833984375,
+        "atlasAge": 1,
+        "motionMax": 0.472412109375
+      }
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "coarseLeaves": 96,
+      "kernelError": 0.00000110496,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000150436,
+      "matrixError": 1.27157e-7,
+      "fluxError": 0,
+      "peakDivergence": 0,
+      "canonicalDivergence": 0,
+      "restMassUnits": 100000,
+      "density": 1.00002,
+      "surfaceVolume": 5.41819,
+      "repairs": 0,
+      "optical": {
+        "powerXYZ": [
+          30.30704683873289,
+          35.47572976694996,
+          31.772809505293083
+        ],
+        "nonzeroTexels": 80196,
+        "maxIrradiance": 529.0846557617188,
+        "atlasAge": 32,
+        "motionMax": 0.00002300739288330078
+      }
+    },
+    {
+      "name": "interior",
+      "frames": 120,
+      "steps": 240,
+      "coarseLeaves": 96,
+      "kernelError": 0.00000110496,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000150436,
+      "matrixError": 1.27157e-7,
+      "fluxError": 0,
+      "peakDivergence": 0,
+      "canonicalDivergence": 0,
+      "restMassUnits": 100000,
+      "density": 1.00079,
+      "surfaceVolume": 5.42103,
+      "repairs": 0,
+      "optical": {
+        "powerXYZ": [
+          30.322990820233503,
+          35.54995513082448,
+          31.780062650051182
+        ],
+        "nonzeroTexels": 80202,
+        "maxIrradiance": 529.084716796875,
+        "atlasAge": 32,
+        "motionMax": 0.00018358230590820312
+      }
+    },
+    {
+      "name": "cycle",
+      "frames": 120,
+      "steps": 240,
+      "coarseLeaves": 96,
+      "kernelError": 0.00000110496,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000150436,
+      "matrixError": 1.27157e-7,
+      "fluxError": 0,
+      "peakDivergence": 0,
+      "canonicalDivergence": 0,
+      "restMassUnits": 100000,
+      "density": 1.00002,
+      "surfaceVolume": 5.41819,
+      "repairs": 0,
+      "optical": {
+        "powerXYZ": [
+          30.307046863924906,
+          35.47572944928876,
+          31.77280952622428
+        ],
+        "nonzeroTexels": 80196,
+        "maxIrradiance": 529.084716796875,
+        "atlasAge": 32,
+        "motionMax": 0.00002300739288330078
+      }
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "steps": 240,
+      "coarseLeaves": 0,
+      "kernelError": 0.00000110496,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000150436,
+      "matrixError": 5.77841e-7,
+      "fluxError": 5.27287e-8,
+      "peakDivergence": 0.0000999915,
+      "canonicalDivergence": 0.0000999914,
+      "restMassUnits": 100000,
+      "density": 1.06406,
+      "surfaceVolume": 7.88161,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          37.88576435034348,
+          42.13133673090817,
+          38.102522089668994
+        ],
+        "nonzeroTexels": 321320,
+        "maxIrradiance": 529.0848364418489,
+        "atlasAge": 32,
+        "motionMax": 3.693359375
+      }
+    },
+    {
+      "name": "room",
+      "frames": 120,
+      "steps": 240,
+      "coarseLeaves": 0,
+      "kernelError": 0.000465669,
+      "rebuilt": 414,
+      "reused": 123561,
+      "geometryError": 0.0000117578,
+      "matrixError": 1.37503e-7,
+      "fluxError": 4.74967e-8,
+      "peakDivergence": 0.000099797,
+      "canonicalDivergence": 0.000099797,
+      "restMassUnits": 102359,
+      "density": 1.07294,
+      "surfaceVolume": 48.3497,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          136.29982739043507,
+          143.32826098126165,
+          140.2677674668978
+        ],
+        "nonzeroTexels": 170227,
+        "maxIrradiance": 540.903564453125,
+        "atlasAge": 32,
+        "motionMax": 3.201171875
+      }
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "coarseLeaves": 0,
+      "kernelError": 0.00000110496,
+      "rebuilt": 2443,
+      "reused": 103307,
+      "geometryError": 0.0000124509,
+      "matrixError": 3.94885e-7,
+      "fluxError": 4.62929e-8,
+      "peakDivergence": 0.0000998612,
+      "canonicalDivergence": 0.0000992215,
+      "restMassUnits": 100000,
+      "density": 1.00309,
+      "surfaceVolume": 5.56108,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          36.97125903623141,
+          41.70107555242417,
+          38.052651149762404
+        ],
+        "nonzeroTexels": 86501,
+        "maxIrradiance": 529.3237915039062,
+        "atlasAge": 1,
+        "motionMax": 202
+      }
+    },
+    {
+      "name": "controls",
+      "frames": 12,
+      "steps": 0,
+      "coarseLeaves": 0,
+      "kernelError": 3.20099e-8,
+      "rebuilt": 0,
+      "reused": 105750,
+      "geometryError": 0.0000139122,
+      "matrixError": 1.6664e-8,
+      "fluxError": 1.3288e-8,
+      "peakDivergence": 9.27199e-12,
+      "canonicalDivergence": 8.65855e-12,
+      "restMassUnits": 257,
+      "density": 0.209503,
+      "surfaceVolume": 0.0341055,
+      "repairs": 0,
+      "optical": {
+        "powerXYZ": [
+          20.874091690247155,
+          26.012009231443134,
+          19.548953995716555
+        ],
+        "nonzeroTexels": 31605,
+        "maxIrradiance": 1072.4129703640938,
+        "atlasAge": 2,
+        "motionMax": 0.00010406970977783203
+      }
+    },
+    {
+      "name": "relaxation",
+      "frames": 12,
+      "steps": 24,
+      "coarseLeaves": 0,
+      "kernelError": 0.000465669,
+      "rebuilt": 2660,
+      "reused": 121315,
+      "geometryError": 0.0000111194,
+      "matrixError": 1.37503e-7,
+      "fluxError": 8.17783e-8,
+      "peakDivergence": null,
+      "canonicalDivergence": 0.00679174,
+      "restMassUnits": 100000,
+      "density": 1.05162,
+      "surfaceVolume": 48.1177,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          136.23501967439142,
+          143.26736739129808,
+          140.2171506243258
+        ],
+        "nonzeroTexels": 72534,
+        "maxIrradiance": 532.0687255859375,
+        "atlasAge": 2,
+        "motionMax": 0.60009765625
+      }
+    },
+    {
+      "name": "adaptive",
+      "frames": 64,
+      "steps": 128,
+      "coarseLeaves": 0,
+      "kernelError": 0.000465669,
+      "rebuilt": 2736,
+      "reused": 121239,
+      "geometryError": 0.0000111194,
+      "matrixError": 1.37503e-7,
+      "fluxError": 4.74967e-8,
+      "peakDivergence": 0.000099797,
+      "canonicalDivergence": 0.000099797,
+      "restMassUnits": 101258,
+      "density": 1.04635,
+      "surfaceVolume": 48.2801,
+      "repairs": 4,
+      "optical": {
+        "powerXYZ": [
+          135.85701650969128,
+          142.8836131051369,
+          139.8488506158355
+        ],
+        "nonzeroTexels": 125765,
+        "maxIrradiance": 549.2605590820312,
+        "atlasAge": 32,
+        "motionMax": 3.15234375
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "plane",
+      "frames": 8,
+      "kernelError": 0.00000282699,
+      "updates": 1,
+      "rebuilt": 0,
+      "reused": 105750
+    },
+    {
+      "name": "oblique",
+      "frames": 8,
+      "kernelError": 0.00000128449,
+      "updates": 1,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "name": "moving-plane",
+      "frames": 60,
+      "kernelError": 0.00000282699,
+      "updates": 120,
+      "rebuilt": 6750,
+      "reused": 99000
+    },
+    {
+      "name": "sphere",
+      "frames": 8,
+      "kernelError": 3.20099e-8,
+      "updates": 1,
+      "rebuilt": 0,
+      "reused": 105750
+    }
+  ],
+  "physicalComparisons": [
+    {
+      "name": "calm",
+      "legacyDensity": 1.00002,
+      "newDensity": 1.00002,
+      "surfaceVolumeRelativeDifference": 0,
+      "densityGatePassed": true,
+      "volumeGatePassed": true
+    },
+    {
+      "name": "room",
+      "legacyDensity": 1.11377,
+      "newDensity": 1.07294,
+      "surfaceVolumeRelativeDifference": 0.003299391791362183,
+      "densityGatePassed": true,
+      "volumeGatePassed": true
+    },
+    {
+      "name": "adaptive",
+      "legacyDensity": 1.11365,
+      "newDensity": 1.04635,
+      "surfaceVolumeRelativeDifference": 0.000012427326033126462,
+      "densityGatePassed": true,
+      "volumeGatePassed": true
+    }
+  ],
+  "profiles": [
+    {
+      "mode": "legacy",
+      "repeat": 1,
+      "rawMs": 16.8553,
+      "fluidMs": 6.77533,
+      "pressureMeanMs": 3.75571,
+      "geometryMeanMs": 0.0185648,
+      "rebuilt": 0,
+      "reused": 0
+    },
+    {
+      "mode": "full",
+      "repeat": 1,
+      "rawMs": 21.6032,
+      "fluidMs": 10.2962,
+      "pressureMeanMs": 3.86605,
+      "geometryMeanMs": 0.846471,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "mode": "cached",
+      "repeat": 1,
+      "rawMs": 21.5582,
+      "fluidMs": 10.2266,
+      "pressureMeanMs": 3.85643,
+      "geometryMeanMs": 0.778647,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "mode": "legacy",
+      "repeat": 2,
+      "rawMs": 16.9571,
+      "fluidMs": 6.73744,
+      "pressureMeanMs": 3.72752,
+      "geometryMeanMs": 0.018453,
+      "rebuilt": 0,
+      "reused": 0
+    },
+    {
+      "mode": "full",
+      "repeat": 2,
+      "rawMs": 21.692,
+      "fluidMs": 10.2972,
+      "pressureMeanMs": 3.8734,
+      "geometryMeanMs": 0.847179,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "mode": "cached",
+      "repeat": 2,
+      "rawMs": 21.6019,
+      "fluidMs": 10.2279,
+      "pressureMeanMs": 3.86017,
+      "geometryMeanMs": 0.778289,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "mode": "legacy",
+      "repeat": 3,
+      "rawMs": 16.876,
+      "fluidMs": 6.76544,
+      "pressureMeanMs": 3.74255,
+      "geometryMeanMs": 0.0171857,
+      "rebuilt": 0,
+      "reused": 0
+    },
+    {
+      "mode": "full",
+      "repeat": 3,
+      "rawMs": 21.5425,
+      "fluidMs": 10.2726,
+      "pressureMeanMs": 3.84295,
+      "geometryMeanMs": 0.847784,
+      "rebuilt": 0,
+      "reused": 123975
+    },
+    {
+      "mode": "cached",
+      "repeat": 3,
+      "rawMs": 21.3436,
+      "fluidMs": 10.2976,
+      "pressureMeanMs": 3.88746,
+      "geometryMeanMs": 0.77937,
+      "rebuilt": 0,
+      "reused": 123975
+    }
+  ],
+  "performance": {
+    "legacy": {
+      "rawMs": 16.876,
+      "fluidMs": 6.76544,
+      "pressureMeanMs": 3.74255,
+      "geometryMeanMs": 0.018453
+    },
+    "full": {
+      "rawMs": 21.6032,
+      "fluidMs": 10.2962,
+      "pressureMeanMs": 3.86605,
+      "geometryMeanMs": 0.847179
+    },
+    "cached": {
+      "rawMs": 21.5582,
+      "fluidMs": 10.2279,
+      "pressureMeanMs": 3.86017,
+      "geometryMeanMs": 0.778647
+    }
+  },
+  "gpuValidation": {
+    "attempted": true,
+    "available": false,
+    "initializationError": "0x887A002D"
+  },
+  "caveats": [
+    "Room density acceptance remains separate from kernel and pressure accuracy.",
+    "Six/eight-point quadrature agreement is sampled, not a rigorous global error bound.",
+    "Sparse physical allocation and authoritative flowing coarse bulk remain unimplemented.",
+    "GPU validation was retried, but the Windows debug component is still unavailable (0x887A002D). No GBV-clean claim."
+  ],
+  "exeSha256": "fada0d5fd3d3b5f2bca4e18cc185c8e044883ac5ec4dbea243ae694a29079e85",
+  "shaderSetSha256": "d18f9b2edc3561a2be5f9866fc79aac8892acc0401bf6cc2d0aa3f887f3a78cc"
+}

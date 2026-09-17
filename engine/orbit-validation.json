@@ -1,0 +1,191 @@
+{
+  "date": "2026-09-10",
+  "scope": "Orbit input and CPU scheduling only; no GPU speedup claimed",
+  "gpu": "NVIDIA RTX 5090",
+  "shaderSha256": {
+    "Accumulate.dxil": "307ae6838745e632cbd7347a82c78199206d3deea67fce04331c4e5aeeb45b70",
+    "Clear.dxil": "42e94f4414dca5578d962d20df1724e1e4caa0b95ff84b374c805406a017166d",
+    "Composite.dxil": "82f9a14074b98c77fbaba9d5018e0426ca5eae7b76cf951d0d228be8de26cd60",
+    "PS.dxil": "1dd11d296a6f3cb9010b0f8365a47298314dd1f30c348db1b58973ebf44c67a1",
+    "Transport-0-0.dxil": "9c19f4a421ee12589666aa823c08bff269032401a6a79bc0bbf809ea4ac0373e",
+    "Transport-0-1.dxil": "5ac7dd5e3d745f84df28e6b3677f9a0cb375163e0b0456c7a38077fc419f5079",
+    "Transport-1-0.dxil": "fe14b1580e33d89eb2f1bfdc3450ad21d9b57df307af34f6f8c7ea2dd144bb9d",
+    "Transport-1-1.dxil": "b5924078e4547a7fdeed4a3aa06cd35df691022ffdd390c81abe30525061b81c",
+    "Transport-2-0.dxil": "deeda2a7856a157f826035c807c704d5934557f0ea569f9a511b06dac267d625",
+    "Transport-2-1.dxil": "1c378554c213df93951ca3e2bd2d2a957bce2cc8e1cf8c220256a1c428fb5e4b",
+    "VS.dxil": "5b6d2b4352796532058812dc34a829ba47234d9ccdd82e8806c50935bd1d1562"
+  },
+  "runs": [
+    {
+      "name": "orbit-final",
+      "frames": 300,
+      "dlssEvaluations": 300,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "play-initial",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "play-solved",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "rrHistoryResets": 1,
+      "atlasResets": 127,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "play-blocked",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "rrHistoryResets": 1,
+      "atlasResets": 10,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "play-tuning",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "rrHistoryResets": 1,
+      "atlasResets": 79,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "play-controls",
+      "frames": 360,
+      "dlssEvaluations": 360,
+      "rrHistoryResets": 5,
+      "atlasResets": 181,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "temporal",
+      "frames": 256,
+      "dlssEvaluations": 256,
+      "rrHistoryResets": 1,
+      "atlasResets": 34,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": false
+    },
+    {
+      "name": "lab",
+      "frames": 946,
+      "dlssEvaluations": 946,
+      "rrHistoryResets": 3,
+      "atlasResets": 18,
+      "photonErrors": [
+        0,
+        0
+      ],
+      "pacedPresentation": true
+    }
+  ],
+  "experiments": [
+    {
+      "name": "orbit-before",
+      "measuredFrames": 236,
+      "excludedInitialFrames": 64,
+      "cameraMedianMs": 0.620864,
+      "cameraP95Ms": 0.961312,
+      "cameraMeanMs": 0.6456849999999998
+    },
+    {
+      "name": "orbit-after",
+      "measuredFrames": 236,
+      "excludedInitialFrames": 64,
+      "cameraMedianMs": 0.684608,
+      "cameraP95Ms": 0.950528,
+      "cameraMeanMs": 0.6955765847457628
+    },
+    {
+      "name": "orbit-shadow",
+      "measuredFrames": 236,
+      "excludedInitialFrames": 64,
+      "cameraMedianMs": 0.653472,
+      "cameraP95Ms": 0.953472,
+      "cameraMeanMs": 0.6779414237288137
+    },
+    {
+      "name": "orbit-shadow-repeat",
+      "measuredFrames": 236,
+      "excludedInitialFrames": 64,
+      "cameraMedianMs": 0.642368,
+      "cameraP95Ms": 0.9952,
+      "cameraMeanMs": 0.674843211864407
+    },
+    {
+      "name": "orbit-final",
+      "measuredFrames": 236,
+      "excludedInitialFrames": 64,
+      "cameraMedianMs": 0.625888,
+      "cameraP95Ms": 0.695904,
+      "cameraMeanMs": 0.6373980762711863
+    }
+  ],
+  "experimentConclusion": "Early-out visibility and primary-hit reuse were rejected; final shaders restored exactly to 6a4eb25. Single-path bounded timings are diagnostics, not a statistically controlled benchmark.",
+  "crossRunImageDiagnostic": {
+    "motionDepthNormalAlbedoAndSpecularGuidesIdentical": true,
+    "noisyColorRelativeL1": 2.776147105512417e-9,
+    "rrOutputRelativeL1": 0.001813611844731839,
+    "rrCompressedRgbMeanAbsDifference": 0.00039886053307964825,
+    "tentativeAllTextureThreshold": 0.001,
+    "rrExceededTentativeThreshold": true,
+    "visualInspectionAndDedicatedTemporalRegressionPassed": true,
+    "note": "Identical final shaders; independent RR output was not bit-identical. Cause of the small output difference not isolated."
+  },
+  "checks": {
+    "windowsCtestPassed": 2,
+    "opticsAndSourceTestsPassed": 15,
+    "inputIntegratorHz": [
+      60,
+      120,
+      144,
+      240,
+      360
+    ],
+    "integratorTimeConstantMs": 6,
+    "synthetic125HzInputAt240HzAngularStepVarianceRatio": 0.123665,
+    "scriptedRightDragConservesAngleRadians": 0.4,
+    "temporalRrToNoisyDeltaRatio": 0.0037158285159107534,
+    "finalOrbitMotionMaxPixels": 17.234375,
+    "finalVsReferenceAtlasRelativeL1": 5.37655085481586e-8,
+    "interactiveRawInputRegistered": true,
+    "interactiveResizeMinimizeRestorePassed": true,
+    "finalShaderHashesMatchAcceptedStabilityBuild": true,
+    "mainlineAndReleaseModified": false,
+    "limitations": "Synthetic cadence and scripted-window tests do not establish subjective hardware-mouse feel or a displayed-frame stutter percentage. D3D12 debug layer remains unavailable."
+  }
+}

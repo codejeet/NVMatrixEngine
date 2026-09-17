@@ -1,0 +1,95 @@
+{
+  "checkpoint": "Persistent passive volume and momentum inventory",
+  "date": "2026-09-12",
+  "baselineRevision": "6c7f509",
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "authoritative": false,
+  "defaultEnabled": false,
+  "particleReduction": false,
+  "adaptiveMacResolution": false,
+  "opticalChanges": false,
+  "localIncompressibilityClaimed": false,
+  "nodeTests": 64,
+  "windowsTests": 6,
+  "debugLayer": "Explicit empty-fluid --gpu-validation probe on this build failed before rendering: 0x887A002D. No OS/driver changes; no debug-layer certification.",
+  "runtimeSha256": {
+    "NVMatrixFluidLab.exe": "947d826ed8c31883a1b9021506fbc313b57e1d7997ccf297cd0d89fd4e1f8eee",
+    "shaders/BulkFlux.dxil": "613fee2dc964cc4b315a24868ecd0cb60fdda9e903147b8d4bef7f3d7f888725",
+    "shaders/BulkRestrictFaces.dxil": "be7e9ba9b1c2278cd0bb912a556b647ef785aaf43a7b745d2c06b920efaee2a9",
+    "shaders/BulkVS.dxil": "c7ef58d4276002fd4b638aaadfa25018a1a9e6e9caa23bffe757abb0f56cfe50"
+  },
+  "gpuCases": [
+    {"name":"empty","frames":4,"particles":0,"steps":8,"sourceCalls":1,"resets":1,"volumeM3":0,"relativeVolumeError":0,"momentumErrorKgMps":0,"maxVolumeFraction":0,"overfilledCells":0,"limitedDonorUpdates":0,"maxOutgoingCfl":0.0224406,"validated":true},
+    {"name":"fall","frames":90,"particles":100000,"steps":180,"sourceCalls":1,"resets":1,"volumeM3":5.41494,"relativeVolumeError":4.04911e-7,"momentumErrorKgMps":0.000126433,"maxVolumeFraction":3.22202,"overfilledCells":132,"limitedDonorUpdates":0,"maxOutgoingCfl":0.380881,"validated":true},
+    {"name":"room","frames":300,"particles":105899,"steps":600,"sourceCalls":300,"resets":1,"volumeM3":50.9569,"relativeVolumeError":2.32458e-7,"momentumErrorKgMps":0.0280829,"maxVolumeFraction":2.81943,"overfilledCells":41,"limitedDonorUpdates":0,"maxOutgoingCfl":0.277638,"validated":true},
+    {"name":"translation","frames":120,"particles":100000,"steps":240,"sourceCalls":1,"resets":1,"volumeM3":5.41494,"relativeVolumeError":4.04911e-7,"momentumErrorKgMps":0.000118996,"maxVolumeFraction":0.965412,"overfilledCells":0,"limitedDonorUpdates":0,"maxOutgoingCfl":0.145833,"validated":true},
+    {"name":"high-cfl","frames":120,"particles":100000,"steps":240,"sourceCalls":1,"resets":1,"volumeM3":5.41494,"relativeVolumeError":4.04911e-7,"momentumErrorKgMps":0.0304629,"maxVolumeFraction":0.685018,"overfilledCells":0,"limitedDonorUpdates":27600,"maxOutgoingCfl":14.5833,"validated":true},
+    {"name":"persistent","frames":120,"particles":100000,"steps":240,"sourceCalls":1,"resets":1,"volumeM3":5.41494,"relativeVolumeError":4.04911e-7,"momentumErrorKgMps":0,"maxVolumeFraction":1.65251,"overfilledCells":600,"limitedDonorUpdates":0,"maxOutgoingCfl":0,"validated":true},
+    {"name":"controls","frames":12,"particles":257,"steps":3,"sourceCalls":1,"resets":2,"volumeM3":0.065792,"relativeVolumeError":3.00806e-8,"momentumErrorKgMps":1.51516e-15,"maxVolumeFraction":0.0624876,"overfilledCells":0,"limitedDonorUpdates":0,"maxOutgoingCfl":0.0127734,"validated":true},
+    {"name":"reset-inlet","frames":180,"particles":101376,"steps":160,"sourceCalls":71,"resets":2,"volumeM3":48.7805,"relativeVolumeError":1.6801e-7,"momentumErrorKgMps":0.000475982,"maxVolumeFraction":3.14115,"overfilledCells":100,"limitedDonorUpdates":0,"maxOutgoingCfl":0.201031,"validated":true},
+    {"name":"active","frames":90,"particles":101769,"steps":180,"sourceCalls":90,"resets":1,"volumeM3":48.9696,"relativeVolumeError":2.58437e-7,"momentumErrorKgMps":0.000951964,"maxVolumeFraction":3.07178,"overfilledCells":84,"limitedDonorUpdates":0,"maxOutgoingCfl":0.286761,"validated":true},
+    {"name":"multigrid","frames":90,"particles":101769,"steps":180,"sourceCalls":90,"resets":1,"volumeM3":48.9696,"relativeVolumeError":2.58437e-7,"momentumErrorKgMps":0.00053548,"maxVolumeFraction":3.25349,"overfilledCells":85,"limitedDonorUpdates":0,"maxOutgoingCfl":0.286336,"validated":true},
+    {"name":"overlay","frames":32,"particles":100629,"steps":64,"sourceCalls":32,"resets":1,"volumeM3":48.4211,"relativeVolumeError":1.86629e-7,"momentumErrorKgMps":0.000237991,"maxVolumeFraction":3.29661,"overfilledCells":100,"limitedDonorUpdates":0,"maxOutgoingCfl":0.269478,"validated":true},
+    {"name":"frame-gen","frames":90,"particles":101769,"steps":180,"sourceCalls":90,"resets":1,"volumeM3":48.9696,"relativeVolumeError":2.58437e-7,"momentumErrorKgMps":0.000118996,"maxVolumeFraction":3.03881,"overfilledCells":82,"limitedDonorUpdates":0,"maxOutgoingCfl":0.286758,"validated":true},
+    {"name":"pt","frames":90,"particles":101769,"steps":180,"sourceCalls":90,"resets":1,"volumeM3":48.9696,"relativeVolumeError":2.58437e-7,"momentumErrorKgMps":0.000773471,"maxVolumeFraction":3.03509,"overfilledCells":82,"limitedDonorUpdates":0,"maxOutgoingCfl":0.28676,"validated":true}
+  ],
+  "profiles": [
+    {"name":"bulk-cost-off-1","rawMedianMs":11.7838,"fluidMedianMs":1.94714,"particles":105899,"steps":600},
+    {"name":"bulk-cost-off-2","rawMedianMs":11.8442,"fluidMedianMs":1.95258,"particles":105899,"steps":600},
+    {"name":"bulk-cost-off-3","rawMedianMs":11.7225,"fluidMedianMs":1.95962,"particles":105899,"steps":600},
+    {"name":"bulk-cost-on-1","rawMedianMs":11.8232,"fluidMedianMs":2.00243,"bulkMeanMs":0.0500208,"particles":105899,"steps":600},
+    {"name":"bulk-cost-on-2","rawMedianMs":11.8306,"fluidMedianMs":1.99798,"bulkMeanMs":0.0437763,"particles":105899,"steps":600},
+    {"name":"bulk-cost-on-3","rawMedianMs":11.8938,"fluidMedianMs":1.99984,"bulkMeanMs":0.0415934,"particles":105899,"steps":600}
+  ],
+  "profileSettings": {
+    "output": [
+      1920,
+      1080
+    ],
+    "quality": "Balanced",
+    "scene": "room/inlet/foam/importance/orbit",
+    "frames": 300,
+    "warmup": 32,
+    "fg": false,
+    "fullValidation": false,
+    "bulkMeanIncludesWarmup": true,
+    "note": "Profiles preceded a validation-only extension of fine-face readback and debug wire-tail culling. Transport compute shaders unchanged; overlay disabled."
+  },
+  "allocatedRoomGpuBufferBytes": 2103516,
+  "overallSpeedupClaimed": false,
+  "fineFaceRestrictionSnapshotValidated": true,
+  "temporal": {
+    "reference": "water-temporal-adaptive",
+    "candidate": "water-temporal-bulk",
+    "frames": 320,
+    "preservationGatesPassed": true,
+    "rrHistoryResets": 1,
+    "changes": {
+      "static": {
+        "rawDeltaReductionPercent": -0.01090707823181436,
+        "rrDeltaReductionPercent": 0.7073278932620108,
+        "meanChangePercent": 0.012898791569737611
+      },
+      "risingOrbit": {
+        "rawDeltaReductionPercent": 0.12361938088187863,
+        "rrDeltaReductionPercent": 0.314674270466031,
+        "meanChangePercent": -0.010731458196489019
+      },
+      "topDownOrbit": {
+        "rawDeltaReductionPercent": -0.19701015269735223,
+        "rrDeltaReductionPercent": -0.48887004458235683,
+        "meanChangePercent": 0.0002856575882281831
+      },
+      "liveWaterOrbit": {
+        "rawDeltaReductionPercent": 0.050662392801270606,
+        "rrDeltaReductionPercent": -0.35883119943549424,
+        "meanChangePercent": 0.027954303876520648
+      },
+      "afterRolling": {
+        "rawDeltaReductionPercent": -0.006914974543015262,
+        "rrDeltaReductionPercent": 0.15749180827343556,
+        "meanChangePercent": 0.0013276632075509553
+      }
+    }
+  }
+}

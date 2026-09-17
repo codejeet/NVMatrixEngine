@@ -1,0 +1,29 @@
+<rml><head><title>NVMatrixEngine — Fluid Lab</title><link type="text/rcss" href="lab.rcss"/></head><body>
+<div id="fps">0 FPS</div>
+<div id="wall-controls"><div class="eyebrow">FLOOD CHAMBER / WALL VALVE</div><button id="wall-water" data-action="wall-water">SPEW WALL WATER [T]</button><div id="water-state"/></div>
+<div id="objective"><div class="eyebrow">NVMATRIXENGINE / FLUID LAB</div><div class="title" id="objective-title">Water in motion.</div><div class="muted" id="objective-description">Explore simulated water and spectral light transport.</div></div>
+<div id="receiver"><div id="charge">RECEIVER / 0%</div><div class="track"><div id="fill"/></div><div id="power"/></div>
+<div id="details"><div class="eyebrow">SPECTRAL PLAYGROUND</div><p id="hint"/><p id="laser"/><p id="fluid"/><p id="pt-mode"/><p>GPU liquid uses the actual animated surface for refraction and caustics. Secondary whitewater follows the flow; the wall inlet stops safely at capacity.</p><p>Real Bullet bodies · DXR ray generation · spectral photons · DLSS ray reconstruction</p></div>
+<div id="tuning"><div class="eyebrow">PRECISION MODE / OPTIC LOCKED</div><div id="pose"/></div>
+<div id="context"/>
+<div id="shortcuts">L: laser color · U / H: hints &amp; details · Esc: pause · R: reset</div>
+<div id="pause"><div class="panel"><div class="eyebrow">NVMATRIXENGINE / SETTINGS</div><h1 id="pause-title">Take a breath</h1>
+<button id="resume" data-action="resume">Resume</button>
+<div class="section">CAMERA &amp; LIGHT</div>
+<button id="lens" data-action="lens"/><label id="lens-value"/><input id="lens-fov" type="range" min="90" max="160" step="5" value="120"/>
+<button id="view" data-action="view"/><p>Right-drag to look. Tab switches views. Hold Ctrl to dive. The camera has no waterline clamp.</p>
+<button id="environment" data-action="environment"/><button id="flashlight" data-action="flashlight"/>
+<div id="ball-settings"><div class="section">BALL BUOYANCY</div>
+<button id="ball-density" data-action="ball-density"/><p id="ball-density-info"/>
+<p>Float rises when Ctrl is released. Sink stays submerged and can sink the boat.</p></div>
+<div id="water-settings"><div class="section">LIQUID QUALITY</div>
+<label id="capacity-value"/><input id="particle-limit" type="range" min="100" max="1000" step="50" value="500"/>
+<label id="grid-value"/><input id="grid-resolution" type="range" min="10" max="24" step="2" value="16"/>
+<label id="rate-value"/><input id="simulation-rate" type="range" min="60" max="180" step="30" value="120"/>
+<p>Capacity reserves room for the inlet; it does not spawn particles. Finer cells and higher rates cost GPU time. Applying resets the water.</p>
+<button id="apply-water" data-action="apply-water">Apply quality &amp; reset water</button></div>
+<div class="section">PERFORMANCE &amp; AUDIO</div>
+<button id="frame-gen" data-action="frame-gen">DLSS Frame Generation</button><p id="frame-gen-info"/>
+<label>Background music</label><input id="music" type="range" min="0" max="100" value="15" step="1"/>
+<button data-action="restart">Restart chamber</button><button data-action="quit">Exit lab</button></div></div>
+</body></rml>

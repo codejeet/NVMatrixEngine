@@ -1,0 +1,444 @@
+{
+  "date": "2026-09-10",
+  "scope": "Temporal correctness and interactive pacing; interrupted engine-comparison profiling not resumed",
+  "gpu": "NVIDIA RTX 5090",
+  "shaderSha256": {
+    "Accumulate.dxil": "307ae6838745e632cbd7347a82c78199206d3deea67fce04331c4e5aeeb45b70",
+    "Clear.dxil": "42e94f4414dca5578d962d20df1724e1e4caa0b95ff84b374c805406a017166d",
+    "Composite.dxil": "82f9a14074b98c77fbaba9d5018e0426ca5eae7b76cf951d0d228be8de26cd60",
+    "PS.dxil": "1dd11d296a6f3cb9010b0f8365a47298314dd1f30c348db1b58973ebf44c67a1",
+    "Transport-0-0.dxil": "9c19f4a421ee12589666aa823c08bff269032401a6a79bc0bbf809ea4ac0373e",
+    "Transport-0-1.dxil": "5ac7dd5e3d745f84df28e6b3677f9a0cb375163e0b0456c7a38077fc419f5079",
+    "Transport-1-0.dxil": "fe14b1580e33d89eb2f1bfdc3450ad21d9b57df307af34f6f8c7ea2dd144bb9d",
+    "Transport-1-1.dxil": "b5924078e4547a7fdeed4a3aa06cd35df691022ffdd390c81abe30525061b81c",
+    "Transport-2-0.dxil": "deeda2a7856a157f826035c807c704d5934557f0ea569f9a511b06dac267d625",
+    "Transport-2-1.dxil": "1c378554c213df93951ca3e2bd2d2a957bce2cc8e1cf8c220256a1c428fb5e4b",
+    "VS.dxil": "5b6d2b4352796532058812dc34a829ba47234d9ccdd82e8806c50935bd1d1562"
+  },
+  "runs": [
+    {
+      "name": "play-initial",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "historyResets": 10,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        2804520,
+        10493873,
+        3531105,
+        11337494
+      ],
+      "cameraTruncatedLastFrame": 968,
+      "photonCounters": [
+        65536,
+        47109,
+        47099,
+        42857,
+        9,
+        0,
+        0,
+        0
+      ],
+      "game": {
+        "won": false,
+        "gateOpen": false,
+        "charge": 0,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "initial"
+      }
+    },
+    {
+      "name": "play-solved",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "historyResets": 127,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0.886006,
+      "cameraPathTotals": [
+        3768387,
+        14883554,
+        2288305,
+        13542153
+      ],
+      "cameraTruncatedLastFrame": 969,
+      "photonCounters": [
+        65536,
+        41373,
+        43736,
+        40623,
+        352,
+        0,
+        0,
+        563
+      ],
+      "game": {
+        "won": false,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "solved"
+      }
+    },
+    {
+      "name": "play-blocked",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "historyResets": 10,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        3768387,
+        14883554,
+        2288305,
+        13542153
+      ],
+      "cameraTruncatedLastFrame": 969,
+      "photonCounters": [
+        65536,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "game": {
+        "won": false,
+        "gateOpen": false,
+        "charge": 0,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "blocked"
+      }
+    },
+    {
+      "name": "play-tuning",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "historyResets": 79,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0.90753,
+      "cameraPathTotals": [
+        715467,
+        2534133,
+        766122,
+        2639433
+      ],
+      "cameraTruncatedLastFrame": 370,
+      "photonCounters": [
+        65536,
+        41377,
+        43751,
+        40609,
+        363,
+        0,
+        0,
+        578
+      ],
+      "game": {
+        "won": false,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "tuning"
+      }
+    },
+    {
+      "name": "play-controls",
+      "frames": 360,
+      "dlssEvaluations": 360,
+      "historyResets": 181,
+      "rrHistoryResets": 5,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0.864633,
+      "cameraPathTotals": [
+        4967361,
+        18949133,
+        5951177,
+        20091982
+      ],
+      "cameraTruncatedLastFrame": 24,
+      "photonCounters": [
+        65536,
+        39752,
+        39720,
+        39561,
+        31,
+        0,
+        0,
+        0
+      ],
+      "game": {
+        "won": true,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 1,
+        "throws": 2,
+        "tuneMoves": 1,
+        "tuneTurns": 1,
+        "pose": "initial"
+      }
+    },
+    {
+      "name": "temporal",
+      "frames": 256,
+      "dlssEvaluations": 256,
+      "historyResets": 34,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        1050484,
+        4103921,
+        1171368,
+        4345758
+      ],
+      "cameraTruncatedLastFrame": 466,
+      "photonCounters": [
+        65536,
+        50636,
+        50571,
+        50379,
+        57,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "launch-basename",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "historyResets": 1,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        197484,
+        771008,
+        219014,
+        815234
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "photonCounters": [
+        65536,
+        50636,
+        50575,
+        50392,
+        52,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "launch-relative",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "historyResets": 1,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        197484,
+        771008,
+        219014,
+        815234
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "photonCounters": [
+        65536,
+        50636,
+        50575,
+        50392,
+        52,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "launch-foreign-cwd",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "historyResets": 1,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        197484,
+        771008,
+        219014,
+        815234
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "photonCounters": [
+        65536,
+        50636,
+        50575,
+        50392,
+        52,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "lab",
+      "frames": 908,
+      "dlssEvaluations": 908,
+      "historyResets": 18,
+      "rrHistoryResets": 3,
+      "pacedPresentation": true,
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        24928203,
+        93275152,
+        31385450,
+        100773217
+      ],
+      "cameraTruncatedLastFrame": 2714,
+      "photonCounters": [
+        65536,
+        47108,
+        47100,
+        42895,
+        7,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "stability-dxr-fixed",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "historyResets": 1,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": false,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        197484,
+        771008,
+        219014,
+        815234
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "photonCounters": [
+        65536,
+        50636,
+        50575,
+        50392,
+        52,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "stability-nvapi",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "historyResets": 1,
+      "rrHistoryResets": 1,
+      "pacedPresentation": false,
+      "hitMode": 1,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "cameraPathTotals": [
+        197484,
+        771008,
+        219014,
+        815234
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "photonCounters": [
+        65536,
+        50636,
+        50575,
+        50392,
+        52,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "temporal": {
+    "phases": "static -> prism motion -> settle -> orbit -> settle",
+    "frames": 256,
+    "rrHistoryResets": 1,
+    "atlasResets": 34,
+    "stableSamples": 381853,
+    "meanNoisyLuminanceDelta": 0.008792729865213083,
+    "meanRrLuminanceDelta": 0.00003473349367277055,
+    "rrToNoisyDeltaRatio": 0.003950251424212134,
+    "prismResponse": 0.007187708921491018,
+    "orbitResponse": 0.00629706919854128,
+    "returnError": 0.00021801252071092006,
+    "caveat": "RR versus noisy input in settled fixture, not a before/after benchmark or artifact-free gameplay claim"
+  },
+  "checks": {
+    "opticsNodeTestsPassed": 14,
+    "windowsCtestPassed": true,
+    "sixRaygenVariantsCompiled": true,
+    "playableNineTexturesFinite": true,
+    "blockedAtlasEntirelyZero": true,
+    "temporalMotionAndSettlingPassed": true,
+    "explicitStandardAndNvapiSmokePassed": true,
+    "interactiveResizeMinimizeRestorePassed": true,
+    "debugLayerValidation": "Not run; unavailable in this Windows setup",
+    "mainlineAndPortableReleaseModified": false
+  }
+}

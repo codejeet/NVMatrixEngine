@@ -1,0 +1,651 @@
+{
+  "schema": 1,
+  "date": "2026-09-12",
+  "baseCommit": "ae2fcc7",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Experimental dormant ownership, uniform MAC pressure; full adaptive goal incomplete",
+  "accepted": false,
+  "openFailure": {
+    "case": "wake",
+    "maxDensity": 2.84863,
+    "uniformReferenceMaxDensity": 2.61575,
+    "limit": 2.6257499999999996,
+    "relativeVolumeError": 0.00037527899030198597
+  },
+  "nodeTests": 74,
+  "windowsCTests": 6,
+  "ordinaryFluidRegressionCases": [
+    "constant",
+    "affine",
+    "compression",
+    "roundtrip",
+    "controls",
+    "apic-long (2400 substeps)"
+  ],
+  "debugLayer": {
+    "available": false,
+    "previousInitializationError": "0x887A002D",
+    "gpuBasedValidationExecuted": false
+  },
+  "cases": [
+    {
+      "name": "reference",
+      "frames": 120,
+      "steps": 240,
+      "validated": true,
+      "active": 95234,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": null,
+      "volume": 5.42262,
+      "maxDensity": 1.00004,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "reference-long",
+      "frames": 600,
+      "steps": 1200,
+      "validated": true,
+      "active": 95234,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": null,
+      "volume": 5.42273,
+      "maxDensity": 1.00004,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "reference-wake",
+      "frames": 180,
+      "steps": 360,
+      "validated": true,
+      "active": 100000,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": null,
+      "volume": 5.71556,
+      "maxDensity": 1.84763,
+      "divergenceRms": 0.000126161,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "reference-uniform-wake",
+      "frames": 180,
+      "steps": 360,
+      "validated": true,
+      "active": 100000,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": null,
+      "volume": 5.56919,
+      "maxDensity": 2.61575,
+      "divergenceRms": 0.000131563,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "validated": true,
+      "active": 0,
+      "restMass": 0,
+      "particleMass": 0,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 0,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.030944,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 0,
+      "maxDensity": 0,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "validated": true,
+      "active": 93376,
+      "restMass": 100000,
+      "particleMass": 93376,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 96,
+        "massUnits": 6624,
+        "demotions": 96,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.055232,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 5.419,
+      "maxDensity": 1.00148,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "cycle",
+      "frames": 120,
+      "steps": 221,
+      "validated": true,
+      "active": 100000,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 96,
+        "promotions": 96,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.02752,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 5.41816,
+      "maxDensity": 1.00003,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "calm-long",
+      "frames": 600,
+      "steps": 1200,
+      "validated": true,
+      "active": 93376,
+      "restMass": 100000,
+      "particleMass": 93376,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 96,
+        "massUnits": 6624,
+        "demotions": 96,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.055328,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 5.42836,
+      "maxDensity": 1.00148,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "validated": true,
+      "active": 100000,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 96,
+        "promotions": 96,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.030848,
+        "massError": 0,
+        "linearErrorPerMass": 1.62981e-14,
+        "angularErrorPerMass": 1.14305e-13,
+        "relativeEnergyIncrease": 2.6273e-15
+      },
+      "volume": 5.5671,
+      "maxDensity": 2.84863,
+      "divergenceRms": 0.000111175,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "steps": 240,
+      "validated": true,
+      "active": 100000,
+      "restMass": 100000,
+      "particleMass": 100000,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 0,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.030464,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 6.63696,
+      "maxDensity": 1.88549,
+      "divergenceRms": 0.0453312,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "room",
+      "frames": 90,
+      "steps": 180,
+      "validated": true,
+      "active": 101769,
+      "restMass": 101769,
+      "particleMass": 101769,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 0,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.032512,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 47.9212,
+      "maxDensity": 1.23495,
+      "divergenceRms": 0.000521856,
+      "penetration": 0.00000849739,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "multigrid",
+      "frames": 120,
+      "steps": 240,
+      "validated": true,
+      "active": 93376,
+      "restMass": 100000,
+      "particleMass": 93376,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 96,
+        "massUnits": 6624,
+        "demotions": 96,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.054688,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 5.419,
+      "maxDensity": 1.00148,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "bulk",
+      "frames": 120,
+      "steps": 240,
+      "validated": true,
+      "active": 93376,
+      "restMass": 100000,
+      "particleMass": 93376,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 96,
+        "massUnits": 6624,
+        "demotions": 96,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.054496,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 5.419,
+      "maxDensity": 1.00148,
+      "divergenceRms": 0,
+      "penetration": 0,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "fg",
+      "frames": 60,
+      "steps": 120,
+      "validated": true,
+      "active": 101179,
+      "restMass": 101179,
+      "particleMass": 101179,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 0,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.034016,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 48.0041,
+      "maxDensity": 1.2824,
+      "divergenceRms": 0.000436138,
+      "penetration": 5.21541e-8,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "pt",
+      "frames": 60,
+      "steps": 120,
+      "validated": true,
+      "active": 101179,
+      "restMass": 101179,
+      "particleMass": 101179,
+      "interior": {
+        "mode": "dormant coarse ownership with global fine pressure",
+        "validated": true,
+        "ownedCells": 0,
+        "massUnits": 0,
+        "demotions": 0,
+        "promotions": 0,
+        "samplesRemovedThisFrame": 0,
+        "samplesRestoredThisFrame": 0,
+        "invalid": 0,
+        "latticeCandidates": 0,
+        "shapeRejected": 0,
+        "weightedRejected": 0,
+        "centroidRejected": 0,
+        "latticeRejected": 0,
+        "lastMs": 0.031008,
+        "massError": 0,
+        "linearErrorPerMass": 0,
+        "angularErrorPerMass": 0,
+        "relativeEnergyIncrease": 0
+      },
+      "volume": 48.0047,
+      "maxDensity": 1.33291,
+      "divergenceRms": 0.000431378,
+      "penetration": 5.21541e-8,
+      "badRoots": 0,
+      "truncated": 0,
+      "photonFailures": [
+        0,
+        0
+      ]
+    }
+  ],
+  "profiles": {
+    "calm": {
+      "off": {
+        "frames": 804,
+        "fluidMs": 1.770115,
+        "surfaceMs": 1.406655,
+        "rawFrameMs": 7.7141,
+        "runMedians": [
+          {
+            "fluid": 1.76995,
+            "raw": 7.6783
+          },
+          {
+            "fluid": 1.77117,
+            "raw": 7.7805
+          },
+          {
+            "fluid": 1.76944,
+            "raw": 7.7136
+          }
+        ]
+      },
+      "on": {
+        "frames": 804,
+        "fluidMs": 1.8391199999999999,
+        "surfaceMs": 1.403565,
+        "rawFrameMs": 7.7688500000000005,
+        "runMedians": [
+          {
+            "fluid": 1.84234,
+            "raw": 7.7298
+          },
+          {
+            "fluid": 1.8423,
+            "raw": 7.8692
+          },
+          {
+            "fluid": 1.83398,
+            "raw": 7.7403
+          }
+        ]
+      }
+    },
+    "room": {
+      "off": {
+        "frames": 804,
+        "fluidMs": 2.0675850000000002,
+        "surfaceMs": 1.154035,
+        "rawFrameMs": 12.27305,
+        "runMedians": [
+          {
+            "fluid": 2.0609,
+            "raw": 12.1885
+          },
+          {
+            "fluid": 2.06803,
+            "raw": 12.6111
+          },
+          {
+            "fluid": 2.07651,
+            "raw": 12.2395
+          }
+        ]
+      },
+      "on": {
+        "frames": 804,
+        "fluidMs": 2.1601600000000003,
+        "surfaceMs": 1.1828949999999998,
+        "rawFrameMs": 12.30115,
+        "runMedians": [
+          {
+            "fluid": 2.17123,
+            "raw": 12.7413
+          },
+          {
+            "fluid": 2.15501,
+            "raw": 11.9925
+          },
+          {
+            "fluid": 2.15258,
+            "raw": 12.3037
+          }
+        ]
+      }
+    }
+  },
+  "temporal": {
+    "passed": true,
+    "prefix": "water-temporal-interior",
+    "reference": "water-temporal-resampling",
+    "frames": 320,
+    "rrResets": 1,
+    "maxBrightnessChangePercent": 0.02894,
+    "maxRawDeltaIncreasePercent": 0.074754,
+    "maxRrDeltaIncreasePercent": 0.205049,
+    "note": "Includes refracted parallax and physical changes; not pure variance. Shallow room has no coarse owners."
+  },
+  "exeSha256": "753d0323399e93a6be42c31d8179cb97536ce6dbfb34efa7e5339d11c4881be0",
+  "shaderSetSha256": "3764607a713cd06aec6b6df661a672cd27076aced33ea7d935d5ea19596f288a"
+}

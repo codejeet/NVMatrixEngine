@@ -1,0 +1,137 @@
+{
+  "note": "Motion-compensated consecutive real frames, raw and RR separately. Reprojection uses the current primary-surface guide, so this metric also includes refracted parallax mismatch; it is not pure estimator variance. Live phases include genuine surface/light changes. FG is off.",
+  "comparisonMode": "preserve",
+  "prefix": "water-temporal-mac",
+  "current": {
+    "static": {
+      "samples": 51650.666666666664,
+      "rawDelta": 0.006122613109734856,
+      "rrDelta": 0.0006214475140293991,
+      "meanLuminance": 0.14538671207079382,
+      "atlasRelativeDelta": 0.05066988087432608,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "risingOrbit": {
+      "samples": 78395.33333333333,
+      "rawDelta": 0.004498603560466851,
+      "rrDelta": 0.0012928957506325982,
+      "meanLuminance": 0.1350401680791848,
+      "atlasRelativeDelta": 0.007192800985037751,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "topDownOrbit": {
+      "samples": 81709.66666666667,
+      "rawDelta": 0.003785768870322521,
+      "rrDelta": 0.000466891489677734,
+      "meanLuminance": 0.13459360348002705,
+      "atlasRelativeDelta": 0.0073003529442204436,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "liveWaterOrbit": {
+      "samples": 88245.33333333333,
+      "rawDelta": 0.008525087542982262,
+      "rrDelta": 0.001251939928380177,
+      "meanLuminance": 0.1344210403663716,
+      "atlasRelativeDelta": 0.06128859165056141,
+      "atlasResets": 10,
+      "fluidSteps": 288,
+      "fluidHistoryResets": 10
+    },
+    "afterRolling": {
+      "samples": 66496.66666666667,
+      "rawDelta": 0.007932139416054555,
+      "rrDelta": 0.001462417903321361,
+      "meanLuminance": 0.1327778692047736,
+      "atlasRelativeDelta": 0.0604337907542833,
+      "atlasResets": 58,
+      "fluidSteps": 384,
+      "fluidHistoryResets": 10
+    }
+  },
+  "reference": "water-temporal-mac-reference",
+  "before": {
+    "static": {
+      "samples": 51687.333333333336,
+      "rawDelta": 0.006124378234412029,
+      "rrDelta": 0.0006281422807220455,
+      "meanLuminance": 0.14539147520164827,
+      "atlasRelativeDelta": 0.05017133803970383,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "risingOrbit": {
+      "samples": 78447,
+      "rawDelta": 0.004492507845993663,
+      "rrDelta": 0.0012984590894029057,
+      "meanLuminance": 0.13505699812165614,
+      "atlasRelativeDelta": 0.007156483078978904,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "topDownOrbit": {
+      "samples": 81774.33333333333,
+      "rawDelta": 0.0037966698473659456,
+      "rrDelta": 0.00046813000969918544,
+      "meanLuminance": 0.13461234294918348,
+      "atlasRelativeDelta": 0.00728050621849551,
+      "atlasResets": 10,
+      "fluidSteps": 192,
+      "fluidHistoryResets": 10
+    },
+    "liveWaterOrbit": {
+      "samples": 88283.33333333333,
+      "rawDelta": 0.008508529972404321,
+      "rrDelta": 0.0012478243049151884,
+      "meanLuminance": 0.13438359733780647,
+      "atlasRelativeDelta": 0.06127774017125428,
+      "atlasResets": 10,
+      "fluidSteps": 288,
+      "fluidHistoryResets": 10
+    },
+    "afterRolling": {
+      "samples": 66442.66666666667,
+      "rawDelta": 0.00796348356956731,
+      "rrDelta": 0.0014821568901797018,
+      "meanLuminance": 0.1327638855134717,
+      "atlasRelativeDelta": 0.0604303167114757,
+      "atlasResets": 58,
+      "fluidSteps": 384,
+      "fluidHistoryResets": 10
+    }
+  },
+  "changes": {
+    "static": {
+      "rawDeltaReductionPercent": 0.028821287804448037,
+      "rrDeltaReductionPercent": 1.0658041813314534,
+      "meanChangePercent": -0.0032760729938630107
+    },
+    "risingOrbit": {
+      "rawDeltaReductionPercent": -0.1356862287647198,
+      "rrDeltaReductionPercent": 0.428456993039783,
+      "meanChangePercent": -0.012461436804755976
+    },
+    "topDownOrbit": {
+      "rawDeltaReductionPercent": 0.2871194357599305,
+      "rrDeltaReductionPercent": 0.264567533759974,
+      "meanChangePercent": -0.01392106306589147
+    },
+    "liveWaterOrbit": {
+      "rawDeltaReductionPercent": -0.1945996621230961,
+      "rrDeltaReductionPercent": -0.32982395428404754,
+      "meanChangePercent": 0.027862796730326878
+    },
+    "afterRolling": {
+      "rawDeltaReductionPercent": 0.3935985205336223,
+      "rrDeltaReductionPercent": 1.3317744558032252,
+      "meanChangePercent": 0.01053275237299367
+    }
+  }
+}

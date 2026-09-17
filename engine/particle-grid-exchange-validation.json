@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "scope": "Isolated GPU single-owner particle/grid exchange with existing precise implicit transport; not live Narrow Band FLIP integration",
+  "liveFluidSystemEnabled": false,
+  "defaultLaunchersChanged": false,
+  "gpuDebugLayerEnabled": false,
+  "gpuBasedValidationEnabled": false,
+  "performanceMeasured": false,
+  "validation": {
+    "javascriptTestsPassed": 204,
+    "nativeTestsPassed": 7,
+    "hardwareCases": [
+      {
+        "name": "fractional flowing retire/restore",
+        "maxJointQuantityError": 2.77556e-17,
+        "liveParticles": 9
+      },
+      {
+        "name": "allocation exhaustion",
+        "maxJointQuantityError": 1.73472e-18,
+        "liveParticles": 4
+      },
+      {
+        "name": "missing restoration sites",
+        "maxJointQuantityError": 1.73472e-18,
+        "liveParticles": 6
+      },
+      {
+        "name": "capacity refusal",
+        "maxJointQuantityError": 0,
+        "liveParticles": 5
+      },
+      {
+        "name": "invalid restoration sites",
+        "maxJointQuantityError": 1.73472e-18,
+        "liveParticles": 6
+      },
+      {
+        "name": "closing grid owner",
+        "maxJointQuantityError": 3.46945e-18,
+        "liveParticles": 6
+      },
+      {
+        "name": "reserved future emitter slots",
+        "maxJointQuantityError": 1.73472e-18,
+        "liveParticles": 4
+      }
+    ],
+    "stagesPerCase": 7,
+    "checks": [
+      "joint volume and linear momentum",
+      "translational kinetic energy does not increase through exchange/transport",
+      "FP32 particle cache agrees with FP64 quantity",
+      "zero cached velocity increment preserves authoritative momentum",
+      "known velocity increment imported once",
+      "restoration refusal retains grid ownership",
+      "reserved future emitter IDs",
+      "seeded/restored positions replace stale history",
+      "invalid CPU API order and bounds rejected"
+    ]
+  },
+  "generatedUtc": "2026-09-13T23:41:12.729Z",
+  "sourceSha256": {
+    "engine/CMakeLists.txt": "d3d5e8249faf89a8f3887b140e519990fe13f7387fcb714b45506f234d9fc9c8",
+    "engine/compile-shaders.ps1": "361b8b87c6948408bd6151bb7345e5c6a1c08a99224211ff0573d09a3f07df1b",
+    "engine/compile-fluid-exchange.ps1": "0441feea4fdfddabcef30bc939e7aaa9d36aafd382988316fa5c35d712fa13a4",
+    "engine/particle-grid-exchange.test.mjs": "bf030ff02d039a259c4275eadb73a88b767dbdd45514111de78ae5776ec8fdc7",
+    "engine/tests/fluid_exchange_gpu.cpp": "0cdc5bab1882bba2a724fb1f8060bcc93f0c4ed59dd88da5ee5bf92e176b0fba",
+    "engine/src/fluid/fluid_particle_grid_exchange.h": "e6f6b4fc866f2efab862346dff857d4e1d8930b348521eb2396ba56596aacaff",
+    "engine/src/fluid/fluid_particle_grid_exchange.cpp": "9d684f4a08ae71e373d27727b42b54096b112d6320f528dd6c2d7eccd840feea",
+    "engine/shaders/fluid/particle-grid-exchange.hlsl": "11affddd1709ec1d5c9f91814a9759c94543b608aa1a14b82b6e84fa3d1d9bb9",
+    "engine/src/fluid/fluid_implicit_transport.h": "3a9e7ee5e67a265cf885ae1987a6804158d13c01fe7436b9c37b5893bab63d79",
+    "engine/src/fluid/fluid_implicit_transport.cpp": "a134a5139febe9424a6c8f26b1bde656c611e34a9a09edd7a67ea52cd8abc0a5",
+    "engine/shaders/fluid/bulk-implicit.hlsl": "4e4c0e54460a1facf5ec850d2b66929d26b53b55f331d63ffdb6adeaaf94a8d4",
+    "engine/shaders/fluid/bulk-numeric.hlsli": "650498d786805408ff55a923eb0cf1b0578028b4146a3e0d3d30b7c7837e9ed3"
+  },
+  "builds": [
+    {
+      "file": "NVMatrixFluidLab.exe",
+      "sha256": "01b4c5650a78f86f39924b56c89c4a5ecaab36787ef309b31bfbc3913ef6bb53",
+      "modifiedUtc": "2026-09-13T23:38:45.577Z"
+    },
+    {
+      "file": "NVMatrixEngineExchangeGpuTest.exe",
+      "sha256": "b68679d028ea2131eefa216ca01ef92c04f88699eaca993704f06d28c3ac2731",
+      "modifiedUtc": "2026-09-13T23:38:50.930Z"
+    }
+  ],
+  "shaderSha256": {
+    "ExchangeClear.dxil": "6681eeddf4ffd02c49e516caf6dd2ffb29f4533b193c1cd6c9aab7fe5cf6544c",
+    "ExchangeDeposit.dxil": "42d268cfb5620bbbc8b25d382e73a80dd4075cb839180435a2ad8fb7732c2c33",
+    "ExchangeFree.dxil": "18ba06a66597744ac8ab18c49de7d0b7d8d084dcae8c8a6d0b6f8fd34ca3cb69",
+    "ExchangeReset.dxil": "8c3cd76d54e8b86e17f7c28bdbc1763a44a9d712504f180a42813c1ac9666286",
+    "ExchangeRestore.dxil": "4ede80872c14566814d62327a9d1fae8f783ee0ff7295f0382d0727b44365756",
+    "ExchangeSeed.dxil": "eab02f8b6a7768f6c61c556b9c14e0d4ebd8044e4dc1307b88ddc0987340bd74",
+    "ExchangeVelocityDelta.dxil": "c1e5de542f0695124b4681d4d96e3f683704e38453f64241342073b1ea9dd5fa",
+    "ImplicitClear-precise.dxil": "a4ef89eedeab0ee8b5446e72f63f071204403564dfb70931e6689df1db5669b1",
+    "ImplicitExport-precise.dxil": "46eaa13c50a7f7e91f191183bd11bc7d7b8830571dd3d79735499d15538b2356",
+    "ImplicitFinish-precise.dxil": "153533167fd00122ff2d8b289f382a46f6a3e45e80b415bd375655c275a280db",
+    "ImplicitInitialize-precise.dxil": "cda895a2c776d4de1d2177fc90014ff575f4d193d13fa180300e70330e9962af",
+    "ImplicitIterate-precise.dxil": "f5748a4407982ceb0eca08d93bd0a53344ae8c096e0e9f0343fc77eb50e34df8",
+    "ImplicitPrepare-precise.dxil": "1ed1e20b8faf913bc56165a10adc82c9ccb4d8fae4da1c1d2daba47a9632d1d7",
+    "ImplicitResidual-precise.dxil": "baa18bf30f8cbdca8c7656ee0f398a81afca919a8887ad1bc2ef6ed3e7482daa"
+  },
+  "regressions": [
+    {
+      "name": "bulk-coupled-short-time",
+      "sha256": "7b07e7c46a62d9cd45b1cbf4d2658dd765b149b38060484b209ab61c57971033",
+      "frames": 8,
+      "dlssEvaluations": 8,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "bulk": {
+        "validated": true,
+        "invalid": 0,
+        "relativeVolumeError": 1.00064e-8,
+        "excessVolumeM3": 0
+      }
+    },
+    {
+      "name": "bulk-coupled-adaptive-time",
+      "sha256": "2c0827682cec277e489977b84e15648bd291fbcfd8a19c9873f62e0c10d3b6cd",
+      "frames": 64,
+      "dlssEvaluations": 64,
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "bulk": {
+        "validated": true,
+        "invalid": 0,
+        "relativeVolumeError": 4.78874e-8,
+        "excessVolumeM3": 0
+      }
+    },
+    {
+      "name": "launch-basename",
+      "sha256": "649e8d46a38e6a11dc00c8ee9fc34c616da740b0c1c03a82cd6a14f41f9de911",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "adapter": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "name": "launch-relative",
+      "sha256": "0e4ccf686fcbba57792dc809737920bc22dc1872535706c407d5a43c36dd68f3",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "adapter": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "name": "launch-foreign-cwd",
+      "sha256": "607bb19c5417c102b4303853e41484a6aa606c62fe77bb46190f0e2dc7045532",
+      "frames": 48,
+      "dlssEvaluations": 48,
+      "adapter": "NVIDIA GeForce RTX 5090"
+    },
+    {
+      "name": "lab",
+      "sha256": "a742060a0b54df8e01d359e3701e4782ae2dee414f349fc11cadabd371d9ce33",
+      "frames": 189,
+      "dlssEvaluations": 189,
+      "adapter": "NVIDIA GeForce RTX 5090"
+    }
+  ],
+  "remaining": [
+    "live mass/bin/P2G and source consumers",
+    "geometry-aware band and restoration sites",
+    "APIC affine/angular transfer or error-controlled admission",
+    "joint grid/particle pressure and momentum coupling",
+    "canonical fluid surface ownership and optical continuity",
+    "sparse physical allocation and remaining full-spec requirements"
+  ]
+}

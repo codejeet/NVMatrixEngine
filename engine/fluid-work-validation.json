@@ -1,0 +1,1294 @@
+{
+  "schema": 1,
+  "date": "2026-09-13T08:07:35.686Z",
+  "baseCommit": "c1841a9",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "GPU-compacted exact P2G/density execution; dense transfer storage and broader adaptive specification remain incomplete",
+  "scopedChecksPassed": true,
+  "cpuTests": 93,
+  "windowsTests": 7,
+  "cases": [
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "samples": 0,
+      "mass": 0,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 0,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 0,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 0,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 8,
+        "sameStateDensityComparisons": 16,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.012416,
+          0.003744,
+          0.002304,
+          0.0344,
+          0.079616
+        ],
+        "meanMs": [
+          0.012624,
+          0.003544,
+          0.002376,
+          0.034528,
+          0.079008
+        ]
+      }
+    },
+    {
+      "name": "constant",
+      "frames": 1,
+      "steps": 0,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 588,
+        "frameFaceBuilds": 1,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 0,
+        "occupiedBinVisits": 11088,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 1,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.008704,
+          0.826912,
+          0,
+          0,
+          0
+        ],
+        "meanMs": [
+          0.008704,
+          0.826912,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "affine",
+      "frames": 1,
+      "steps": 0,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 588,
+        "frameFaceBuilds": 1,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 0,
+        "occupiedBinVisits": 11088,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 1,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.009088,
+          0.794112,
+          0,
+          0,
+          0
+        ],
+        "meanMs": [
+          0.009088,
+          0.794112,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "compression",
+      "frames": 1,
+      "steps": 0,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 588,
+        "frameFaceBuilds": 1,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 0,
+        "occupiedBinVisits": 11088,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 1,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.008896,
+          0.41648,
+          0,
+          0,
+          0
+        ],
+        "meanMs": [
+          0.008896,
+          0.41648,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "roundtrip",
+      "frames": 1,
+      "steps": 0,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 588,
+        "frameFaceBuilds": 1,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 0,
+        "occupiedBinVisits": 11088,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 1,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.0088,
+          0.77232,
+          0.030464,
+          0,
+          0
+        ],
+        "meanMs": [
+          0.0088,
+          0.77232,
+          0.030464,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "controls",
+      "frames": 12,
+      "steps": 3,
+      "samples": 257,
+      "mass": 257,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 381,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 0,
+        "frameFaceBuilds": 0,
+        "frameDensityTiles": 0,
+        "frameDensityBuilds": 0,
+        "occupiedBinVisits": 0,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 6,
+        "sameStateDensityComparisons": 8,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "meanMs": [
+          0.00421333,
+          0.005032,
+          0.005984,
+          0.00573067,
+          0.0264133
+        ]
+      }
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 1176,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 336,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 23100,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.018912,
+          1.34992,
+          0.06064,
+          0.034624,
+          0.180288
+        ],
+        "meanMs": [
+          0.0187181,
+          1.35933,
+          0.0594997,
+          0.0362619,
+          0.181283
+        ]
+      }
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 2474,
+        "lastDensityTiles": 653,
+        "frameFaceTiles": 4956,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 2620,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 38288,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.021376,
+          0.809856,
+          0.072096,
+          0.057728,
+          0.536384
+        ],
+        "meanMs": [
+          0.0197811,
+          1.15387,
+          0.061568,
+          0.0510475,
+          0.288705
+        ]
+      }
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 979,
+        "lastDensityTiles": 271,
+        "frameFaceTiles": 1950,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 1082,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 27091,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 360,
+        "sameStateDensityComparisons": 720,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.017664,
+          1.36522,
+          0.055936,
+          0.060096,
+          0.300352
+        ],
+        "meanMs": [
+          0.0184151,
+          1.37171,
+          0.0585417,
+          0.0525499,
+          0.238651
+        ]
+      }
+    },
+    {
+      "name": "interior",
+      "frames": 120,
+      "steps": 240,
+      "samples": 93376,
+      "mass": 93376,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 1176,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 336,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 23100,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.019936,
+          1.4519,
+          0.057728,
+          0.037792,
+          0.180704
+        ],
+        "meanMs": [
+          0.0187664,
+          1.31727,
+          0.0580739,
+          0.0397141,
+          0.18186
+        ]
+      }
+    },
+    {
+      "name": "interior-wake",
+      "frames": 180,
+      "steps": 360,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 983,
+        "lastDensityTiles": 273,
+        "frameFaceTiles": 1957,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 1088,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 27099,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 360,
+        "sameStateDensityComparisons": 720,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.01776,
+          1.30957,
+          0.054592,
+          0.062816,
+          0.302944
+        ],
+        "meanMs": [
+          0.0186242,
+          1.31425,
+          0.057822,
+          0.0510327,
+          0.243622
+        ]
+      }
+    },
+    {
+      "name": "resample-fall",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 2472,
+        "lastDensityTiles": 663,
+        "frameFaceTiles": 4951,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 2662,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 38188,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.020192,
+          1.01491,
+          0.073056,
+          0.057472,
+          0.344256
+        ],
+        "meanMs": [
+          0.0191491,
+          1.1144,
+          0.0614853,
+          0.0529501,
+          0.287587
+        ]
+      }
+    },
+    {
+      "name": "long",
+      "frames": 1200,
+      "steps": 2400,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 432,
+        "lastDensityTiles": 144,
+        "frameFaceTiles": 864,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 576,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 21421,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 2,
+        "sameStateDensityComparisons": 4,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.01584,
+          1.31536,
+          0.103872,
+          0.059168,
+          0.288608
+        ],
+        "meanMs": [
+          0.0169068,
+          0.553237,
+          0.0940648,
+          0.0578846,
+          0.277486
+        ]
+      }
+    },
+    {
+      "name": "room",
+      "frames": 90,
+      "steps": 180,
+      "samples": 101769,
+      "mass": 101769,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 934,
+        "lastDensityTiles": 228,
+        "frameFaceTiles": 1861,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 912,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 29993,
+        "allocatedBytes": 35520,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 180,
+        "sameStateDensityComparisons": 360,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.01728,
+          0.720576,
+          0.055392,
+          0.058592,
+          0.2952
+        ],
+        "meanMs": [
+          0.0185241,
+          0.667828,
+          0.0577209,
+          0.0608988,
+          0.293711
+        ]
+      }
+    },
+    {
+      "name": "odd",
+      "frames": 60,
+      "steps": 120,
+      "samples": 101179,
+      "mass": 101179,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 907,
+        "lastDensityTiles": 232,
+        "frameFaceTiles": 1817,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 924,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 29646,
+        "allocatedBytes": 35520,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 120,
+        "sameStateDensityComparisons": 240,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.017344,
+          0.777696,
+          0.057728,
+          0.059328,
+          0.298272
+        ],
+        "meanMs": [
+          0.0163072,
+          0.663066,
+          0.057688,
+          0.0585131,
+          0.29946
+        ]
+      }
+    },
+    {
+      "name": "mac",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 588,
+        "lastDensityTiles": 0,
+        "frameFaceTiles": 1176,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 336,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 23100,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.017568,
+          1.57587,
+          0.060896,
+          0.034368,
+          0.18096
+        ],
+        "meanMs": [
+          0.0180016,
+          1.35156,
+          0.0598707,
+          0.0398163,
+          0.183929
+        ]
+      }
+    },
+    {
+      "name": "mgpcg",
+      "frames": 120,
+      "steps": 240,
+      "samples": 100000,
+      "mass": 100000,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 2808,
+        "densityTileCapacity": 936,
+        "lastFaceTiles": 2447,
+        "lastDensityTiles": 669,
+        "frameFaceTiles": 4890,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 2664,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 39789,
+        "allocatedBytes": 30272,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 240,
+        "sameStateDensityComparisons": 480,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.020384,
+          1.17949,
+          0.073856,
+          0.057216,
+          0.681504
+        ],
+        "meanMs": [
+          0.0192515,
+          1.15706,
+          0.0619696,
+          0.0650819,
+          0.560561
+        ]
+      }
+    },
+    {
+      "name": "fg",
+      "frames": 60,
+      "steps": 120,
+      "samples": 101179,
+      "mass": 101179,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 906,
+        "lastDensityTiles": 232,
+        "frameFaceTiles": 1814,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 924,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 29688,
+        "allocatedBytes": 35520,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 120,
+        "sameStateDensityComparisons": 240,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.01744,
+          0.704,
+          0.057568,
+          0.059328,
+          0.293408
+        ],
+        "meanMs": [
+          0.0163445,
+          0.665923,
+          0.0576688,
+          0.0687045,
+          0.29686
+        ]
+      }
+    },
+    {
+      "name": "pt",
+      "frames": 60,
+      "steps": 120,
+      "samples": 101179,
+      "mass": 101179,
+      "volumeDifference": 0,
+      "differences": {
+        "postStepMaxRelativeDensity": 0,
+        "postStepOccupiedVolume": 0,
+        "meanHeight": 0,
+        "maxSpeed": 0
+      },
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 906,
+        "lastDensityTiles": 232,
+        "frameFaceTiles": 1814,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 924,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 29688,
+        "allocatedBytes": 35520,
+        "validated": true,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 120,
+        "sameStateDensityComparisons": 240,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.015808,
+          0.694176,
+          0.057056,
+          0.05904,
+          0.2952
+        ],
+        "meanMs": [
+          0.0192533,
+          0.624497,
+          0.0574667,
+          0.0585541,
+          0.310916
+        ]
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "mode": "dense",
+      "repeat": 1,
+      "rawMedianMs": 12.0177,
+      "fluidMedianMs": 2.94605,
+      "rawP95Ms": 14.6972,
+      "work": null
+    },
+    {
+      "mode": "dense",
+      "repeat": 2,
+      "rawMedianMs": 12.0271,
+      "fluidMedianMs": 2.93843,
+      "rawP95Ms": 15.3913,
+      "work": null
+    },
+    {
+      "mode": "dense",
+      "repeat": 3,
+      "rawMedianMs": 12.0699,
+      "fluidMedianMs": 2.92627,
+      "rawP95Ms": 14.9021,
+      "work": null
+    },
+    {
+      "mode": "sparse",
+      "repeat": 1,
+      "rawMedianMs": 11.8365,
+      "fluidMedianMs": 2.83312,
+      "rawP95Ms": 14.69,
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 988,
+        "lastDensityTiles": 228,
+        "frameFaceTiles": 1976,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 912,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 33304,
+        "allocatedBytes": 35520,
+        "validated": false,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 0,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.015904,
+          0.432352,
+          0.059264,
+          0.059552,
+          0.295904
+        ],
+        "meanMs": [
+          0.0162753,
+          0.40665,
+          0.0579581,
+          0.063571,
+          0.295561
+        ]
+      }
+    },
+    {
+      "mode": "sparse",
+      "repeat": 2,
+      "rawMedianMs": 11.9431,
+      "fluidMedianMs": 2.83709,
+      "rawP95Ms": 14.9805,
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 983,
+        "lastDensityTiles": 228,
+        "frameFaceTiles": 1967,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 912,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 32905,
+        "allocatedBytes": 35520,
+        "validated": false,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 0,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.01584,
+          0.4528,
+          0.059296,
+          0.05984,
+          0.296864
+        ],
+        "meanMs": [
+          0.0168912,
+          0.41344,
+          0.0587285,
+          0.0628626,
+          0.299798
+        ]
+      }
+    },
+    {
+      "mode": "sparse",
+      "repeat": 3,
+      "rawMedianMs": 11.9849,
+      "fluidMedianMs": 2.83184,
+      "rawP95Ms": 16.1197,
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 982,
+        "lastDensityTiles": 228,
+        "frameFaceTiles": 1964,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 912,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 33086,
+        "allocatedBytes": 35520,
+        "validated": false,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 0,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.015776,
+          0.413056,
+          0.060224,
+          0.060064,
+          0.29744
+        ],
+        "meanMs": [
+          0.0163264,
+          0.414853,
+          0.0580009,
+          0.0615477,
+          0.299026
+        ]
+      }
+    }
+  ],
+  "multigridProfiles": [
+    {
+      "mode": "dense",
+      "rawMedianMs": 16.5624,
+      "fluidMedianMs": 6.72368,
+      "work": null
+    },
+    {
+      "mode": "sparse",
+      "rawMedianMs": 16.4496,
+      "fluidMedianMs": 6.54243,
+      "work": {
+        "storage": "dense-transfer-cache",
+        "execution": "compact-halo-tiles",
+        "faceTileCapacity": 3300,
+        "densityTileCapacity": 1100,
+        "lastFaceTiles": 983,
+        "lastDensityTiles": 228,
+        "frameFaceTiles": 1966,
+        "frameFaceBuilds": 2,
+        "frameDensityTiles": 912,
+        "frameDensityBuilds": 4,
+        "occupiedBinVisits": 33774,
+        "allocatedBytes": 35520,
+        "validated": false,
+        "sameStateFaceMaxDifference": 0,
+        "sameStateDensityMaxDifference": 0,
+        "sameStateFaceComparisons": 0,
+        "sameStateDensityComparisons": 0,
+        "timingColumns": [
+          "classification",
+          "P2G",
+          "G2P",
+          "densityClassification",
+          "densitySolve"
+        ],
+        "lastMs": [
+          0.017184,
+          0.449472,
+          0.060576,
+          0.05984,
+          0.591488
+        ],
+        "meanMs": [
+          0.0162733,
+          0.426045,
+          0.0585029,
+          0.0632003,
+          0.587894
+        ]
+      }
+    }
+  ],
+  "temporal": [
+    {
+      "frame": 128,
+      "rrResets": 1
+    },
+    {
+      "frame": 176,
+      "rrResets": 1
+    },
+    {
+      "frame": 224,
+      "rrResets": 1
+    },
+    {
+      "frame": 272,
+      "rrResets": 1
+    },
+    {
+      "frame": 320,
+      "rrResets": 1
+    }
+  ],
+  "debugView": {
+    "frames": 12,
+    "validated": true,
+    "visible": true,
+    "mode": 7,
+    "cyanPixels": 146002
+  },
+  "profileScope": "Three interleaved same-build 1080p Balanced room/inlet/foam/orbit runs per uniform/compact mode, plus one MGPCG comparison; FG and validation off.",
+  "exeSha256": "995f7d7bc273eb188f2557a28f9bb929d9b2652f280a0eb3c08d9967b8add03d",
+  "shaderSetSha256": "92e073b1af56739e9caa9e13e872b016221d9269a13ae357e9be7dcf69bf20ce",
+  "debugLayer": {
+    "gpuBasedValidationExecuted": false,
+    "previousInitializationError": "0x887A002D"
+  }
+}

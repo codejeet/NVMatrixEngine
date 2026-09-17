@@ -1,0 +1,495 @@
+{
+  "date": "2026-09-08",
+  "scope": "Playable glass/mechanics regression; not full campaign or ReSTIR validation",
+  "gpu": "RTX 5090",
+  "shaderSha256": {
+    "Accumulate.dxil": "307ae6838745e632cbd7347a82c78199206d3deea67fce04331c4e5aeeb45b70",
+    "Clear.dxil": "42e94f4414dca5578d962d20df1724e1e4caa0b95ff84b374c805406a017166d",
+    "Composite.dxil": "82f9a14074b98c77fbaba9d5018e0426ca5eae7b76cf951d0d228be8de26cd60",
+    "PS.dxil": "1dd11d296a6f3cb9010b0f8365a47298314dd1f30c348db1b58973ebf44c67a1",
+    "Transport-0-0.dxil": "ab5f122d037c3270833ded7c41e12a2908599c8dff55d76d3cf19f43e1bcf4e2",
+    "Transport-0-1.dxil": "ca6ccd74c75694342dd81c709cb27b9bd78bcdd323b5be3eb6bb36c7ef8d1107",
+    "Transport-1-0.dxil": "21288f9c0e43858274e32988d05bd08b22610febadaa12cf9f2b73d5dacdef0c",
+    "Transport-1-1.dxil": "0a857383b9e3620db40d308c0f1dc5e805ff1f63f585c4738c17045221594372",
+    "Transport-2-0.dxil": "370577eadb15fe0f802a3829452882c5f37b757ba63d61e88b015eb155a4d03f",
+    "Transport-2-1.dxil": "0ae5ad6f453f5acaa0c33c282aabd099be0048e4d3131990982f44df0813b948",
+    "VS.dxil": "5b6d2b4352796532058812dc34a829ba47234d9ccdd82e8806c50935bd1d1562"
+  },
+  "runs": [
+    {
+      "name": "play-initial",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "output": [
+        1280,
+        720
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        47109,
+        47099,
+        42857,
+        9,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        2804520,
+        10493885,
+        3531141,
+        11337539
+      ],
+      "cameraTruncatedLastFrame": 968,
+      "historyResets": 125,
+      "transportHash": "4355230193338699214",
+      "game": {
+        "won": false,
+        "gateOpen": false,
+        "charge": 0,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "initial"
+      }
+    },
+    {
+      "name": "play-solved",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "output": [
+        1280,
+        720
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0.886006,
+      "photonCounters": [
+        65536,
+        41373,
+        43736,
+        40623,
+        352,
+        0,
+        0,
+        563
+      ],
+      "cameraPathTotals": [
+        3768386,
+        14883564,
+        2288367,
+        13542220
+      ],
+      "cameraTruncatedLastFrame": 969,
+      "historyResets": 237,
+      "transportHash": "17185818739307048791",
+      "game": {
+        "won": false,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "solved"
+      }
+    },
+    {
+      "name": "play-blocked",
+      "frames": 240,
+      "dlssEvaluations": 240,
+      "output": [
+        1280,
+        720
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        3768386,
+        14883564,
+        2288367,
+        13542220
+      ],
+      "cameraTruncatedLastFrame": 969,
+      "historyResets": 125,
+      "transportHash": "14378691147701773063",
+      "game": {
+        "won": false,
+        "gateOpen": false,
+        "charge": 0,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "blocked"
+      }
+    },
+    {
+      "name": "play-tuning",
+      "frames": 180,
+      "dlssEvaluations": 180,
+      "output": [
+        1280,
+        720
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0.90753,
+      "photonCounters": [
+        65536,
+        41377,
+        43751,
+        40609,
+        363,
+        0,
+        0,
+        578
+      ],
+      "cameraPathTotals": [
+        715467,
+        2534114,
+        766116,
+        2639409
+      ],
+      "cameraTruncatedLastFrame": 370,
+      "historyResets": 180,
+      "transportHash": "7120100276381700714",
+      "game": {
+        "won": false,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 0,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "pose": "tuning"
+      }
+    },
+    {
+      "name": "play-controls",
+      "frames": 360,
+      "dlssEvaluations": 360,
+      "output": [
+        1280,
+        720
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0.864633,
+      "photonCounters": [
+        65536,
+        39752,
+        39720,
+        39561,
+        31,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        4967383,
+        18949312,
+        5951550,
+        20092561
+      ],
+      "cameraTruncatedLastFrame": 24,
+      "historyResets": 319,
+      "transportHash": "12249819324124672998",
+      "game": {
+        "won": true,
+        "gateOpen": true,
+        "charge": 0.999999,
+        "jumps": 1,
+        "throws": 2,
+        "tuneMoves": 1,
+        "tuneTurns": 1,
+        "pose": "initial"
+      }
+    },
+    {
+      "name": "verified-standard",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        394976,
+        1542089,
+        438053,
+        1630551
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-fixed",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": false,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        394976,
+        1542089,
+        438053,
+        1630551
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-no-reorder",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 2,
+      "serActive": false,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        394976,
+        1542089,
+        438053,
+        1630551
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-nvapi",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 1,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        394976,
+        1542089,
+        438053,
+        1630551
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-fallback",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 0,
+      "serActive": false,
+      "floatAtomics": false,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        394976,
+        1542089,
+        438053,
+        1630551
+      ],
+      "cameraTruncatedLastFrame": 463,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-moving",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        960,
+        540
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        53397,
+        53278,
+        53278,
+        87,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        393279,
+        1536413,
+        439380,
+        1627966
+      ],
+      "cameraTruncatedLastFrame": 467,
+      "historyResets": 96,
+      "transportHash": "8544119072436421384"
+    },
+    {
+      "name": "verified-1440p",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        2560,
+        1440
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        2809185,
+        10967609,
+        3115377,
+        11596629
+      ],
+      "cameraTruncatedLastFrame": 3318,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    },
+    {
+      "name": "verified-4k",
+      "frames": 96,
+      "dlssEvaluations": 96,
+      "output": [
+        3840,
+        2160
+      ],
+      "hitMode": 2,
+      "serActive": true,
+      "floatAtomics": true,
+      "receiverWatts": 0,
+      "photonCounters": [
+        65536,
+        50635,
+        50583,
+        50396,
+        45,
+        0,
+        0,
+        0
+      ],
+      "cameraPathTotals": [
+        6319424,
+        24672288,
+        7008158,
+        26087307
+      ],
+      "cameraTruncatedLastFrame": 7461,
+      "historyResets": 1,
+      "transportHash": "2398660334037479388"
+    }
+  ],
+  "checks": {
+    "cpuOpticsTests": 12,
+    "cpuGameTest": true,
+    "rawGuidesFinite": true,
+    "floatFixedAtlasRelativeL1": 0.00003272056198233359,
+    "launcherInteractiveFrames": 474,
+    "launcherExitCode": 0,
+    "actualD3D12DebugLayer": false
+  }
+}

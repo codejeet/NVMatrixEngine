@@ -1,0 +1,339 @@
+{
+  "schema": 1,
+  "date": "2026-09-13T15:05:45.943Z",
+  "baseCommit": "912c8b0",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Canonical projected bulk flux/capacity integration. Passive replica only; not bounded VOF or authoritative flowing ownership.",
+  "defaultPromotionReady": false,
+  "nodeTests": 138,
+  "windowsCTests": 7,
+  "cases": [
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "volumeM3": 0,
+      "relativeMassError": 0,
+      "momentumErrorKgMps": 0,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.0268e-9,
+      "forceSourceError": 0,
+      "excessM3": 0,
+      "inClosedCellsM3": 0,
+      "maxFraction": 0,
+      "overfilledCells": 0,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0,
+      "sourceCalls": 1,
+      "resets": 1
+    },
+    {
+      "name": "short",
+      "frames": 8,
+      "steps": 16,
+      "volumeM3": 48.1184,
+      "relativeMassError": 2.47838e-7,
+      "momentumErrorKgMps": 0.0000297489,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.72529e-9,
+      "forceSourceError": 4.57828e-9,
+      "excessM3": 2.19889,
+      "inClosedCellsM3": 0,
+      "maxFraction": 14.4484,
+      "overfilledCells": 157,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.0000790391,
+      "sourceCalls": 1,
+      "resets": 1
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "volumeM3": 5.41494,
+      "relativeMassError": 4.04911e-7,
+      "momentumErrorKgMps": 0,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 0,
+      "forceSourceError": 0,
+      "excessM3": 0.431271,
+      "inClosedCellsM3": 0,
+      "maxFraction": 1.65251,
+      "overfilledCells": 600,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 96,
+      "peakDivergence": 0,
+      "sourceCalls": 1,
+      "resets": 1
+    },
+    {
+      "name": "fall",
+      "frames": 90,
+      "steps": 180,
+      "volumeM3": 5.41494,
+      "relativeMassError": 4.04911e-7,
+      "momentumErrorKgMps": 0.0000594978,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 0,
+      "forceSourceError": 9.06767e-10,
+      "excessM3": 0.0592301,
+      "inClosedCellsM3": 0,
+      "maxFraction": 2.9404,
+      "overfilledCells": 70,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.0000995824,
+      "sourceCalls": 1,
+      "resets": 1
+    },
+    {
+      "name": "room",
+      "frames": 120,
+      "steps": 240,
+      "volumeM3": 49.2535,
+      "relativeMassError": 2.32468e-7,
+      "momentumErrorKgMps": 0.00285589,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.25963e-9,
+      "forceSourceError": 1.1411e-7,
+      "excessM3": 2.92246,
+      "inClosedCellsM3": 0,
+      "maxFraction": 33.4177,
+      "overfilledCells": 103,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.000099797,
+      "sourceCalls": 120,
+      "resets": 1
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "volumeM3": 5.41494,
+      "relativeMassError": 4.04911e-7,
+      "momentumErrorKgMps": 0.000237991,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 4.65661e-10,
+      "forceSourceError": 3.4954e-10,
+      "excessM3": 0.0128256,
+      "inClosedCellsM3": 0.0121657,
+      "maxFraction": 76129600000000000,
+      "overfilledCells": 152,
+      "limitedDonorsLastFrame": 292,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.0000998612,
+      "sourceCalls": 1,
+      "resets": 1
+    },
+    {
+      "name": "controls",
+      "frames": 12,
+      "steps": 0,
+      "volumeM3": 0.065792,
+      "relativeMassError": 3.00806e-8,
+      "momentumErrorKgMps": 0,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 0,
+      "forceSourceError": 0,
+      "excessM3": 0,
+      "inClosedCellsM3": 0,
+      "maxFraction": 0.0625,
+      "overfilledCells": 0,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 9.27199e-12,
+      "sourceCalls": 1,
+      "resets": 2
+    },
+    {
+      "name": "reset",
+      "frames": 180,
+      "steps": 160,
+      "volumeM3": 48.7805,
+      "relativeMassError": 3.24413e-7,
+      "momentumErrorKgMps": 0.000951964,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.0268e-9,
+      "forceSourceError": 3.85214e-8,
+      "excessM3": 3.02344,
+      "inClosedCellsM3": 0,
+      "maxFraction": 21.5916,
+      "overfilledCells": 132,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.0000999755,
+      "sourceCalls": 71,
+      "resets": 2
+    },
+    {
+      "name": "adaptive",
+      "frames": 64,
+      "steps": 128,
+      "volumeM3": 48.7238,
+      "relativeMassError": 2.82765e-7,
+      "momentumErrorKgMps": 0.00190393,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.72529e-9,
+      "forceSourceError": 4.85007e-8,
+      "excessM3": 2.92054,
+      "inClosedCellsM3": 0,
+      "maxFraction": 22.5879,
+      "overfilledCells": 139,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.000099797,
+      "sourceCalls": 64,
+      "resets": 1
+    },
+    {
+      "name": "overlay",
+      "frames": 32,
+      "steps": 64,
+      "volumeM3": 48.4211,
+      "relativeMassError": 2.65411e-7,
+      "momentumErrorKgMps": 0.000594978,
+      "fluxRestrictionError": 0,
+      "capacityRestrictionError": 3.72529e-9,
+      "forceSourceError": 3.13287e-8,
+      "excessM3": 2.69903,
+      "inClosedCellsM3": 0,
+      "maxFraction": 25.7668,
+      "overfilledCells": 147,
+      "limitedDonorsLastFrame": 0,
+      "coarseLeaves": 0,
+      "peakDivergence": 0.0000872107,
+      "sourceCalls": 32,
+      "resets": 1
+    }
+  ],
+  "localCapacityComparisons": [
+    {
+      "name": "calm",
+      "legacyExcessM3": 0.431271,
+      "projectedExcessM3": 0.431271,
+      "legacyClosedM3": 0,
+      "projectedClosedM3": 0
+    },
+    {
+      "name": "room",
+      "legacyExcessM3": 2.53422,
+      "projectedExcessM3": 2.92246,
+      "legacyClosedM3": 0,
+      "projectedClosedM3": 0
+    },
+    {
+      "name": "wake",
+      "legacyExcessM3": 0.0425206,
+      "projectedExcessM3": 0.0128256,
+      "legacyClosedM3": 0.0338348,
+      "projectedClosedM3": 0.0121657
+    },
+    {
+      "name": "adaptive",
+      "legacyExcessM3": 2.61937,
+      "projectedExcessM3": 2.92054,
+      "legacyClosedM3": 0,
+      "projectedClosedM3": 0
+    }
+  ],
+  "legacyFixtures": [
+    {
+      "name": "translation",
+      "frames": 120,
+      "steps": 240,
+      "relativeMassError": 4.04911e-7
+    },
+    {
+      "name": "high-cfl",
+      "frames": 120,
+      "steps": 240,
+      "relativeMassError": 4.04911e-7
+    },
+    {
+      "name": "persistent",
+      "frames": 120,
+      "steps": 240,
+      "relativeMassError": 4.04911e-7
+    }
+  ],
+  "profiles": [
+    {
+      "mode": "off",
+      "repeat": 1,
+      "rawMs": 21.4941,
+      "fluidMs": 10.2388,
+      "bulkMeanMs": 0,
+      "bulkGpuBytes": 0
+    },
+    {
+      "mode": "on",
+      "repeat": 1,
+      "rawMs": 21.6771,
+      "fluidMs": 10.2846,
+      "bulkMeanMs": 0.0473028,
+      "bulkGpuBytes": 2335176
+    },
+    {
+      "mode": "off",
+      "repeat": 2,
+      "rawMs": 21.354,
+      "fluidMs": 10.1902,
+      "bulkMeanMs": 0,
+      "bulkGpuBytes": 0
+    },
+    {
+      "mode": "on",
+      "repeat": 2,
+      "rawMs": 21.6426,
+      "fluidMs": 10.3548,
+      "bulkMeanMs": 0.0474516,
+      "bulkGpuBytes": 2335176
+    },
+    {
+      "mode": "off",
+      "repeat": 3,
+      "rawMs": 21.4066,
+      "fluidMs": 10.2756,
+      "bulkMeanMs": 0,
+      "bulkGpuBytes": 0
+    },
+    {
+      "mode": "on",
+      "repeat": 3,
+      "rawMs": 21.55,
+      "fluidMs": 10.2854,
+      "bulkMeanMs": 0.0475194,
+      "bulkGpuBytes": 2335176
+    }
+  ],
+  "performance": {
+    "off": {
+      "rawMs": 21.4066,
+      "fluidMs": 10.2388,
+      "bulkMeanMs": 0
+    },
+    "on": {
+      "rawMs": 21.6426,
+      "fluidMs": 10.2854,
+      "bulkMeanMs": 0.0474516
+    }
+  },
+  "gpuValidation": {
+    "available": false,
+    "lastAttemptCommit": "912c8b0",
+    "initializationError": "0x887A002D",
+    "retriedThisCheckpoint": false
+  },
+  "caveats": [
+    "Mass/flux audits do not certify local bounded liquid support. Excess remains visible in these reports.",
+    "Zero-capacity diagnostic fraction uses a 1e-20 denominator floor; no such floor is used for transport.",
+    "Optical isolation is checked separately by check-bulk-projected.mjs with deterministic bins/fixed-point photons.",
+    "Default launchers and particle/optical ownership are unchanged. No completed adaptive-physics or performance claim.",
+    "Windows Graphics Tools remain unavailable from the prior checkpoint; no GBV-clean claim."
+  ],
+  "exeSha256": "614aeb38629383a1eca254f0a7d81ed2a0e04e64394a6f0264a0f332cdf86e5f",
+  "shaderSetSha256": "0878d3102b7ad6aeea63f59ab17aff70225751984310a0791d23eaf5bd48cf8a"
+}

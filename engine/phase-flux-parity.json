@@ -1,0 +1,276 @@
+{
+  "passed": true,
+  "scope": "Exact authoritative diagnostics and optical-channel isolation, not correctness of passive liquid support.",
+  "results": [
+    {
+      "scene": "initial-calm",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "initial-room",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "calm",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "room",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "wake",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    },
+    {
+      "scene": "adaptive",
+      "channels": [
+        {
+          "channel": 0,
+          "different": 0
+        },
+        {
+          "channel": 1,
+          "different": 0
+        },
+        {
+          "channel": 2,
+          "different": 0
+        },
+        {
+          "channel": 3,
+          "different": 0
+        },
+        {
+          "channel": 4,
+          "different": 0
+        },
+        {
+          "channel": 5,
+          "different": 0
+        },
+        {
+          "channel": 6,
+          "different": 0
+        },
+        {
+          "channel": 7,
+          "different": 0
+        },
+        {
+          "channel": 8,
+          "different": 0
+        },
+        {
+          "channel": 9,
+          "different": 0
+        }
+      ]
+    }
+  ]
+}

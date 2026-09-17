@@ -1,0 +1,1297 @@
+{
+  "schema": 1,
+  "date": "2026-09-13T11:42:08.101Z",
+  "baseCommit": "cfd89e8",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Opt-in adaptive fresh optical sampling, receiver importance and interface feedback; exact primary-hit reuse. Full adaptive fluid/caustic specification remains incomplete.",
+  "cpuTests": 117,
+  "windowsTests": 7,
+  "scopedOpticalChecksPassed": true,
+  "cases": [
+    {
+      "name": "observe",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        2835603,
+        0,
+        0,
+        166643,
+        54350,
+        166643,
+        2138,
+        166643,
+        0,
+        0,
+        0,
+        113528,
+        0,
+        32,
+        105546,
+        0
+      ],
+      "opticalFeedbackBricks": 353,
+      "opticalRaisedBricks": 353,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040288
+    },
+    {
+      "name": "adaptive",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5159791,
+        0,
+        0,
+        166643,
+        186320,
+        579448,
+        2147,
+        2644,
+        39596,
+        124403,
+        0,
+        116707,
+        0,
+        32,
+        105556,
+        0
+      ],
+      "opticalFeedbackBricks": 353,
+      "opticalRaisedBricks": 353,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.042432
+    },
+    {
+      "name": "uniform",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5575152,
+        0,
+        0,
+        166643,
+        217400,
+        666572,
+        2138,
+        0,
+        0,
+        166643,
+        0,
+        117092,
+        0,
+        32,
+        105546,
+        0
+      ],
+      "opticalFeedbackBricks": 353,
+      "opticalRaisedBricks": 353,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040864
+    },
+    {
+      "name": "opaque",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 0,
+      "last": [
+        5733639,
+        0,
+        0,
+        166659,
+        597081,
+        620073,
+        2883,
+        1257,
+        21396,
+        144006,
+        0,
+        20243,
+        0,
+        32,
+        0,
+        0
+      ],
+      "opticalFeedbackBricks": 0,
+      "opticalRaisedBricks": 0,
+      "allocatedBytes": 33137696,
+      "classificationMedianMs": 0.040032
+    },
+    {
+      "name": "pt",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5179175,
+        0,
+        60595,
+        166643,
+        185624,
+        582148,
+        2226,
+        2136,
+        39008,
+        125499,
+        0,
+        116511,
+        0,
+        32,
+        105284,
+        68827
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 327,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.046464
+    },
+    {
+      "name": "orbit",
+      "frames": 96,
+      "audits": 96,
+      "feedbackAudits": 96,
+      "last": [
+        4446133,
+        0,
+        0,
+        163702,
+        264592,
+        577546,
+        2738,
+        3596,
+        33237,
+        126869,
+        0,
+        93958,
+        0,
+        32,
+        81385,
+        50903
+      ],
+      "opticalFeedbackBricks": 440,
+      "opticalRaisedBricks": 357,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040192
+    },
+    {
+      "name": "rolling",
+      "frames": 300,
+      "audits": 300,
+      "feedbackAudits": 300,
+      "last": [
+        4370819,
+        0,
+        0,
+        155910,
+        255760,
+        547740,
+        4534,
+        3496,
+        32706,
+        119708,
+        0,
+        83662,
+        0,
+        32,
+        74884,
+        64863
+      ],
+      "opticalFeedbackBricks": 390,
+      "opticalRaisedBricks": 314,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.03984
+    },
+    {
+      "name": "inlet",
+      "frames": 64,
+      "audits": 64,
+      "feedbackAudits": 64,
+      "last": [
+        5211453,
+        0,
+        0,
+        166702,
+        186380,
+        587244,
+        1754,
+        2442,
+        36119,
+        128141,
+        0,
+        120362,
+        0,
+        32,
+        106253,
+        72025
+      ],
+      "opticalFeedbackBricks": 395,
+      "opticalRaisedBricks": 318,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040032
+    },
+    {
+      "name": "view",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5159359,
+        0,
+        0,
+        166643,
+        186403,
+        579521,
+        2138,
+        2625,
+        39588,
+        124430,
+        0,
+        116298,
+        0,
+        32,
+        105546,
+        0
+      ],
+      "opticalFeedbackBricks": 353,
+      "opticalRaisedBricks": 353,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.043392
+    },
+    {
+      "name": "receivers",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5185078,
+        0,
+        0,
+        166643,
+        187090,
+        583820,
+        2226,
+        2714,
+        37305,
+        126624,
+        0,
+        116667,
+        0,
+        32,
+        105284,
+        67966
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 326,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.043328
+    },
+    {
+      "name": "feedback",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5183723,
+        0,
+        0,
+        166643,
+        187088,
+        583944,
+        2226,
+        2714,
+        37243,
+        126686,
+        0,
+        116632,
+        0,
+        32,
+        105284,
+        67280
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 328,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040192
+    },
+    {
+      "name": "controls",
+      "frames": 48,
+      "audits": 12,
+      "feedbackAudits": 12,
+      "last": [
+        5588407,
+        0,
+        0,
+        166643,
+        218388,
+        666572,
+        2226,
+        0,
+        0,
+        166643,
+        0,
+        115821,
+        0,
+        12,
+        105284,
+        68827
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 327,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.039104
+    },
+    {
+      "name": "freeze",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5128579,
+        0,
+        0,
+        164190,
+        225405,
+        638253,
+        3512,
+        6169,
+        0,
+        158021,
+        0,
+        112251,
+        0,
+        32,
+        97687,
+        57179
+      ],
+      "opticalFeedbackBricks": 398,
+      "opticalRaisedBricks": 361,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.03968
+    },
+    {
+      "name": "cap1",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        2839776,
+        0,
+        0,
+        166643,
+        54597,
+        166643,
+        2226,
+        166643,
+        0,
+        0,
+        0,
+        113883,
+        0,
+        32,
+        105284,
+        67336
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 328,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.038624
+    },
+    {
+      "name": "cap8",
+      "frames": 16,
+      "audits": 16,
+      "feedbackAudits": 16,
+      "last": [
+        5701212,
+        0,
+        0,
+        166759,
+        241930,
+        670466,
+        1549,
+        0,
+        52525,
+        87114,
+        27120,
+        114186,
+        0,
+        16,
+        105675,
+        30301
+      ],
+      "opticalFeedbackBricks": 364,
+      "opticalRaisedBricks": 330,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0
+    },
+    {
+      "name": "fg",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5183718,
+        0,
+        0,
+        166643,
+        187086,
+        583642,
+        2224,
+        2714,
+        37394,
+        126535,
+        0,
+        116443,
+        0,
+        32,
+        105284,
+        67909
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 328,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040544
+    },
+    {
+      "name": "nvapi",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 0,
+      "last": [
+        1570823,
+        0,
+        0,
+        164190,
+        353595,
+        361645,
+        838,
+        33715,
+        96985,
+        33490,
+        0,
+        13567,
+        0,
+        32,
+        0,
+        0
+      ],
+      "opticalFeedbackBricks": 0,
+      "opticalRaisedBricks": 0,
+      "allocatedBytes": 33137696,
+      "classificationMedianMs": 0.042816
+    },
+    {
+      "name": "dxr",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 0,
+      "last": [
+        1570823,
+        0,
+        0,
+        164190,
+        353595,
+        361645,
+        838,
+        33715,
+        96985,
+        33490,
+        0,
+        13567,
+        0,
+        32,
+        0,
+        0
+      ],
+      "opticalFeedbackBricks": 0,
+      "opticalRaisedBricks": 0,
+      "allocatedBytes": 33137696,
+      "classificationMedianMs": 0.042656
+    },
+    {
+      "name": "fixed",
+      "frames": 48,
+      "audits": 48,
+      "feedbackAudits": 48,
+      "last": [
+        5187902,
+        0,
+        0,
+        166643,
+        187091,
+        584753,
+        2226,
+        2711,
+        36843,
+        127089,
+        0,
+        116659,
+        0,
+        32,
+        105284,
+        68133
+      ],
+      "opticalFeedbackBricks": 376,
+      "opticalRaisedBricks": 328,
+      "allocatedBytes": 33159776,
+      "classificationMedianMs": 0.040192
+    }
+  ],
+  "parity": {
+    "passed": true,
+    "comparisons": [
+      {
+        "scene": "room",
+        "comparison": "primary-cache",
+        "identicalChannels": 10
+      },
+      {
+        "scene": "room",
+        "comparison": "observer",
+        "identicalChannels": 10
+      },
+      {
+        "scene": "prism",
+        "comparison": "primary-cache",
+        "identicalChannels": 9
+      },
+      {
+        "scene": "prism",
+        "comparison": "observer",
+        "identicalChannels": 9
+      },
+      {
+        "scene": "room-orbit",
+        "comparison": "primary-cache",
+        "identicalChannels": 10
+      },
+      {
+        "scene": "room-orbit",
+        "comparison": "observer",
+        "identicalChannels": 10
+      }
+    ]
+  },
+  "estimator": {
+    "passed": true,
+    "scope": "Empirical raw-radiance mean check against uniform eight-sample reference. Does not establish general unbiasedness, specular reservoir reuse, or a ground-truth error bound.",
+    "results": [
+      {
+        "scene": "diffuse",
+        "mode": "adaptive",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.022509880800770644,
+          0.022873614416701597,
+          0.044681371416183335
+        ],
+        "referenceRgb": [
+          0.022418210031558635,
+          0.02287485240000241,
+          0.04467682284945697
+        ],
+        "relativeRgb": [
+          0.004089120812186264,
+          -0.00005411983776615337,
+          0.00010181043405199652
+        ],
+        "rawRelativeRms": 0.076616621311694,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 81051312,
+        "cameraRays": 351857486
+      },
+      {
+        "scene": "diffuse",
+        "mode": "uniform",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.02248650824098965,
+          0.022884739432160895,
+          0.044683988970640014
+        ],
+        "referenceRgb": [
+          0.022418210031558635,
+          0.02287485240000241,
+          0.04467682284945697
+        ],
+        "relativeRgb": [
+          0.0030465505200847343,
+          0.00043222277397014786,
+          0.00016039907777676277
+        ],
+        "rawRelativeRms": 0.04598399823443368,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 147261560,
+        "cameraRays": 533057159
+      },
+      {
+        "scene": "fresh-pt",
+        "mode": "adaptive",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.02252919234335539,
+          0.022899348088769214,
+          0.04473842499007109
+        ],
+        "referenceRgb": [
+          0.022537507231739043,
+          0.02289444438739236,
+          0.04473147823715642
+        ],
+        "relativeRgb": [
+          -0.0003689355836098418,
+          0.00021418739384437835,
+          0.00015529897934163372
+        ],
+        "rawRelativeRms": 0.08099580580810296,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 81104032,
+        "cameraRays": 351996213
+      },
+      {
+        "scene": "fresh-pt",
+        "mode": "uniform",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.022536607357802777,
+          0.022899026037154706,
+          0.044730396089063575
+        ],
+        "referenceRgb": [
+          0.022537507231739043,
+          0.02289444438739236,
+          0.04473147823715642
+        ],
+        "relativeRgb": [
+          -0.00003992783793760335,
+          0.00020012059191398812,
+          -0.000024192093252661806
+        ],
+        "rawRelativeRms": 0.052974759884820165,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 147261560,
+        "cameraRays": 533040178
+      },
+      {
+        "scene": "reused-pt",
+        "mode": "adaptive",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.02259023056031556,
+          0.022975193066168704,
+          0.04489306202797547
+        ],
+        "referenceRgb": [
+          0.022537304367343504,
+          0.022904705522763597,
+          0.04475050102860161
+        ],
+        "relativeRgb": [
+          0.0023483816923886014,
+          0.003077426310285958,
+          0.003185684988928683
+        ],
+        "rawRelativeRms": 0.06040180750356554,
+        "temporalReuseFrames": 224,
+        "selectedSamples": 78674620,
+        "cameraRays": 345423008
+      },
+      {
+        "scene": "reused-pt",
+        "mode": "uniform",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.02257518787907394,
+          0.022940635132274238,
+          0.04481815017435005
+        ],
+        "referenceRgb": [
+          0.022537304367343504,
+          0.022904705522763597,
+          0.04475050102860161
+        ],
+        "relativeRgb": [
+          0.0016809247065645572,
+          0.0015686562516568081,
+          0.0015116958289518312
+        ],
+        "rawRelativeRms": 0.042494166800734125,
+        "temporalReuseFrames": 224,
+        "selectedSamples": 147261560,
+        "cameraRays": 533040178
+      },
+      {
+        "scene": "water",
+        "mode": "adaptive",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.1651994728351973,
+          0.15999548311284542,
+          0.21651763065834528
+        ],
+        "referenceRgb": [
+          0.16532780776278244,
+          0.16085311571380034,
+          0.21772570346096198
+        ],
+        "relativeRgb": [
+          -0.0007762452628011784,
+          -0.0053317748751654515,
+          -0.005548599836460277
+        ],
+        "rawRelativeRms": 0.44196883052783403,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 131396518,
+        "cameraRays": 1164806132
+      },
+      {
+        "scene": "water",
+        "mode": "uniform",
+        "frames": [
+          128,
+          144,
+          160,
+          176,
+          192,
+          208,
+          224,
+          240,
+          256
+        ],
+        "meanRgb": [
+          0.16518560199599064,
+          0.1599877115120637,
+          0.21649489265726427
+        ],
+        "referenceRgb": [
+          0.16532780776278244,
+          0.16085311571380034,
+          0.21772570346096198
+        ],
+        "relativeRgb": [
+          -0.0008601442716511531,
+          -0.005380089766345741,
+          -0.005653033997055856
+        ],
+        "rawRelativeRms": 0.44186194833884856,
+        "temporalReuseFrames": 0,
+        "selectedSamples": 149392344,
+        "cameraRays": 1249134973
+      }
+    ]
+  },
+  "temporal": {
+    "note": "Motion-compensated consecutive real frames, raw and RR separately. Reprojection uses the current primary-surface guide, so this metric also includes refracted parallax mismatch; it is not pure estimator variance. Live phases include genuine surface/light changes. FG is off.",
+    "comparisonMode": "preserve",
+    "prefix": "water-temporal-optical-adaptive",
+    "current": {
+      "static": {
+        "samples": 51692.333333333336,
+        "rawDelta": 0.00609552493041472,
+        "rrDelta": 0.0006176472274078694,
+        "meanLuminance": 0.14540211357495925,
+        "atlasRelativeDelta": 0.05025313060497574,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "risingOrbit": {
+        "samples": 78409.33333333333,
+        "rawDelta": 0.004489466915746031,
+        "rrDelta": 0.0013433826438621602,
+        "meanLuminance": 0.13516331842270837,
+        "atlasRelativeDelta": 0.0071882829955379896,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "topDownOrbit": {
+        "samples": 81727.66666666667,
+        "rawDelta": 0.003908951550808365,
+        "rrDelta": 0.0004729416676865727,
+        "meanLuminance": 0.13482336017111526,
+        "atlasRelativeDelta": 0.007303456605920832,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "liveWaterOrbit": {
+        "samples": 88276,
+        "rawDelta": 0.008555056396975158,
+        "rrDelta": 0.0012331891089688346,
+        "meanLuminance": 0.13459664257282347,
+        "atlasRelativeDelta": 0.06149674595159493,
+        "atlasResets": 10,
+        "fluidSteps": 288,
+        "fluidHistoryResets": 10
+      },
+      "afterRolling": {
+        "samples": 66661.66666666667,
+        "rawDelta": 0.0078926733994153,
+        "rrDelta": 0.0014697184965454418,
+        "meanLuminance": 0.13270924842733975,
+        "atlasRelativeDelta": 0.06001330576841959,
+        "atlasResets": 58,
+        "fluidSteps": 384,
+        "fluidHistoryResets": 10
+      }
+    },
+    "reference": "water-temporal-optical-uniform",
+    "before": {
+      "static": {
+        "samples": 51673.333333333336,
+        "rawDelta": 0.006089591224541458,
+        "rrDelta": 0.0006194944750338281,
+        "meanLuminance": 0.14543198927377907,
+        "atlasRelativeDelta": 0.05009769874945877,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "risingOrbit": {
+        "samples": 78410.66666666667,
+        "rawDelta": 0.0044672085579113684,
+        "rrDelta": 0.0013451421194571914,
+        "meanLuminance": 0.13518810878410567,
+        "atlasRelativeDelta": 0.007169563822164361,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "topDownOrbit": {
+        "samples": 81735.66666666667,
+        "rawDelta": 0.0038899580372653876,
+        "rrDelta": 0.00047415923553858954,
+        "meanLuminance": 0.13483214824177947,
+        "atlasRelativeDelta": 0.007305983574160704,
+        "atlasResets": 10,
+        "fluidSteps": 192,
+        "fluidHistoryResets": 10
+      },
+      "liveWaterOrbit": {
+        "samples": 88308,
+        "rawDelta": 0.008562331827118871,
+        "rrDelta": 0.0012170998711787684,
+        "meanLuminance": 0.13459666456128647,
+        "atlasRelativeDelta": 0.06120712446772849,
+        "atlasResets": 10,
+        "fluidSteps": 288,
+        "fluidHistoryResets": 10
+      },
+      "afterRolling": {
+        "samples": 66569.66666666667,
+        "rawDelta": 0.007960796580603682,
+        "rrDelta": 0.001478341026742305,
+        "meanLuminance": 0.13270219323688393,
+        "atlasRelativeDelta": 0.06047203820208124,
+        "atlasResets": 58,
+        "fluidSteps": 384,
+        "fluidHistoryResets": 10
+      }
+    },
+    "changes": {
+      "static": {
+        "rawDeltaReductionPercent": -0.0974401343943887,
+        "rrDeltaReductionPercent": 0.29818629550454334,
+        "meanChangePercent": -0.02054272857643369
+      },
+      "risingOrbit": {
+        "rawDeltaReductionPercent": -0.49826099556609105,
+        "rrDeltaReductionPercent": 0.13080220815190335,
+        "meanChangePercent": -0.01833767897211347
+      },
+      "topDownOrbit": {
+        "rawDeltaReductionPercent": -0.488270396776036,
+        "rrDeltaReductionPercent": 0.2567845906520927,
+        "meanChangePercent": -0.00651778583876661
+      },
+      "liveWaterOrbit": {
+        "rawDeltaReductionPercent": 0.0849701960939031,
+        "rrDeltaReductionPercent": -1.321932420753913,
+        "meanChangePercent": -0.00001633655860588945
+      },
+      "afterRolling": {
+        "rawDeltaReductionPercent": 0.8557332234108594,
+        "rrDeltaReductionPercent": 0.583257180913388,
+        "meanChangePercent": 0.005316559043766489
+      }
+    }
+  },
+  "profiles": [
+    {
+      "mode": "cached",
+      "repeat": 1,
+      "cameraMedianMs": 4.85968,
+      "rawMedianMs": 12.2967,
+      "rawP95Ms": 17.9651,
+      "simulationMedianMs": 2.92234,
+      "surfaceMedianMs": 1.15952,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "retraced",
+      "repeat": 1,
+      "cameraMedianMs": 4.92621,
+      "rawMedianMs": 12.3924,
+      "rawP95Ms": 16.4473,
+      "simulationMedianMs": 2.91885,
+      "surfaceMedianMs": 1.15715,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "adaptive",
+      "repeat": 1,
+      "cameraMedianMs": 10.3956,
+      "rawMedianMs": 18.724,
+      "rawP95Ms": 24.8853,
+      "simulationMedianMs": 2.93062,
+      "surfaceMedianMs": 1.15587,
+      "classificationMedianMs": 0.170944,
+      "actualCameraRays": 5156918258,
+      "selectedSamples": 618130717
+    },
+    {
+      "mode": "uniform",
+      "repeat": 1,
+      "cameraMedianMs": 10.7815,
+      "rawMedianMs": 19.1642,
+      "rawP95Ms": 25.6853,
+      "simulationMedianMs": 2.93984,
+      "surfaceMedianMs": 1.15955,
+      "classificationMedianMs": 0.163328,
+      "actualCameraRays": 5670435605,
+      "selectedSamples": 726630876
+    },
+    {
+      "mode": "cached",
+      "repeat": 2,
+      "cameraMedianMs": 4.92186,
+      "rawMedianMs": 12.4719,
+      "rawP95Ms": 16.164,
+      "simulationMedianMs": 2.93904,
+      "surfaceMedianMs": 1.15891,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "retraced",
+      "repeat": 2,
+      "cameraMedianMs": 4.90422,
+      "rawMedianMs": 12.3757,
+      "rawP95Ms": 16.8389,
+      "simulationMedianMs": 2.93373,
+      "surfaceMedianMs": 1.1569,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "adaptive",
+      "repeat": 2,
+      "cameraMedianMs": 10.4998,
+      "rawMedianMs": 18.9474,
+      "rawP95Ms": 40.6518,
+      "simulationMedianMs": 2.95222,
+      "surfaceMedianMs": 1.16608,
+      "classificationMedianMs": 0.171008,
+      "actualCameraRays": 5158464520,
+      "selectedSamples": 618087620
+    },
+    {
+      "mode": "uniform",
+      "repeat": 2,
+      "cameraMedianMs": 10.8112,
+      "rawMedianMs": 19.2238,
+      "rawP95Ms": 36.6685,
+      "simulationMedianMs": 2.95328,
+      "surfaceMedianMs": 1.16339,
+      "classificationMedianMs": 0.163392,
+      "actualCameraRays": 5669166385,
+      "selectedSamples": 726630920
+    },
+    {
+      "mode": "cached",
+      "repeat": 3,
+      "cameraMedianMs": 4.90182,
+      "rawMedianMs": 12.3864,
+      "rawP95Ms": 17.3269,
+      "simulationMedianMs": 2.92198,
+      "surfaceMedianMs": 1.16429,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "retraced",
+      "repeat": 3,
+      "cameraMedianMs": 4.90038,
+      "rawMedianMs": 12.494,
+      "rawP95Ms": 24.4611,
+      "simulationMedianMs": 2.91706,
+      "surfaceMedianMs": 1.15949,
+      "classificationMedianMs": 0,
+      "actualCameraRays": null,
+      "selectedSamples": null
+    },
+    {
+      "mode": "adaptive",
+      "repeat": 3,
+      "cameraMedianMs": 10.7474,
+      "rawMedianMs": 19.1817,
+      "rawP95Ms": 24.5014,
+      "simulationMedianMs": 2.9488,
+      "surfaceMedianMs": 1.15757,
+      "classificationMedianMs": 0.171232,
+      "actualCameraRays": 5156327662,
+      "selectedSamples": 618053159
+    },
+    {
+      "mode": "uniform",
+      "repeat": 3,
+      "cameraMedianMs": 10.8505,
+      "rawMedianMs": 19.3991,
+      "rawP95Ms": 50.341,
+      "simulationMedianMs": 2.95069,
+      "surfaceMedianMs": 1.16374,
+      "classificationMedianMs": 0.163456,
+      "actualCameraRays": 5670432522,
+      "selectedSamples": 726630904
+    }
+  ],
+  "performance": {
+    "cached": {
+      "cameraMedianMs": 4.90182,
+      "rawMedianMs": 12.3864,
+      "rawP95Ms": 17.3269,
+      "classificationMedianMs": 0
+    },
+    "retraced": {
+      "cameraMedianMs": 4.90422,
+      "rawMedianMs": 12.3924,
+      "rawP95Ms": 16.8389,
+      "classificationMedianMs": 0
+    },
+    "adaptive": {
+      "cameraMedianMs": 10.4998,
+      "rawMedianMs": 18.9474,
+      "rawP95Ms": 24.8853,
+      "classificationMedianMs": 0.171008
+    },
+    "uniform": {
+      "cameraMedianMs": 10.8112,
+      "rawMedianMs": 19.2238,
+      "rawP95Ms": 36.6685,
+      "classificationMedianMs": 0.163392
+    }
+  },
+  "frameGeneration": {
+    "adaptive": {
+      "supported": true,
+      "loaded": true,
+      "enabled": true,
+      "multiplier": 2,
+      "maximumMultiplier": 6,
+      "minimumDimension": 100,
+      "status": 0,
+      "reflex": true,
+      "presentedFrames": 48,
+      "extraPresents": 0,
+      "frameTokens": 48,
+      "simulationMarkers": 48,
+      "submissionMarkers": 48,
+      "presentMarkers": 48
+    },
+    "nonAdaptive": {
+      "supported": true,
+      "loaded": true,
+      "enabled": true,
+      "multiplier": 2,
+      "maximumMultiplier": 6,
+      "minimumDimension": 100,
+      "status": 0,
+      "reflex": true,
+      "presentedFrames": 180,
+      "extraPresents": 0,
+      "frameTokens": 180,
+      "simulationMarkers": 180,
+      "submissionMarkers": 180,
+      "presentMarkers": 180
+    },
+    "actualGeneratedPresentsValidated": false,
+    "note": "FG reports enabled/status zero but no extra presented frames in this session, including non-adaptive baseline. Strict FG lifecycle test has not passed; do not label this full FG validation."
+  },
+  "exeSha256": "08a7eface4b776be1e1780707b2513d5f719b286c2e4a1eef9c68241cf40d404",
+  "shaderSetSha256": "e52e628680a6e52818f9b7bae8be929f83e56d01706ae019c5468e34a0782d04",
+  "debugLayer": {
+    "gpuBasedValidationExecuted": false,
+    "previousInitializationError": "0x887A002D"
+  },
+  "initialAtomicProfile": {
+    "scope": "Before wave-reduced optical counters and feedback",
+    "profiles": [
+      {
+        "repeat": 1,
+        "mode": "cached",
+        "cameraMs": 4.8785,
+        "rawMs": 12.4559,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 1,
+        "mode": "retraced",
+        "cameraMs": 4.89158,
+        "rawMs": 12.3087,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 1,
+        "mode": "adaptive",
+        "cameraMs": 10.6138,
+        "rawMs": 19.3094,
+        "opticsMs": 0.270144
+      },
+      {
+        "repeat": 1,
+        "mode": "uniform",
+        "cameraMs": 10.6676,
+        "rawMs": 18.8899,
+        "opticsMs": 0.1512
+      },
+      {
+        "repeat": 2,
+        "mode": "cached",
+        "cameraMs": 4.91126,
+        "rawMs": 12.3787,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 2,
+        "mode": "retraced",
+        "cameraMs": 4.86694,
+        "rawMs": 12.3997,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 2,
+        "mode": "adaptive",
+        "cameraMs": 10.5518,
+        "rawMs": 19.0121,
+        "opticsMs": 0.269568
+      },
+      {
+        "repeat": 2,
+        "mode": "uniform",
+        "cameraMs": 10.7666,
+        "rawMs": 19.4091,
+        "opticsMs": 0.151104
+      },
+      {
+        "repeat": 3,
+        "mode": "cached",
+        "cameraMs": 4.90355,
+        "rawMs": 12.3358,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 3,
+        "mode": "retraced",
+        "cameraMs": 4.9144,
+        "rawMs": 12.427,
+        "opticsMs": 0
+      },
+      {
+        "repeat": 3,
+        "mode": "adaptive",
+        "cameraMs": 10.6323,
+        "rawMs": 19.1293,
+        "opticsMs": 0.270688
+      },
+      {
+        "repeat": 3,
+        "mode": "uniform",
+        "cameraMs": 10.7211,
+        "rawMs": 18.9309,
+        "opticsMs": 0.162208
+      }
+    ]
+  }
+}

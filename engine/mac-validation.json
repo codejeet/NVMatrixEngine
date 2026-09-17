@@ -1,0 +1,570 @@
+{
+  "schema": 1,
+  "date": "2026-09-13",
+  "baseCommit": "0cef4c5",
+  "gpu": "NVIDIA RTX 5090",
+  "scope": "Opt-in coupled two-level MAC projection; dense transfer cache remains; full adaptive goal incomplete",
+  "scopedGpuChecksPassed": true,
+  "cases": [
+    {
+      "name": "reference-calm",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00002,
+      "volume": 5.4176,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": null
+    },
+    {
+      "name": "reference-fall",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.23645,
+      "volume": 7.22794,
+      "divergenceBefore": 2.43509,
+      "divergenceAfter": 0.0500202,
+      "operator": null
+    },
+    {
+      "name": "reference-wake",
+      "frames": 180,
+      "steps": 360,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00713,
+      "volume": 5.63052,
+      "divergenceBefore": 0.477462,
+      "divergenceAfter": 0.00023078,
+      "operator": null
+    },
+    {
+      "name": "reference-room",
+      "frames": 90,
+      "steps": 180,
+      "mass": 101769,
+      "samples": 101769,
+      "postDensity": 1.10795,
+      "volume": 48.1408,
+      "divergenceBefore": 0.46726,
+      "divergenceAfter": 0.000419873,
+      "operator": null
+    },
+    {
+      "name": "empty",
+      "frames": 4,
+      "steps": 8,
+      "mass": 0,
+      "samples": 0,
+      "postDensity": 0,
+      "volume": 0,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 0,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.192448,
+        "meanMs": 0.191488,
+        "allocatedBytes": 22897712,
+        "matrixError": 0,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "audit",
+      "frames": 12,
+      "steps": 24,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00002,
+      "volume": 5.41757,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 10878,
+        "coarseLeaves": 96,
+        "junctionFaces": 128,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 96,
+        "lastMs": 1.1121,
+        "meanMs": 0.894979,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "view",
+      "frames": 12,
+      "steps": 24,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00002,
+      "volume": 5.41757,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 10878,
+        "coarseLeaves": 96,
+        "junctionFaces": 128,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 96,
+        "lastMs": 1.15114,
+        "meanMs": 0.899403,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "calm",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00002,
+      "volume": 5.4176,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 10878,
+        "coarseLeaves": 96,
+        "junctionFaces": 128,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 96,
+        "lastMs": 1.13546,
+        "meanMs": 1.27147,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "cycle",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00002,
+      "volume": 5.4176,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 10878,
+        "coarseLeaves": 96,
+        "junctionFaces": 128,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 96,
+        "coarseDemotions": 192,
+        "lastMs": 1.13648,
+        "meanMs": 0.974237,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "fall",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.23645,
+      "volume": 7.22794,
+      "divergenceBefore": 2.43509,
+      "divergenceAfter": 0.0500202,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 19181,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.534656,
+        "meanMs": 0.488977,
+        "allocatedBytes": 22897712,
+        "matrixError": 0,
+        "rhsDivergenceError": 0.000011814,
+        "fluxError": 1.46899e-7,
+        "prolongationError": 0,
+        "residualMismatch": 0.00000792779,
+        "validated": true
+      }
+    },
+    {
+      "name": "wake",
+      "frames": 180,
+      "steps": 360,
+      "mass": 100000,
+      "samples": 100000,
+      "postDensity": 1.00725,
+      "volume": 5.62969,
+      "divergenceBefore": 0.473978,
+      "divergenceAfter": 0.000198474,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 13502,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 96,
+        "coarseDemotions": 96,
+        "lastMs": 0.454496,
+        "meanMs": 0.820153,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0.00000691706,
+        "fluxError": 1.73758e-7,
+        "prolongationError": 3.98359e-8,
+        "residualMismatch": 0.00000829057,
+        "validated": true
+      }
+    },
+    {
+      "name": "interior",
+      "frames": 120,
+      "steps": 240,
+      "mass": 100000,
+      "samples": 93376,
+      "postDensity": 1.00097,
+      "volume": 5.41958,
+      "divergenceBefore": 0,
+      "divergenceAfter": 0,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 10878,
+        "coarseLeaves": 96,
+        "junctionFaces": 128,
+        "peakCoarseLeaves": 96,
+        "peakJunctionFaces": 128,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 96,
+        "lastMs": 1.12982,
+        "meanMs": 1.11976,
+        "allocatedBytes": 22897712,
+        "matrixError": 1.27157e-7,
+        "rhsDivergenceError": 0,
+        "fluxError": 0,
+        "prolongationError": 0,
+        "residualMismatch": 0,
+        "validated": true
+      }
+    },
+    {
+      "name": "room",
+      "frames": 90,
+      "steps": 180,
+      "mass": 101769,
+      "samples": 101769,
+      "postDensity": 1.10795,
+      "volume": 48.1408,
+      "divergenceBefore": 0.46726,
+      "divergenceAfter": 0.000419873,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 14947,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.400128,
+        "meanMs": 0.41127,
+        "allocatedBytes": 26845992,
+        "matrixError": 0,
+        "rhsDivergenceError": 0.00000409238,
+        "fluxError": 5.796e-8,
+        "prolongationError": 0,
+        "residualMismatch": 0.00000385129,
+        "validated": true
+      }
+    },
+    {
+      "name": "odd",
+      "frames": 60,
+      "steps": 120,
+      "mass": 101179,
+      "samples": 101179,
+      "postDensity": 1.11465,
+      "volume": 48.1915,
+      "divergenceBefore": 0.427453,
+      "divergenceAfter": 0.00042961,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 121,
+        "leaves": 14758,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.398688,
+        "meanMs": 0.418541,
+        "allocatedBytes": 26845992,
+        "matrixError": 0,
+        "rhsDivergenceError": 0.00000382717,
+        "fluxError": 5.30749e-8,
+        "prolongationError": 0,
+        "residualMismatch": 0.00000399073,
+        "validated": true
+      }
+    },
+    {
+      "name": "fg",
+      "frames": 60,
+      "steps": 120,
+      "mass": 101179,
+      "samples": 101179,
+      "postDensity": 1.11462,
+      "volume": 48.1942,
+      "divergenceBefore": 0.428183,
+      "divergenceAfter": 0.000492012,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 14808,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.392192,
+        "meanMs": 0.469664,
+        "allocatedBytes": 26845992,
+        "matrixError": 0,
+        "rhsDivergenceError": 0.00000354025,
+        "fluxError": 5.48081e-8,
+        "prolongationError": 0,
+        "residualMismatch": 0.00000476207,
+        "validated": true
+      }
+    },
+    {
+      "name": "pt",
+      "frames": 60,
+      "steps": 120,
+      "mass": 101179,
+      "samples": 101179,
+      "postDensity": 1.11462,
+      "volume": 48.1942,
+      "divergenceBefore": 0.428183,
+      "divergenceAfter": 0.000492012,
+      "operator": {
+        "mode": "mixed-mac-2to1",
+        "solver": "absolute-row-relaxation",
+        "iterations": 120,
+        "leaves": 14808,
+        "coarseLeaves": 0,
+        "junctionFaces": 0,
+        "peakCoarseLeaves": 0,
+        "peakJunctionFaces": 0,
+        "invalid": 0,
+        "finePromotions": 0,
+        "coarseDemotions": 0,
+        "lastMs": 0.397632,
+        "meanMs": 0.413686,
+        "allocatedBytes": 26845992,
+        "matrixError": 0,
+        "rhsDivergenceError": 0.00000354025,
+        "fluxError": 5.48081e-8,
+        "prolongationError": 0,
+        "residualMismatch": 0.00000476207,
+        "validated": true
+      }
+    }
+  ],
+  "comparisons": {
+    "calm": {
+      "volumeError": 0,
+      "densityDelta": 0
+    },
+    "cycle": {
+      "volumeError": 0,
+      "densityDelta": 0
+    },
+    "fall": {
+      "volumeError": 0,
+      "densityDelta": 0
+    },
+    "wake": {
+      "volumeError": 0.00014741089632919202,
+      "densityDelta": 0.00011999999999989797
+    },
+    "room": {
+      "volumeError": 0,
+      "densityDelta": 0
+    }
+  },
+  "ordinary": [
+    {
+      "name": "constant",
+      "steps": 0,
+      "particles": 100000
+    },
+    {
+      "name": "affine",
+      "steps": 0,
+      "particles": 100000
+    },
+    {
+      "name": "compression",
+      "steps": 0,
+      "particles": 100000
+    },
+    {
+      "name": "roundtrip",
+      "steps": 0,
+      "particles": 100000
+    },
+    {
+      "name": "controls",
+      "steps": 3,
+      "particles": 257
+    },
+    {
+      "name": "apic-long",
+      "steps": 2400,
+      "particles": 100000
+    }
+  ],
+  "optical": [
+    {
+      "name": "colliders",
+      "frames": 180,
+      "roots": 6261
+    },
+    {
+      "name": "surface-controls",
+      "frames": 12,
+      "roots": 1452
+    }
+  ],
+  "temporal": [
+    {
+      "frame": 128,
+      "rrResets": 1,
+      "coarseLeaves": 0
+    },
+    {
+      "frame": 176,
+      "rrResets": 1,
+      "coarseLeaves": 0
+    },
+    {
+      "frame": 224,
+      "rrResets": 1,
+      "coarseLeaves": 0
+    },
+    {
+      "frame": 272,
+      "rrResets": 1,
+      "coarseLeaves": 0
+    },
+    {
+      "frame": 320,
+      "rrResets": 1,
+      "coarseLeaves": 0
+    }
+  ],
+  "profile": {
+    "reference": {
+      "medianRawMs": 13.6848,
+      "p95RawMs": 16.292,
+      "medianSimulationMs": 2.97952,
+      "measuredFrames": 268,
+      "peakCoarseLeaves": 0
+    },
+    "adaptive": {
+      "medianRawMs": 13.6277,
+      "p95RawMs": 16.1118,
+      "medianSimulationMs": 3.01517,
+      "measuredFrames": 268,
+      "peakCoarseLeaves": 0
+    },
+    "scope": "One sequential same-build 1080p Balanced room/inlet/foam/orbit run per mode; FG off, no invariant snapshots or deterministic sorting. Operating-cost check, not statistically established speedup."
+  },
+  "exeSha256": "7d311f0432aa93686527afb4d5377aea6bf4c90092bfa8ab992d9275136b1a3b",
+  "shaderSetSha256": "42b2de96cf4ee1b7cf4a5c3eec1a6228496e121a83a2b54bab0a1d6a433f9f7c",
+  "debugLayer": {
+    "gpuBasedValidationExecuted": false,
+    "previousInitializationError": "0x887A002D"
+  }
+}

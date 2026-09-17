@@ -1,0 +1,295 @@
+{
+  "context": "RTX 5090, 1280x720 Balanced, 65536 spectral photons/frame. Raw caustics checked before albedo/DLSS. GPU probe runs are not representative performance benchmarks. Surface, solver, light flux and temporal history are unchanged.",
+  "quietFloor": {
+    "meanY": 0.7573321699819644,
+    "coefficientOfVariation": 0.10960784660013141
+  },
+  "comparison": {
+    "referencePrefix": "<LOCALAPPDATA>/NVMatrixEngine/build/bin/Release/restir-room-reference",
+    "before": {
+      "meanY": 0.7583714546490228,
+      "coefficientOfVariation": 0.20054291599905685
+    },
+    "after": {
+      "meanY": 0.7573321699819644,
+      "coefficientOfVariation": 0.10960784660013141
+    },
+    "reductionPercent": 45.344443580023096
+  },
+  "runs": [
+    {
+      "name": "flow",
+      "frames": 240,
+      "medianMs": [
+        0.681984,
+        0.010016,
+        5.19955,
+        0.004192,
+        0.464288,
+        11.2517,
+        1.93392,
+        1.02342,
+        0.127456,
+        0.029088,
+        0.208608
+      ],
+      "energyWatts": [
+        183,
+        127.442,
+        27.7305,
+        10.7321,
+        13.5694,
+        0.153768,
+        3.37268
+      ],
+      "footprintCapped": 824,
+      "rawCapture": {
+        "powerXYZ": [
+          136.8895842587233,
+          143.97376509063983,
+          141.00414396150023
+        ],
+        "nonzeroTexels": 208326,
+        "maxIrradiance": 540.3265380859375,
+        "atlasAge": 32,
+        "motionMax": 4.484375
+      }
+    },
+    {
+      "name": "still",
+      "frames": 240,
+      "medianMs": [
+        0.64192,
+        0.010048,
+        4.31053,
+        0.004288,
+        0.464768,
+        9.5508,
+        1.89661,
+        0.938208,
+        0.127552,
+        0,
+        0
+      ],
+      "energyWatts": [
+        183,
+        128.896,
+        26.6537,
+        11.1244,
+        12.9918,
+        0.0483503,
+        3.28489
+      ],
+      "footprintCapped": 317,
+      "rawCapture": {
+        "powerXYZ": [
+          136.9747220460084,
+          143.93183319451762,
+          140.82201916777757
+        ],
+        "nonzeroTexels": 152877,
+        "maxIrradiance": 541.7522583007812,
+        "atlasAge": 32,
+        "motionMax": 0.326904296875
+      }
+    },
+    {
+      "name": "fixed",
+      "frames": 90,
+      "medianMs": [
+        3.69021,
+        0.010368,
+        4.74141,
+        0.00416,
+        0.462272,
+        13.7109,
+        1.92387,
+        0.968768,
+        0.12832,
+        0.025856,
+        0.136032
+      ],
+      "energyWatts": [
+        183,
+        127.674,
+        26.9221,
+        12.5595,
+        12.5735,
+        0.0389071,
+        3.23186
+      ],
+      "footprintCapped": 462,
+      "rawCapture": {
+        "powerXYZ": [
+          135.98960655541472,
+          142.9992894103168,
+          139.9157535652609
+        ],
+        "nonzeroTexels": 148197,
+        "maxIrradiance": 533.0176391601562,
+        "atlasAge": 32,
+        "motionMax": 4.2265625
+      }
+    },
+    {
+      "name": "dxr",
+      "frames": 90,
+      "medianMs": [
+        0.993856,
+        0.009664,
+        6.86189,
+        0.006912,
+        0.467872,
+        13.2936,
+        1.90426,
+        0.964352,
+        0.129216,
+        0.025632,
+        0.134208
+      ],
+      "energyWatts": [
+        183,
+        127.498,
+        27.0004,
+        12.5101,
+        12.6557,
+        0.104067,
+        3.23186
+      ],
+      "footprintCapped": 487,
+      "rawCapture": {
+        "powerXYZ": [
+          136.0196230704151,
+          143.04268618712265,
+          139.99228565139217
+        ],
+        "nonzeroTexels": 161723,
+        "maxIrradiance": 532.9768676757812,
+        "atlasAge": 32,
+        "motionMax": 4.23046875
+      }
+    },
+    {
+      "name": "nvapi",
+      "frames": 90,
+      "medianMs": [
+        1.01082,
+        0.009696,
+        6.99709,
+        0.007264,
+        0.46752,
+        13.609,
+        1.91997,
+        0.957376,
+        0.130848,
+        0.026304,
+        0.134176
+      ],
+      "energyWatts": [
+        183,
+        127.317,
+        27.0484,
+        12.5427,
+        12.782,
+        0.0784178,
+        3.23186
+      ],
+      "footprintCapped": 488,
+      "rawCapture": {
+        "powerXYZ": [
+          135.9161668235184,
+          142.9068877199132,
+          139.88249647379615
+        ],
+        "nonzeroTexels": 161342,
+        "maxIrradiance": 532.9393310546875,
+        "atlasAge": 32,
+        "motionMax": 4.2265625
+      }
+    },
+    {
+      "name": "frame-gen",
+      "frames": 90,
+      "medianMs": [
+        0.677248,
+        0.01024,
+        7.21242,
+        0.004576,
+        0.470752,
+        13.6274,
+        1.92301,
+        0.959072,
+        0.129216,
+        0.025472,
+        0.134944
+      ],
+      "energyWatts": [
+        183,
+        127.435,
+        27.0213,
+        12.5691,
+        12.6566,
+        0.0865479,
+        3.23186
+      ],
+      "footprintCapped": 479,
+      "rawCapture": {
+        "powerXYZ": [
+          135.97329750207996,
+          142.96867517573605,
+          139.9579949860407
+        ],
+        "nonzeroTexels": 162442,
+        "maxIrradiance": 532.947998046875,
+        "atlasAge": 32,
+        "motionMax": 4.2265625
+      }
+    },
+    {
+      "name": "restir",
+      "frames": 180,
+      "medianMs": [
+        0.69152,
+        0.010016,
+        5.80326,
+        0.007712,
+        0.4672,
+        11.8889,
+        1.92496,
+        1.01805,
+        0.129248,
+        0.02832,
+        0.179104
+      ],
+      "energyWatts": [
+        183,
+        127.932,
+        27.1598,
+        11.8393,
+        12.6677,
+        0.0239935,
+        3.37659
+      ],
+      "footprintCapped": 593,
+      "rawCapture": {
+        "powerXYZ": [
+          136.23671197019544,
+          143.23389263911673,
+          140.2638909681086
+        ],
+        "nonzeroTexels": 193180,
+        "maxIrradiance": 541.7642822265625,
+        "atlasAge": 32,
+        "motionMax": 4.34765625
+      }
+    }
+  ],
+  "shaderSha256": {
+    "Transport-0-0": "e4f4d84b86ebebaf83acf0496aa59ad4d646e6e464ecc04484ece0b921c74564",
+    "Transport-0-1": "1dcb29b5c239e1b72a0f946b5df05a48cc8614cfd2bba85799c64c40853c7c68",
+    "Transport-1-0": "ce84f3356d9f9fcd9729f95b269298d290261bf5d4445aca8401535b1a7e56a1",
+    "Transport-1-1": "dce35f0a8a2bd7c3a1c19fbb3d0d4a8f68f13543bfd021ed5cad7cbfd95fc339",
+    "Transport-2-0": "e5b4af54e12badeebfc5e2322af69a84077e01b7c891d23b49a5ab2e92567715",
+    "Transport-2-1": "d09c18e5f597f3379b45f37fc69f3ec2388debccb3802a6e4a47377414110c99"
+  }
+}
