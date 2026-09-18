@@ -221,6 +221,10 @@ LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM w, LPARAM l) {
                 if (once && activeRenderer)
                     activeRenderer->experience.firstPerson = !activeRenderer->experience.firstPerson;
                 break;
+            case 'Y':
+                if (once && activeRenderer && activeRenderer->experience.oceanLab)
+                    activeRenderer->experience.environment = 1 - activeRenderer->experience.environment;
+                break;
             case 'W':
                 g.input.forward = down;
                 break;
@@ -234,6 +238,7 @@ LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM w, LPARAM l) {
                 g.input.right = down;
                 break;
             case VK_SPACE:
+                g.input.ascend = down;
                 if (once)
                     g.input.jump = true;
                 break;
@@ -396,7 +401,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
     HWND window = nullptr;
     try {
         lab::Options options;
-        bool selfTest = false, demoTour = false, underwaterView = false, dlssSettingsTest = false;
+        bool selfTest = false, demoTour = false, underwaterView = false, inletView = false, dlssSettingsTest = false;
         std::string name = "lab";
         int argc = 0;
         std::unique_ptr<wchar_t *, CommandLineDeleter> arguments(
@@ -409,7 +414,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
         if (argc == 1) {
             options.fluidRoom = options.fluid = true;
         }
-        bool normalLens = false;
+        bool normalLens = false, waveOptionsSet = false, waveControlsTest = false, wavePatchTest = false,
+             waveFillTest = false, oceanControlsTest = false;
         // Preset defaults precede parsing so explicit overrides are order independent.
         for (int i = 1; i < argc; ++i)
             if (std::wstring_view(argv[i]) == L"--fluid-deep-pool") {
@@ -418,6 +424,31 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 options.fluidCapacity = lab::deepPool::capacity;
                 options.fluidDepth = lab::deepPool::depth;
                 options.fluidCellSize = lab::deepPool::cellSize;
+            }
+        for (int i = 1; i < argc; ++i)
+            if (std::wstring_view(argv[i]) == L"--water-lab=large") {
+                options.largeWaterLab = options.fluidRoom = options.fluid = true;
+                options.hamiltonian.enabled = true;
+                options.fluidParticles = lab::largeWater::particles;
+                options.fluidCapacity = lab::largeWater::capacity;
+                options.fluidDepth = lab::largeWater::depth;
+                options.fluidCellSize = lab::largeWater::cellSize;
+            }
+        for (int i = 1; i < argc; ++i)
+            if (std::wstring_view(argv[i]) == L"--water-lab=ocean" ||
+                std::wstring_view(argv[i]) == L"--water-lab=extra-large") {
+                options.oceanLab = options.fluidRoom = options.fluid = options.boat = true;
+                options.hamiltonian.enabled = true;
+                options.hamiltonian.amplitude = .8f;
+                options.hamiltonian.epsilon = 1;
+                options.hamiltonian.resolution = 128;
+                options.hamiltonian.windSpeed = 11;
+                options.hamiltonian.extendOpticalSurface = true;
+                options.fluidParticles = lab::ocean::particles;
+                options.fluidCapacity = lab::ocean::capacity;
+                options.fluidDepth = lab::ocean::depth;
+                options.fluidCellSize = lab::ocean::cellSize;
+                options.lasers = false;
             }
         // Suppress modal errors for bounded tests, even when another switch is invalid.
         for (int i = 1; i < argc; ++i)
@@ -454,6 +485,10 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 underwaterView = true;
                 continue;
             }
+            if (arg == "--inlet-view") {
+                inletView = true;
+                continue;
+            }
             if (arg == "--demo-tour") {
                 demoTour = true;
                 continue;
@@ -477,6 +512,65 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     throw std::runtime_error("Expected a finite, nonnegative SI material value");
                 return x;
             };
+            if (arg == "--water-lab=large" || arg == "--water-lab=ocean" || arg == "--water-lab=extra-large")
+                continue;
+            if (arg.starts_with("--time-of-day=")) {
+                const auto mode = value("--time-of-day=");
+                if (mode != "day" && mode != "night") throw std::runtime_error("Time of day must be day or night");
+                options.oceanNight = mode == "night";
+                continue;
+            }
+            if (arg.starts_with("--water-path=")) {
+                const auto mode = value("--water-path=");
+                if (mode != "baseline" && mode != "hamiltonian")
+                    throw std::runtime_error("Water path must be baseline or hamiltonian");
+                options.hamiltonian.enabled = mode == "hamiltonian";
+                options.fluidRoom = options.fluid = true;
+                continue;
+            }
+            if (arg == "--wave-patch-test") {
+                wavePatchTest = true;
+                continue;
+            }
+            if (arg == "--wave-controls-test") {
+                waveControlsTest = true;
+                continue;
+            }
+            if (arg == "--ocean-controls-test") {
+                oceanControlsTest = true;
+                continue;
+            }
+            if (arg == "--ocean-swim-test") {
+                options.oceanSwimTest = true;
+                continue;
+            }
+            if (arg == "--wave-fill-test") {
+                waveFillTest = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-epsilon=")) {
+                options.hamiltonian.epsilon = physical("--wave-epsilon=");
+                waveOptionsSet = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-amplitude=")) {
+                options.hamiltonian.amplitude = physical("--wave-amplitude=");
+                waveOptionsSet = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-relaxation=")) {
+                options.hamiltonian.relaxation = physical("--wave-relaxation=");
+                waveOptionsSet = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-order=")) {
+                const auto order = value("--wave-order=");
+                if (order != "2" && order != "3")
+                    throw std::runtime_error("Wave order must be 2 or 3");
+                options.hamiltonian.order = order == "2" ? 2u : 3u;
+                waveOptionsSet = true;
+                continue;
+            }
             // Keep backend selection out of the legacy else-if chain, which is
             // close to MSVC's syntactic nesting limit.
             if (arg == "--fluid-deep-pool")
@@ -812,8 +906,9 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 options.water = false;
             } else if (arg.starts_with("--fluid-cell-size="))
                 options.fluidCellSize =
-                    std::clamp(physical("--fluid-cell-size="), options.fluidDeepPool ? .5f : .10f,
-                               options.fluidDeepPool ? 1.f : .24f);
+                    std::clamp(physical("--fluid-cell-size="),
+                               options.oceanLab ? .8f : options.fluidDeepPool ? .5f : (options.largeWaterLab ? .20f : .10f),
+                               options.oceanLab ? 1.2f : options.fluidDeepPool ? 1.f : (options.largeWaterLab ? .32f : .24f));
             else if (arg.starts_with("--fluid-simulation-hz="))
                 options.fluidSimulationHz =
                     std::clamp(std::stof(value("--fluid-simulation-hz=")), 60.f, 180.f);
@@ -890,11 +985,45 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
         if (options.capture && !options.frames)
             throw std::runtime_error("Capture requires a bounded --frames run");
         automation = options.frames != 0;
+        if (oceanControlsTest && (!options.oceanLab || options.oceanNight || options.frames != 120))
+            throw std::runtime_error("Ocean controls test requires daytime Ocean Lab and --frames=120");
+        if (options.oceanSwimTest && (!options.oceanLab || options.frames != 600))
+            throw std::runtime_error("Ocean swimming test requires Ocean Lab and --frames=600");
+        if (options.oceanLab && (options.largeWaterLab || options.fluidDeepPool || options.fixture ||
+                                !options.fluidRoom || options.fluidSolverOnly || options.fluidRoomTest ||
+                                options.fluidTemporalTest || options.fluidCellSize < .8f || options.fluidBackend == "cuda"))
+            throw std::runtime_error("Ocean Lab requires its own rendered room and cells >= 0.8 m");
+        if (wavePatchTest && (!options.largeWaterLab || !options.hamiltonian.enabled || options.frames != 240))
+            throw std::runtime_error("Wave patch test requires large Hamiltonian Water Lab and --frames=240");
+        if (waveControlsTest && (!options.hamiltonian.enabled || options.frames != 12))
+            throw std::runtime_error("Wave input test requires --water-path=hamiltonian --frames=12");
+        if (waveFillTest && (!options.hamiltonian.enabled || options.frames < 240 || waveControlsTest || wavePatchTest))
+            throw std::runtime_error("Wave fill test requires Hamiltonian water, at least 240 frames and no other wave fixture");
+        if (waveOptionsSet && !options.hamiltonian.enabled)
+            throw std::runtime_error("Wave controls require --water-path=hamiltonian");
+        if (options.largeWaterLab && (options.fluidDeepPool || !options.fluidRoom || options.fixture ||
+                                      options.fluidSolverOnly || options.fluidRoomTest ||
+                                      options.fluidTemporalTest || options.fluidCellSize < .20f))
+            throw std::runtime_error("Large Water Lab requires its own rendered room and cells >= 0.20 m");
+        if (options.hamiltonian.enabled) {
+            options.hamiltonian.validate(options.fluidDepth, options.fluidGravity);
+            if (!options.fluidParticles)
+                throw std::runtime_error("Hamiltonian water needs a positive full-room particle count");
+            if (options.fluidDeepPool || options.fixture || options.fluidSurfaceLod ||
+                options.fluidSurfaceFixture || options.fluidSurfaceControlsTest ||
+                options.fluidRoomTest || options.fluidValidate || options.fluidControlTest ||
+                options.fluidTemporalTest || options.fluidSolverOnly)
+                throw std::runtime_error("Hamiltonian water uses the rendered room with its own open "
+                                         "boundary reservoir; closed-volume fixtures and surface "
+                                         "LOD are not supported");
+        }
         if (underwaterView) {
             if (!options.fluidRoom || !options.boat)
                 throw std::runtime_error("Underwater view requires --fluid-room and --boat");
             options.fluidView = false;
         }
+        if (inletView && (!options.fluidRoom || options.fixture || options.fluidSolverOnly || underwaterView))
+            throw std::runtime_error("Inlet view requires a rendered Water Lab room");
         if (demoTour && (!automation || !options.fluidRoom || !options.boat || options.fluidDeepPool ||
                          options.fixture || options.rollingTest || options.experienceTest))
             throw std::runtime_error("Demo tour requires a bounded fluid-room run with --boat");
@@ -1055,14 +1184,31 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             std::unique_ptr<lab::Hud> hud;
             if (!options.fixture) {
                 game = std::make_unique<Game>(std::vector<Level>{
-                    lab::makePlayLevel(options.fluidRoom, options.boat, options.fluidDeepPool)});
+                    lab::makePlayLevel(options.fluidRoom, options.boat, options.fluidDeepPool, options.largeWaterLab, options.oceanLab)});
+                if (options.oceanLab) {
+                    game->azimuth = 1.25f;
+                    game->elevation = .30f;
+                    game->distance = 14.f;
+                }
                 if (underwaterView)
                     game->elevation = -.10f;
+                if (inletView) {
+                    const auto inlet = renderer.fluid->emitter.position;
+                    game->place(0, {inlet.x + 2.f, options.fluidDepth + .8f, inlet.z + 1.8f});
+                    game->azimuth = 1.05f;
+                    game->elevation = .28f;
+                    game->distance = 5.5f;
+                }
                 hud = std::make_unique<lab::Hud>(renderer.uiDevice(), window, folder, *game,
                                                  renderer.experience, automation);
                 hud->rendererStatus = options.restirPt
                                           ? "RTXDI ReSTIR PT: opaque diffuse GI · photon caustics · DLSS-RR"
                                           : "Baseline diffuse GI · photon caustics · DLSS-RR";
+                hud->hamiltonianWater = options.hamiltonian.enabled;
+                hud->largeWaterLab = options.largeWaterLab;
+                if (options.hamiltonian.enabled)
+                    hud->rendererStatus = "Hamiltonian HOS-" + std::to_string(options.hamiltonian.order) +
+                                          " waves + local 3D flow · " + hud->rendererStatus;
                 activeGame = game.get();
                 activeHud = hud.get();
                 if (options.fluidColliderTest) {
@@ -1083,6 +1229,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             XMFLOAT3 testStart{};
             XMFLOAT3 boatTestStart{};
             bool boatMoved = false, boatWet = false;
+            float swimStartHeight = 0;
             uint32_t movementRrResets = 0;
             float orbitStart = 0;
             auto require = [](bool ok, const char *why) {
@@ -1305,8 +1452,172 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     // ordering as the normal pumpMessages/applyResize path.
                     applyResize();
                 }
-                if (options.fluidControlTest) {
+                if (waveFillTest) {
                     auto &f = *renderer.fluid;
+                    auto &wave = *f.hamiltonian;
+                    static double stoppedVolume = 0;
+                    static uint64_t stoppedEmitted = 0;
+                    if (renderer.frame) {
+                        require(wave.steps == f.stepCount, "Fill advanced different wave/particle clocks");
+                        require(std::abs(wave.publishedMeanHeight() - (f.description().minimum.y + wave.depth())) < 2e-5f,
+                                "Rendered wave height lost the inlet volume ledger");
+                    }
+                    switch (renderer.frame) {
+                    case 0:
+                        if (!f.emitter.enabled)
+                            key('T');
+                        require(f.emitter.enabled, "T did not open the Hamiltonian inlet");
+                        break;
+                    case 20:
+                        require(wave.freeWaterSamples() > 0, "Inlet did not emit simulated free water");
+                        stoppedVolume = wave.addedVolume();
+                        stoppedEmitted = f.emittedParticles;
+                        key('P');
+                        break;
+                    case 24:
+                        require(wave.addedVolume() == stoppedVolume && f.emittedParticles == stoppedEmitted,
+                                "Paused water continued emitting or transferring mass");
+                        key(VK_OEM_PERIOD);
+                        break;
+                    case 25:
+                        require(f.emittedParticles > stoppedEmitted, "Single-step did not advance the source");
+                        key('T');
+                        stoppedVolume = wave.addedVolume();
+                        stoppedEmitted = f.emittedParticles;
+                        key(VK_OEM_PERIOD);
+                        break;
+                    case 26:
+                        require(!f.emitter.enabled && f.emittedParticles == stoppedEmitted,
+                                "Closed inlet emitted during a single step");
+                        key('P');
+                        key('T');
+                        break;
+                    case 60:
+                        game->place(0, {f.emitter.position.x + .8f, options.fluidDepth + 1, f.emitter.position.z});
+                        require(renderer.nearWallValve(*game), "Hamiltonian wall valve is unreachable");
+                        key('E');
+                        require(!f.emitter.enabled, "E did not close the Hamiltonian wall valve");
+                        stoppedVolume = wave.addedVolume();
+                        stoppedEmitted = f.emittedParticles;
+                        break;
+                    case 65:
+                        require(f.emittedParticles == stoppedEmitted, "E-closed inlet kept emitting");
+                        hud->testClick("wall-water");
+                        break;
+                    case 66:
+                        require(f.emitter.enabled, "Wall UI did not open the Hamiltonian inlet");
+                        break;
+                    case 85:
+                        require(f.emittedParticles > stoppedEmitted && wave.freeWaterSamples() > 0,
+                                "Reopened inlet failed to emit water");
+                        key('B');
+                        break;
+                    case 86:
+                        require(wave.addedVolume() == 0 && wave.depth() == options.fluidDepth &&
+                                    !f.emitter.enabled && !f.emitterFull, "Reset did not drain Hamiltonian inlet volume");
+                        break;
+                    case 90:
+                        key('T');
+                        game->place(0, {0, options.fluidDepth + 1, 3.2f});
+                        break;
+                    }
+                    if (renderer.frame == options.frames - 1) {
+                        require(wave.addedVolume() > 0 && wave.regionChanges() > 0,
+                                "Filling did not survive adaptive region changes and reset");
+                        if (f.emitterFull) {
+                            require(f.emitterFull && wave.full() && !f.emitter.enabled,
+                                    "Hamiltonian capacity did not close the inlet");
+                            key('T');
+                            require(!f.emitter.enabled, "T reopened a full Hamiltonian reservoir");
+                        }
+                        logLine("PASS Hamiltonian inlet: T/E/UI, pause, step, drain/reset, adaptive regions and fill limit");
+                    }
+                }
+                if (oceanControlsTest) {
+                    const auto f = renderer.frame;
+                    if (f == 5 || f == 20) {
+                        key('Y');
+                        require(renderer.experience.environment == 1, "Y did not select night");
+                    }
+                    if (f == 10 || f == 30) {
+                        hud->testClick(f == 10 ? "ocean-time" : "environment");
+                        require(renderer.experience.environment == 0, "Ocean lighting button did not select day");
+                    }
+                    if (f == 40 || f == 45) {
+                        key('I');
+                        require(renderer.inspectingFluid() == (f == 40), "Ocean overview did not toggle");
+                    }
+                    if (f == 50 || f == 55) {
+                        key(VK_TAB);
+                        require(renderer.experience.firstPerson == (f == 50), "Ocean player view did not toggle");
+                    }
+                    if (f == 60 || f == 110) key('T');
+                    if (f == 119) {
+                        require(renderer.fluid->stepCount >= 200, "Sky controls reset or stopped water");
+                        require(renderer.fluid->emittedParticles > 0, "Ocean outlet did not emit water");
+                        logLine("PASS ocean: day/night, both lighting buttons, overview, player view and outlet");
+                    }
+                }
+                if (options.oceanSwimTest) {
+                    const auto f=renderer.frame;
+                    if(f==0) {
+                        renderer.experience.ballFloats=false;game->setBallFloating(false);
+                        game->place(0,{30,.75f,30});game->distance=5;game->elevation=.20f;
+                    }
+                    if(f==10)send(WM_KEYDOWN,'W');
+                    if(f==50)send(WM_KEYUP,'W');
+                    if(f==60){swimStartHeight=game->playerPosition().y;send(WM_KEYDOWN,VK_SPACE);}
+                    if(f==180) {
+                        require(game->playerPosition().y>swimStartHeight+1.4f,"GPU water did not allow sustained Space ascent");
+                        require(game->jumps==0&&!game->ballFloats(),"Underwater propulsion jumped or changed density");
+                        swimStartHeight=game->playerPosition().y;send(WM_KEYUP,VK_SPACE);
+                    }
+                    if(f==240) {
+                        require(game->playerPosition().y<swimStartHeight-.4f,"Key release did not resume sinking");
+                        game->clearInput();renderer.experience.ballFloats=true;game->setBallFloating(true);
+                        game->place(game->boatBody,{40,6.4f,40});game->place(0,{40,7.4f,38});
+                        require(game->toggleBoat(),"Ocean voyage could not board the boat");
+                        boatTestStart={40,6.4f,40};game->distance=12;game->elevation=.4f;
+                        send(WM_KEYDOWN,'W');
+                    }
+                    if(f==540)send(WM_KEYDOWN,'D');
+                    if(f>330) {
+                        auto hull=game->poses().at(size_t(game->boatBody)+1);
+                        if(hull._22<.3f)throw std::runtime_error("Ocean boat capsized at frame "+std::to_string(f));
+                    }
+                    if(f==599) {
+                        auto p=game->playerPosition();
+                        require(std::hypot(p.x-boatTestStart.x,p.z-boatTestStart.z)>12,"Larger boat failed sustained ocean propulsion");
+                        logLine("PASS ocean: floor traversal, no air pocket, held Space, key release and powered voyage");
+                    }
+                }
+                if (wavePatchTest) {
+                    auto &f = *renderer.fluid;
+                    const float t = std::clamp((float(renderer.frame) - 30.f) / 150.f, 0.f, 1.f);
+                    game->place(0, {8.f * t, 2.2f, 3.2f + 7.f * t});
+                    if (renderer.frame == 239) {
+                        const auto &d = f.description();
+                        require(f.hamiltonian->regionChanges() > 20 && f.hamiltonian->activeColumns() > 0,
+                                "Hamiltonian regions did not respond to moving bodies");
+                        require(d.minimum.x + 1.9f < 8.f && d.maximum.x - 1.9f > 8.f &&
+                                    d.minimum.z + 1.9f < 10.2f && d.maximum.z - 1.9f > 10.2f,
+                                "Moving body left the addressable adaptive basin");
+                        if (game->boatBody >= 0) {
+                            const auto poses = game->poses();
+                            require(poses[game->boatBody + 1]._42 > lab::largeWater::depth - .6f &&
+                                        game->submergedBoat > 0,
+                                    "Boat lost buoyancy while another region moved");
+                        }
+                    }
+                }
+                if (options.fluidControlTest || waveControlsTest) {
+                    auto &f = *renderer.fluid;
+                    if (waveControlsTest) {
+                        require(f.hamiltonian->steps == f.stepCount,
+                                "Wave and 3D controls advanced different clocks");
+                        if (renderer.frame == 0)
+                            f.debugVisible = true;
+                    }
                     if (f.cutCells && renderer.frame < 2) {
                         require(f.cutCells->debugVisible == (renderer.frame == 1),
                                 "Cut-cell view did not persist");
@@ -1760,6 +2071,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                         hud->wallWater = renderer.fluid->emitter.enabled;
                         hud->waterFull = renderer.fluid->emitterFull;
                         hud->nearbyValve = renderer.nearWallValve(*game);
+                        if (renderer.fluid->hamiltonian) {
+                            const auto &wave = *renderer.fluid->hamiltonian;
+                            std::ostringstream fillStatus;
+                            if (renderer.fluid->paused)
+                                fillStatus << "Paused · ";
+                            fillStatus << std::fixed << std::setprecision(3) << wave.depth() << " m · +"
+                                       << std::setprecision(1) << renderer.fluid->emittedParticles * double(renderer.fluid->particleVolume)
+                                       << " m³ supplied";
+                            hud->waterFillStatus = fillStatus.str();
+                        }
                         const char *fluidViews[] = {"particles",
                                                     "MAC velocity",
                                                     "pressure",
@@ -1771,8 +2092,12 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                         std::ostringstream status;
                         const auto *resampling = renderer.fluid->resampling.get();
                         status << std::fixed << std::setprecision(2)
-                               << (resampling ? resampling->activeSamples() : renderer.fluid->activeParticles)
+                               << (renderer.fluid->hamiltonian ? renderer.fluid->hamiltonian->activeSamples()
+                                   : resampling ? resampling->activeSamples() : renderer.fluid->activeParticles)
                                << " samples / " << renderer.fluid->simulationMs << " ms simulation";
+                        if (renderer.fluid->hamiltonian)
+                            status << " / depth " << renderer.fluid->hamiltonian->depth() << " m"
+                                   << " / +" << renderer.fluid->hamiltonian->addedVolume() << " m³ filled";
                         if (resampling)
                             status << " / " << renderer.fluid->activeParticles << " rest-mass units / "
                                    << resampling->milliseconds() << " ms resampling";
@@ -1856,6 +2181,9 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     renderer.capture(folder / (name + "-pause"));
                     renderer.report(folder / (name + "-pause.json"));
                 }
+                if (options.oceanSwimTest && options.capture &&
+                    (renderer.frame==55 || renderer.frame==175))
+                    renderer.capture(folder / (name + (renderer.frame==55 ? "-floor" : "-ascent")));
                 if (options.rollingTest)
                     require(renderer.rrHistoryResets == 1, "Rolling/jumping reset global RR history");
                 if (options.opticalEstimatorTest && renderer.frame >= 128 && renderer.frame % 16 == 0) {

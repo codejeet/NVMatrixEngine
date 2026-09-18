@@ -56,7 +56,8 @@ void Composite(uint3 p:SV_DispatchThreadID) {
         // Atlas stores irradiance. Lambertian radiance needs albedo / pi.
         // Keep spectral XYZ signed after RGB conversion until combined at presentation.
         float3 transmittance=exp(-extinctionRgb(ambientMedium(CameraPosition.xyz))*s.w);
-        Noisy[p.xy]+=float4(xyzToRgb(lerp(a,b,f.y))*Albedo[p.xy].xyz*transmittance/PI,0);
+        float areaScale=CameraState.w==3?max(0,NormalRoughness[p.xy].y):1;
+        Noisy[p.xy]+=float4(xyzToRgb(lerp(a,b,f.y))*Albedo[p.xy].xyz*transmittance*(areaScale/PI),0);
         if(OpticalControls.x&1){
             uint index=opticalAddress(p.xy,false);
             float value=opticalReceiver((s.xy-float2(s.z*Atlas.z,0)+.5)/Atlas.z,uint(s.z));

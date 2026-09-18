@@ -35,6 +35,7 @@ add_executable(NVMatrixFluidLab WIN32 src/main.cpp src/renderer.cpp src/scene.cp
   src/fluid/fluid_flowing_band.cpp
   src/optical_importance.cpp
   src/fluid/fluid_buoyancy.cpp
+  src/fluid/hamiltonian_wave.cpp
   ../shared/src/game.cpp ../shared/src/ui_renderer.cpp ../shared/src/audio.cpp
   "${RMLUI}/Backends/RmlUi_Platform_Win32.cpp")
 set_source_files_properties(../shared/src/audio.cpp PROPERTIES COMPILE_OPTIONS /W0)
@@ -58,6 +59,7 @@ add_custom_command(TARGET NVMatrixFluidLab POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/ui"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${RMLUI}/Samples/basic/harfbuzz/data/Poppins-Regular.ttf" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/ui/Poppins-Regular.ttf"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/../shared/assets/audio" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/assets/audio"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets/ocean" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/assets/ocean"
   COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:NVMatrixFluidLab>/shaders"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/../shared/shaders/ui.hlsl" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/shaders/ui.hlsl"
   COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:NVMatrixFluidLab>/D3D12"
@@ -76,6 +78,14 @@ foreach(entry "bullet/LICENSE.txt|Bullet" "RmlUi-6.3/LICENSE.txt|RmlUi" "freetyp
   add_custom_command(TARGET NVMatrixFluidLab POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/${source}" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/${name}-LICENSE.txt")
 endforeach()
 enable_testing()
+# Explicit hardware fixture; run serially with the built runtime folder as argv[1].
+add_executable(NVMatrixEngineHamiltonianGpuTest tests/hamiltonian_gpu.cpp src/fluid/hamiltonian_wave.cpp)
+target_include_directories(NVMatrixEngineHamiltonianGpuTest BEFORE PRIVATE "${DEPS}/agility-1.619.5/build/native/include")
+target_include_directories(NVMatrixEngineHamiltonianGpuTest PRIVATE ../shared/src "${DEPS}/pix-1.0.240308001/Include/WinPixEventRuntime")
+target_compile_definitions(NVMatrixEngineHamiltonianGpuTest PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_compile_options(NVMatrixEngineHamiltonianGpuTest PRIVATE /W4 /EHsc /utf-8)
+target_link_libraries(NVMatrixEngineHamiltonianGpuTest PRIVATE d3d12 dxgi dxguid d3dcompiler)
+set_target_properties(NVMatrixEngineHamiltonianGpuTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 add_executable(NVMatrixEngineLambertianTest tests/lambertian.cpp)
 add_test(NAME lab_lambertian_reduction COMMAND NVMatrixEngineLambertianTest)
 add_test(NAME lab_gameplay COMMAND NVMatrixFluidLab --self-test)
@@ -96,6 +106,8 @@ add_executable(NVMatrixEngineExperienceTest tests/experience.cpp src/gameplay.cp
 target_include_directories(NVMatrixEngineExperienceTest PRIVATE ../shared/src)
 target_compile_options(NVMatrixEngineExperienceTest PRIVATE /EHsc /utf-8)
 target_link_libraries(NVMatrixEngineExperienceTest PRIVATE lab_bullet)
+add_custom_command(TARGET NVMatrixEngineExperienceTest POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets/ocean" "$<TARGET_FILE_DIR:NVMatrixEngineExperienceTest>/assets/ocean")
 add_test(NAME lab_camera_and_watercraft COMMAND NVMatrixEngineExperienceTest)
 add_executable(NVMatrixEngineWaterTest tests/water.cpp src/scene.cpp)
 target_compile_options(NVMatrixEngineWaterTest PRIVATE /EHsc /utf-8)

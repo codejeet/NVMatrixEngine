@@ -8,6 +8,8 @@ div, p, h1, label { display: block; } div, button { box-sizing: border-box; }
 #dlss-presets button { display: inline-block; width: 32%; padding: 10dp 0; margin-right: 1%; text-align: center; font-size: 11dp; }
 #dlss-presets button.selected { color: #b9fff2; background-color: #21413f; border-color: #72e9df; }
 #wall-controls { display: none; position: absolute; left: 28dp; top: 145dp; width: 260dp; padding: 14dp; background-color: #071b25e8; border: 1dp #386572; border-top: 2dp #73ecdc; pointer-events: auto; }
+#ocean-controls { display: none; position: absolute; left: 28dp; top: 145dp; width: 235dp; padding: 14dp; background-color: #071b25cc; border: 1dp #386572; border-top: 2dp #73ecdc; pointer-events: auto; }
+#ocean-time { pointer-events: auto; padding: 12dp 8dp; color: #b9fff2; font-size: 12dp; }
 #wall-water { pointer-events: auto; padding: 12dp 8dp; color: #b9fff2; font-size: 12dp; }
 #water-state { font-size: 10dp; color: #9bbcc7; }
 #objective { position: absolute; top: 25dp; left: 28dp; padding: 14dp 19dp; background-color: #07131dcc; border-left: 2dp #72e9df; }

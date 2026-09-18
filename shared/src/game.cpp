@@ -117,6 +117,7 @@ void Game::destroyWorld() {
     bodies.clear();
     owned.clear();
     shapes.clear();
+    terrainMesh.reset();
     world.reset();
     solver.reset();
     broadphase.reset();
@@ -171,6 +172,12 @@ void Game::load(int index) {
     world->getSolverInfo().m_numIterations = 12;
     for (auto &s : l.solids)
         add(new btBoxShape(v(s.half)), v(s.center), 0);
+    if (!l.terrain.empty()) {
+        terrainMesh = std::make_unique<btTriangleMesh>();
+        for (size_t i = 0; i < l.terrain.size(); i += 3)
+            terrainMesh->addTriangle(v(l.terrain[i]), v(l.terrain[i + 1]), v(l.terrain[i + 2]), false);
+        add(new btBvhTriangleMeshShape(terrainMesh.get(), true), {0, 0, 0}, 0);
+    }
     for (const auto &sensor : l.sensors)
         add(new btBoxShape({sensor.half.x, sensor.half.y, sensor.half.z}),
             {sensor.centerMaterial.x, sensor.centerMaterial.y, sensor.centerMaterial.z}, 0);
@@ -188,15 +195,10 @@ void Game::load(int index) {
             hull->setMargin(.002f);
             shape = hull;
         } else if (p.kind == 8) {
-            auto compound = new btCompoundShape();
-            for (const auto &part : watercraft::hull) {
-                auto box = new btBoxShape(v(part.half));
-                shapes.emplace_back(box);
-                auto local = btTransform::getIdentity();
-                local.setOrigin(v(part.center));
-                compound->addChildShape(local, box);
-            }
-            shape = compound;
+            auto hull = new btConvexHullShape();
+            for (auto vertex : watercraft::hullVertices()) hull->addPoint(v(vertex), false);
+            hull->recalcLocalAabb(); hull->setMargin(.002f);
+            shape = hull;
             mass = watercraft::mass;
             boatBody = int(i + 1);
         } else if (p.kind == 6 || p.kind == 7) {
@@ -252,10 +254,14 @@ void Game::load(int index) {
                                            body ? 2 * h * h * h : watercraft::sphereVolume(h, 2 * h) / 4,
                                            h});
                 }
-        for (float x : {-.72f, .72f})
-            for (float z : {-.94f, -.31f, .31f, .94f})
-                floatPoints.push_back(
-                    {boatBody, {x, 0, z}, {x + (x > 0 ? .40f : -.40f), 0, z}, .1035f, .18f});
+        for (unsigned i=0;i<watercraft::stations;++i) {
+            float z=watercraft::bow+(i+.5f)*watercraft::stationLength;
+            for (float side : {-1.f,1.f}) {
+                float beam=watercraft::halfBeam(z,watercraft::deck);
+                floatPoints.push_back({boatBody,{side*beam*.55f,0,z},{side*(beam+.3f),0,z},
+                    watercraft::columnVolume(z,watercraft::deck), (watercraft::deck-watercraft::keel)*.5f});
+            }
+        }
     }
     held = -1;
     docked = false;
@@ -574,7 +580,7 @@ void Game::setBallFloating(bool floating) {
 bool Game::nearBoat() const {
     return boatBody >= 0 &&
            (bodies[boatBody]->getWorldTransform().getOrigin() - bodies[0]->getWorldTransform().getOrigin())
-                   .length() < 3.f;
+                   .length() < watercraft::boardingDistance;
 }
 bool Game::toggleBoat() {
     if (boatBody < 0 || (!piloting && !nearBoat()))
@@ -587,8 +593,13 @@ bool Game::toggleBoat() {
                                   : player->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
     if (!piloting) {
         auto p = bodies[boatBody]->getWorldTransform() * btVector3(2.1f, 1.f, 0);
-        p.setX(std::clamp(p.x(), -5.2f, 5.2f));
-        p.setZ(std::clamp(p.z(), -5.2f, 7.2f));
+        if (level().roomBounds) {
+            const auto &room = *level().roomBounds;
+            p.setX(std::clamp(p.x(), room.center.x - room.half.x + .8f,
+                             room.center.x + room.half.x - .8f));
+            p.setZ(std::clamp(p.z(), room.center.z - room.half.z + .8f,
+                             room.center.z + room.half.z - .8f));
+        }
         place(0, f(p));
     }
     clearInput();
@@ -596,9 +607,20 @@ bool Game::toggleBoat() {
     return true;
 }
 std::vector<XMFLOAT4> Game::waterQueries() const {
+    return waterQueries(0);
+}
+std::vector<XMFLOAT4> Game::waterQueries(float solidClearance) const {
     std::vector<XMFLOAT4> queries;
     for (const auto &sample : floatPoints) {
-        auto p = bodies[sample.body]->getWorldTransform() * v(sample.query);
+        auto q=sample.query;
+        if(sample.body==boatBody) {
+            // A surface kernel has no particle support inside the hull. Probe
+            // beyond that exclusion band; forces still act at hull quadrature
+            // points, not at the displaced probe locations.
+            float radius=watercraft::halfBeam(q.z,watercraft::deck)+std::max(.3f,solidClearance);
+            q.x=q.x<0?-radius:radius;
+        }
+        auto p = bodies[sample.body]->getWorldTransform() * v(q);
         queries.push_back({p.x(), p.y(), p.z(), 0});
     }
     return queries;
@@ -613,9 +635,9 @@ void Game::receiveWater(const std::vector<XMFLOAT4> &samples, float density, flo
     if (boatBody >= 0)
         world->setGravity({0, -gravity, 0});
 }
-void Game::waterForces(float dt) {
+bool Game::waterForces(float dt) {
     if (boatBody < 0)
-        return;
+        return false;
     waterAge += dt;
     submergedBoat = 0;
     float playerLift = 0, playerWaterForceY = 0;
@@ -629,6 +651,10 @@ void Game::waterForces(float dt) {
             auto offset = b->getWorldTransform().getBasis() * v(point.local);
             auto p = b->getWorldTransform().getOrigin() + offset;
             float fraction = watercraft::immersedFraction(sample.x, p.y(), point.halfHeight);
+            if (point.body == boatBody) {
+                float upright=std::max(.2f, float(std::abs(b->getWorldTransform().getBasis()[1][1])));
+                fraction=watercraft::columnVolume(point.local.z,(sample.x-p.y())/upright)/point.volume;
+            }
             if (!point.body) {
                 // Exact spherical-cap volume in locally planar water.
                 fraction = watercraft::sphereVolume(.68f, sample.x - p.y() + .68f) /
@@ -645,6 +671,13 @@ void Game::waterForces(float dt) {
             auto relative = b->getVelocityInLocalPoint(offset) - btVector3(sample.y, sample.z, sample.w);
             const float area = std::pow(point.volume, 2.f / 3) * fraction;
             auto drag = -relative * (.5f * waterDensity * .7f * area * relative.length());
+            if (point.body == boatBody) {
+                auto basis=b->getWorldTransform().getBasis();
+                auto local=basis.transpose()*relative;
+                drag=basis*btVector3(-local.x()*std::abs(local.x())*1.1f,
+                    -local.y()*(std::abs(local.y())*1.3f+1.5f),
+                    -local.z()*std::abs(local.z())*.12f)*(.5f*waterDensity*area);
+            }
             // Dissipative bound: an explicit drag impulse may not reverse the
             // relative velocity within one fixed step, including large impacts.
             // Effective mass at the force point includes angular response. A
@@ -652,7 +685,7 @@ void Game::waterForces(float dt) {
             auto axis = relative.length2() > 1e-12f ? relative.normalized() : btVector3(0, 1, 0);
             auto lever = offset.cross(axis);
             float inverseMass = b->getInvMass() + lever.dot(b->getInvInertiaTensorWorld() * lever);
-            float cap = 1 / (inverseMass * dt * (point.body == boatBody ? 8 : 4));
+            float cap = 1 / (inverseMass * dt * (point.body == boatBody ? 2*watercraft::stations : 4));
             if (drag.length() > relative.length() * cap)
                 drag = -relative * cap;
             if (!point.body)
@@ -661,13 +694,16 @@ void Game::waterForces(float dt) {
             b->applyForce(btVector3(0, waterDensity * waterGravity * volume, 0) + drag, offset);
         }
     }
-    if (!piloting && input.dive && playerLift > 0) {
+    const int verticalInput = int(input.ascend) - int(input.dive);
+    if (!piloting && verticalInput && playerLift > 0) {
         auto player = bodies[0];
         float mass = 1 / player->getInvMass();
-        // Player-controlled dive propulsion; hydrostatic lift stays physical.
+        // Swimming uses sustained thrust, including for heavy solid glass.
+        // The controller overcomes weight/drag while wet; it never changes
+        // density or teleports the ball. Opposing controls cancel propulsion.
         player->applyCentralForce(
             {0,
-             -playerWaterForceY + mass * waterGravity + mass * (-1.5f - player->getLinearVelocity().y()) * 8,
+             -playerWaterForceY + mass * waterGravity + mass * (verticalInput * 1.5f - player->getLinearVelocity().y()) * 8,
              0});
     }
     if (piloting) {
@@ -689,11 +725,12 @@ void Game::waterForces(float dt) {
             float throttle = float(input.forward - input.back), steering = float(input.right - input.left);
             // Propeller thrust plus rudder moment; never teleports the hull or
             // sets its velocity. MAC solid velocities produce the moving wake.
-            boat->applyCentralForce(direction * (throttle * 450));
-            boat->applyTorque({0, -steering * (80 + std::abs(throttle) * 180), 0});
+            boat->applyCentralForce(direction * (throttle * watercraft::thrust * (throttle < 0 ? .45f : 1.f)));
+            boat->applyTorque({0, -steering * (450 + std::abs(throttle) * 1800), 0});
             boat->activate(true);
         }
     }
+    return !piloting && playerLift > 0;
 }
 void Game::step(float delta) {
     const float blendTarget = tuning >= 0 ? 1.f : 0.f;
@@ -717,6 +754,7 @@ void Game::step(float delta) {
             player->setAngularVelocity({0, 0, 0});
             velocity = {0, 0, 0};
             input.forward = input.back = input.left = input.right = input.jump = false;
+            input.ascend = input.dive = false;
         }
         btVector3 forward(-std::sin(azimuth), 0, -std::cos(azimuth)),
             right(std::cos(azimuth), 0, -std::sin(azimuth));
@@ -736,15 +774,6 @@ void Game::step(float delta) {
         } else if (ground) {
             player->applyCentralForce({-velocity.x() * mass * 3.5f, 0, -velocity.z() * mass * 3.5f});
             player->applyTorque(-player->getAngularVelocity() * mass * .5f);
-        }
-        if (input.jump) {
-            if (ground && jumpCooldown <= 0) {
-                player->activate(true);
-                player->applyCentralImpulse({0, mass * 7.2f, 0});
-                jumpCooldown = .2f;
-                jumps++;
-            }
-            input.jump = false;
         }
         if (held >= 0) {
             auto b = bodies[held];
@@ -768,11 +797,22 @@ void Game::step(float delta) {
             gateLift = std::min(3.3f, gateLift + dt * 1.7f);
             auto b = boatBody == int(bodies.size()) - 1 ? bodies[bodies.size() - 2] : bodies.back();
             auto t = b->getWorldTransform();
-            t.setOrigin({0, 1.4f + gateLift, -6.2f});
+            const size_t gate = boatBody == int(bodies.size()) - 1 ? bodies.size() - 3 : bodies.size() - 2;
+            const auto &origin = level().props[gate].position;
+            t.setOrigin({origin.x, origin.y + gateLift, origin.z});
             b->setWorldTransform(t);
             world->updateSingleAabb(b);
         }
-        waterForces(dt);
+        const bool swimming = waterForces(dt);
+        if (input.jump) {
+            if (!swimming && !piloting && ground && jumpCooldown <= 0) {
+                player->activate(true);
+                player->applyCentralImpulse({0, mass * 7.2f, 0});
+                jumpCooldown = .2f;
+                jumps++;
+            }
+            input.jump = false;
+        }
         previousStep.clear();
         for (auto b : bodies)
             previousStep.push_back(b->getWorldTransform());
@@ -800,7 +840,10 @@ void Game::receive(const LaserResult &laser, float delta) {
         }
     }
     auto p = playerPosition();
-    if (gateOpen && gateLift > 2.2f && p.z < -6.45f && std::abs(p.x) < 1.48f) {
+    const size_t gate = boatBody == int(bodies.size()) - 1 ? bodies.size() - 3 : bodies.size() - 2;
+    const auto &exit = level().props[gate];
+    if (gateOpen && gateLift > 2.2f && p.z < exit.position.z - .25f &&
+        std::abs(p.x - exit.position.x) < exit.half.x) {
         completed = std::max(completed, chapter + 1);
         if (chapter + 1 == int(levels.size())) {
             won = true;
@@ -896,10 +939,14 @@ Camera Game::camera(float aspect, CameraFollow *follow, float delta) const {
         c.position = f(v(c.position).lerp(overhead, tuneBlend));
         target = f(v(target).lerp(v(tuneFocus), tuneBlend));
     }
-    if (boatBody >= 0 && tuning < 0) {
-        c.position.x = std::clamp(c.position.x, -5.65f, 5.65f);
-        c.position.y = std::clamp(c.position.y, .30f, 5.65f);
-        c.position.z = std::clamp(c.position.z, -5.65f, 7.65f);
+    if (boatBody >= 0 && tuning < 0 && level().roomBounds) {
+        const auto &room = *level().roomBounds;
+        c.position.x = std::clamp(c.position.x, room.center.x - room.half.x + .35f,
+                                 room.center.x + room.half.x - .35f);
+        c.position.y = std::clamp(c.position.y, room.center.y - room.half.y + .30f,
+                                 room.center.y + room.half.y - .35f);
+        c.position.z = std::clamp(c.position.z, room.center.z - room.half.z + .35f,
+                                 room.center.z + room.half.z - .35f);
     }
     auto eye = XMLoadFloat3(&c.position), focus = XMLoadFloat3(&target);
     auto forward = XMVector3Normalize(XMVectorSubtract(focus, eye)),

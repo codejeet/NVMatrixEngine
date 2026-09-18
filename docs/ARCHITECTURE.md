@@ -33,6 +33,17 @@ This is a dependency diagram, not a claim that simulation N+1 overlaps rendering
 
 There is no additional rendering framework or separate fluid screen-space renderer.
 
+The Large Water Lab defaults to the Hamiltonian spectral wave/local-3D simulation
+path; the small lab defaults to legacy full 3D. `--water-path=hamiltonian` or
+`--water-path=baseline` explicitly overrides the room default.
+GPU Zakharov evolution, finite-depth velocity boundaries and canonical height
+feedback feed one blended procedural surface shared by camera rays and photons.
+A GPU activity field selects disconnected 3D regions around wet solids, vorticity,
+steep waves and incoming water. Calm regions return to waves with hysteresis;
+feedback and rendering share one calibrated particle surface. The adaptive regions,
+batched depth transforms, numerical adaptations and tests are described in
+[Hamiltonian water](../engine/HAMILTONIAN_WATER.md).
+
 ## Liquid solver
 
 Particles hold position, velocity and APIC affine terms. GPU binning builds cell ranges for neighborhood operations. Quadratic B-spline transfers independently accumulate momentum and weights on staggered MAC faces. Grid velocities are normalized, copied for FLIP deltas, forced, constrained against solid velocities, projected through the pressure solve, and extrapolated before grid-to-particle transfer.
@@ -103,3 +114,9 @@ These are conceptual foundations or integrated libraries, not claims that their 
 - [CIE standard-observer data](https://doi.org/10.25039/CIE.DS.xvudnb9b).
 
 Narrow-band, adaptive-grid and multigrid research motivates the experiments. ST-FLIP, full two-phase simulation and a general multiscale free-surface solver are not shipping features.
+
+### Outdoor ocean preset
+
+`--water-lab=ocean` (alias `extra-large`) uses a 256 × 256 m, 6 m deep domain with a 128² wave grid, 256² even-extension FFT and a metre-scale parent 3D grid. The fixed 1 m 3D cells are shared by all body interactions; calm water remains Hamiltonian and existing activity regions select where 3D flow runs. Dynamic contact-cell refinement is excluded from this release. A shared island height function supplies the visible mesh, Bullet terrain and GPU fluid boundary; coastal terrain activity joins submerged bodies and flow complexity in selecting local 3D regions. A wind-weighted initial spectrum uses finite-depth dispersion.
+
+Linear RGBE HDR environments provide the sky, dielectric reflections and solid-angle importance-sampled diffuse illumination. Hierarchical row/column CDFs retain sampling support around high-contrast sun pixels; diffuse sky contributions belong to next-event sampling, and refracted caustics remain photon-owned. Day/night lighting changes do not reset the simulation. This is a bounded constant-offshore-depth hybrid with an optical outer horizon, not a complete bathymetric surf or tide model. [Preset, calibration and limitations](../engine/OCEAN_LAB.md).

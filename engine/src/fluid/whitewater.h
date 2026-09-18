@@ -7,7 +7,7 @@ namespace lab {
 class Whitewater {
   public:
     static constexpr uint32_t capacity = 8192;
-    Whitewater(ID3D12Device5 *, const std::filesystem::path &, const FluidSurface &);
+    Whitewater(ID3D12Device5 *, const std::filesystem::path &, const FluidSurface &, const FluidSystem &);
     void record(ID3D12GraphicsCommandList4 *, const FluidSystem &, const FluidSurface &);
     void recordReadback(ID3D12GraphicsCommandList *, bool validate);
     void collect(uint64_t frequency);
@@ -22,7 +22,7 @@ class Whitewater {
         return blas.resource->GetGPUVirtualAddress();
     }
     double simulationMs = 0, blasMs = 0;
-    std::array<uint32_t, 8> counts{};
+    std::array<uint32_t, 9> counts{};
 
   private:
     struct Particle {
@@ -32,13 +32,13 @@ class Whitewater {
     struct Uniforms {
         DirectX::XMFLOAT4 fieldMinimum, domainMinimum, domainMaximum;
         DirectX::XMUINT4 bricks, grid, control;
-        DirectX::XMFLOAT4 timeGravity, emitter;
+        DirectX::XMFLOAT4 timeGravity;
     };
-    gpu::Buffer particles, aabbs, counters, constants, blas, scratch, readback, validation, foam;
+    gpu::Buffer particles, aabbs, counters, constants, blas, scratch, readback, validation, foam, sources;
     std::array<gpu::Buffer, 2> foamHistory;
-    uint32_t foamNodes = 0, foamIndex = 0;
+    uint32_t foamNodes = 0, foamIndex = 0, sourceCapacity = 0;
     Microsoft::WRL::ComPtr<ID3D12RootSignature> root;
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> clear, update, foamClear, foamSplat, foamTransport;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> clear, findSources, update, foamClear, foamSplat, foamTransport;
     Microsoft::WRL::ComPtr<ID3D12QueryHeap> queries;
     D3D12_RAYTRACING_GEOMETRY_DESC geometry{};
     bool readable = false, recorded = false, validatePending = false, validated = false;

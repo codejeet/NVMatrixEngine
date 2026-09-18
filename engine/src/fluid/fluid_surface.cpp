@@ -10,14 +10,16 @@ using Microsoft::WRL::ComPtr;
 FluidSurface::FluidSurface(ID3D12Device5 *device, const std::filesystem::path &folder,
                            const FluidSystemDesc &desc)
     : narrowBand(desc.narrowBand), shaderFolder(folder / "shaders") {
-    const float spacing = desc.gridCellSize * .5f, padding = desc.gridCellSize * 2;
+    const float spacing = desc.gridCellSize * desc.surfaceCellScale, padding = desc.gridCellSize * 2;
     for (uint32_t a = 0; a < 3; ++a)
         (&expectedSimulationGrid.x)[a] =
             uint32_t(std::ceil(((&desc.maximum.x)[a] - (&desc.minimum.x)[a]) / desc.gridCellSize));
-    minimumSpacing = {desc.minimum.x - padding, desc.minimum.y - padding, desc.minimum.z - padding, spacing};
+    const auto renderMin = desc.hamiltonian.enabled ? desc.waveMinimum : desc.minimum;
+    const auto renderMax = desc.hamiltonian.enabled ? desc.waveMaximum : desc.maximum;
+    minimumSpacing = {renderMin.x - padding, renderMin.y - padding, renderMin.z - padding, spacing};
     for (int a = 0; a < 3; ++a)
         (&brickGrid.x)[a] =
-            uint32_t(std::ceil(((&desc.maximum.x)[a] - (&desc.minimum.x)[a] + 2 * padding) / (8 * spacing)));
+            uint32_t(std::ceil(((&renderMax.x)[a] - (&renderMin.x)[a] + 2 * padding) / (8 * spacing)));
     const uint64_t capacity = uint64_t(brickGrid.x) * brickGrid.y * brickGrid.z;
     // One-dimensional indirect dispatch has a 65535 group ceiling, six groups/brick.
     if (!capacity || capacity > 10000)
@@ -29,7 +31,14 @@ FluidSurface::FluidSurface(ID3D12Device5 *device, const std::filesystem::path &f
                            D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name);
     };
     field = make(capacity * 729 * 16, L"Fluid sparse phi and material displacement (9 cubed nodes)");
-    shapes = make(uint64_t(desc.maxParticles) * 48, L"Fluid covariance-shaped reconstruction kernels");
+    // Hamiltonian reconstruction uses the shared isotropic wave/particle
+    // kernel. Its shaders never consume the per-particle covariance buffer.
+    shapes = make(desc.hamiltonian.enabled ? 48 : uint64_t(desc.maxParticles) * 48,
+                  L"Fluid covariance-shaped reconstruction kernels");
+    if (desc.hamiltonian.enabled) {
+        freeHeads = make(capacity * 8, L"Fluid free-water world brick heads and occupancy halo");
+        freeNext = make(uint64_t(desc.maxParticles) * 4, L"Fluid free-water world brick links");
+    }
     // Page table followed by 16 mask uints and packed surface bounds per slot.
     // Conservative zero-crossing masks skip field loads for empty/interior cells.
     // Trailing GPU flag distinguishes actual LOD deformation from merely
@@ -43,7 +52,7 @@ FluidSurface::FluidSurface(ID3D12Device5 *device, const std::filesystem::path &f
                            D3D12_RESOURCE_STATE_GENERIC_READ, L"Fluid reconstruction constants");
     readback = gpu::buffer(device, 256, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE,
                            D3D12_RESOURCE_STATE_COPY_DEST, L"Fluid surface timings and counts");
-    D3D12_ROOT_PARAMETER params[25]{};
+    D3D12_ROOT_PARAMETER params[29]{};
     params[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     for (int i = 1; i < 11; ++i) {
         params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
@@ -63,7 +72,15 @@ FluidSurface::FluidSurface(ID3D12Device5 *device, const std::filesystem::path &f
         params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
         params[i].Descriptor.ShaderRegister = i - 3;
     }
-    D3D12_ROOT_SIGNATURE_DESC r{25, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    params[25].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+    params[25].Descriptor.ShaderRegister = 22;
+    params[26].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    params[26].Descriptor.ShaderRegister = 3;
+    for (uint32_t i = 27; i < 29; ++i) {
+        params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+        params[i].Descriptor.ShaderRegister = i - 4;
+    }
+    D3D12_ROOT_SIGNATURE_DESC r{desc.hamiltonian.enabled ? 29u : 25u, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     gpu::check(D3D12SerializeRootSignature(&r, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
                "Fluid surface root serialize");
@@ -78,11 +95,15 @@ FluidSurface::FluidSurface(ID3D12Device5 *device, const std::filesystem::path &f
         gpu::check(device->CreateComputePipelineState(&d, IID_PPV_ARGS(&out)), name);
     };
     compute("SurfaceClear", clear);
-    compute(narrowBand ? "SurfaceMarkNarrow" : "SurfaceMark", mark);
+    compute(desc.hamiltonian.enabled ? "SurfaceMarkHamiltonian" : narrowBand ? "SurfaceMarkNarrow" : "SurfaceMark", mark);
     compute("SurfacePrepare", prepare);
-    compute(narrowBand ? "SurfaceReconstructNarrow" : "SurfaceReconstruct", reconstruct);
+    compute(desc.hamiltonian.enabled ? "SurfaceReconstructHamiltonian" : narrowBand ? "SurfaceReconstructNarrow" : "SurfaceReconstruct", reconstruct);
     compute("SurfaceBounds", bounds);
     compute("SurfaceShape", shape);
+    if (desc.hamiltonian.enabled) {
+        compute("SurfaceFreeClearHamiltonian", freeClear);
+        compute("SurfaceFreeBinHamiltonian", freeBin);
+    }
     const char *lodNames[]{"SurfaceLodBegin",    "SurfaceLodFingerprint", "SurfaceLodPlan",
                            "SurfaceLodFine",     "SurfaceLodCoarse",      "SurfaceLodMasks",
                            "SurfaceLodAnalyze",  "SurfaceLodGuard",       "SurfaceLodRepair",
@@ -210,7 +231,8 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
                              camera.position.z != previousCamera.z;
     const bool updating = !recorded || system.changedThisFrame || system.phase != previousPhase ||
                           system.planes != previousPlanes || (adaptive && (lodNeedsUpdate || cameraMoved)) ||
-                          (phaseMode && (system.advancedSeconds > 0 || phaseMotion || system.resetThisFrame));
+                          (phaseMode && (system.advancedSeconds > 0 || phaseMotion || system.resetThisFrame)) ||
+                          (system.hamiltonian && phaseMotion);
     changedThisFrame = updating;
     lodSnapshotReady = false;
     if (updating) {
@@ -257,7 +279,7 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
             brickGrid,
             view.grid,
             {desc.gridCellSize * 1.5f, desc.gridCellSize * .5f, float(desc.maxParticles), float(fixture)},
-            {view.colliderCount, anisotropic ? 1u : 0u, view.interiorEnabled ? 1u : 0u, lodCoarseAxes}};
+            {view.colliderCount, anisotropic && !system.hamiltonian ? 1u : 0u, view.interiorEnabled ? 1u : 0u, lodCoarseAxes}};
         c.lodTolerance = {lodPhiTolerance, lodNormalTolerance, std::clamp(dt * 7.5f, 0.f, 1.f),
                           lodPhiTolerance * .5f};
         c.lodControl = {adaptive ? 1u : 0u, ++updateNumber, (!recorded || system.resetThisFrame) ? 1u : 0u,
@@ -270,6 +292,12 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
         memcpy(uniforms.mapped, &c, sizeof(c));
         cmd->SetComputeRootSignature(root.Get());
         cmd->SetComputeRootConstantBufferView(0, uniforms.resource->GetGPUVirtualAddress());
+        if (system.hamiltonian) {
+            cmd->SetComputeRootUnorderedAccessView(25, system.hamiltonian->surface()->GetGPUVirtualAddress());
+            cmd->SetComputeRootConstantBufferView(26, system.hamiltonian->constants());
+            cmd->SetComputeRootUnorderedAccessView(27, freeHeads.resource->GetGPUVirtualAddress());
+            cmd->SetComputeRootUnorderedAccessView(28, freeNext.resource->GetGPUVirtualAddress());
+        }
         ID3D12Resource *buffers[] = {view.particles,          view.offsets,         view.indices,
                                      view.previousPositions,  map.resource.Get(),   field.resource.Get(),
                                      list.resource.Get(),     aabbs.resource.Get(), counts.resource.Get(),
@@ -298,6 +326,10 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
             gpu::uav(cmd);
         };
         pass(clear.Get(), (brickGrid.w + 127) / 128);
+        if (system.hamiltonian) {
+            pass(freeClear.Get(), (brickGrid.w + 127) / 128);
+            pass(freeBin.Get(), (desc.maxParticles + 127) / 128);
+        }
         if (phaseMode) {
             gpu::Event heightEvent(cmd, L"Fluid phase / local height-function columns");
             const uint32_t owners =
@@ -306,7 +338,7 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
         }
         if (adaptive)
             pass(lodPipelines[LodBegin].Get(), (brickGrid.w + 127) / 128);
-        if (!fixture && !phaseMode)
+        if (!fixture && !phaseMode && !system.hamiltonian)
             pass(shape.Get(), (desc.maxParticles + 127) / 128);
         if (adaptive && !fixture)
             pass(lodPipelines[LodFingerprint].Get(), (view.grid.w + 127) / 128);
@@ -381,7 +413,7 @@ void FluidSurface::record(ID3D12GraphicsCommandList4 *cmd, const FluidSurfaceInp
     previousPlanes = system.planes;
     // Clear the prior frame's material displacement once when simulation stops.
     // Otherwise a cached field would keep telling RR that stationary water moves.
-    phaseMotion = phaseMode && system.advancedSeconds > 0 && !system.resetThisFrame;
+    phaseMotion = (phaseMode || system.hamiltonian) && system.advancedSeconds > 0 && !system.resetThisFrame;
 }
 void FluidSurface::recordReadback(ID3D12GraphicsCommandList *cmd) {
     cmd->ResolveQueryData(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, 3, readback.resource.Get(), 0);

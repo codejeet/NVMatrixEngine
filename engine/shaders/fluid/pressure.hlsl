@@ -1,10 +1,34 @@
 #include "common.hlsli"
+#if FLUID_HAMILTONIAN
+#include "hamiltonian-shared.hlsli"
+bool waveCell(int3 c) {
+    float3 p=DomainMinCell.xyz+(float3(c)+.5)*DomainMinCell.w;
+    return waveEdge(p.xz)<WaveCoupling.y;
+}
+bool waveFace(int3 c,uint axis) {
+    // Use exactly the same cell predicate as the Neumann pressure stencil.
+    // Comparing world-space face distance to four cells can round to opposite
+    // sides of the interface, creating an unprojected source of liquid.
+    int3 left=c;left[axis]--;
+    return waveCell(c)||waveCell(left);
+}
+float4 waveFaceValue(int3 c,uint axis,float4 f) {
+    float3 p=DomainMinCell.xyz+(float3(c)+faceOffset(axis))*DomainMinCell.w;
+    if(WaveMass.w!=0&&waveEdge(p.xz)<-1.5*DomainMinCell.w)return 0;
+    f.x=p.y<=wavePlane(p.xz,0).x?waveBoundaryVelocity(p)[axis]:0;
+    // Mark the prescribed velocity valid for both PIC and FLIP extrapolation.
+    f.w=1;return f;
+}
+#endif
 // V1 free surface: zero air pressure, impermeable domain walls. Solid SDF
 // fractions/boundary velocities will replace the domain-only boundary in M6.
 [numthreads(256,1,1)]
 void Classify(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=Grid.w)return;
     Cells[id]=float4(0,0,solid(cellFromIndex(id))?2:(cellOccupied(id)?1:0),0);PressureIn[id]=0;PressureOut[id]=0;Density[id]=0;MaterialGrid[id]=0;
+#if FLUID_HAMILTONIAN
+    if(Cells[id].z!=2&&waveCell(int3(cellFromIndex(id))))Cells[id].z=3;
+#endif
 }
 [numthreads(128,1,1)]
 void Forces(uint3 tid:SV_DispatchThreadID) {
@@ -15,6 +39,14 @@ void Forces(uint3 tid:SV_DispatchThreadID) {
     if(any(p>=extent))return;
     float4 f=Faces[id];
     int3 left=int3(p);left[axis]--;
+#if FLUID_HAMILTONIAN
+    if(waveFace(int3(p),axis)) {
+        f=waveFaceValue(int3(p),axis,f);
+        if((inGrid(left)&&solid(left))||(inGrid(int3(p))&&solid(int3(p))))f.x=boundaryVelocity(left,int3(p),axis);
+        if(axis==1&&(p.y==0||p.y==Grid.y))f.x=0;
+        Faces[id]=f;return;
+    }
+#endif
 #if CUT_PRESSURE
     if(cutPressureAperture(p,axis)==0)f.x=cutPressureBoundary(p,axis);
 #else
@@ -44,6 +76,11 @@ void Divergence(uint3 tid:SV_DispatchThreadID) {
     uint mask=0,diagonal=0;float ghost=0;
     [unroll]for(uint axis=0;axis<3;++axis)[unroll]for(int side=-1;side<=1;side+=2) {
         int3 n=c;n[axis]+=side;
+#if FLUID_HAMILTONIAN
+        // Prescribed normal flux is already in divergence. Its pressure
+        // correction is zero: a Neumann face, never an air-pressure ghost.
+        if(waveCell(n))continue;
+#endif
         if(!solid(n)) {
             diagonal++;
             if(liquid(n))mask|=1u<<(axis*2+(side>0?1:0));
@@ -66,6 +103,14 @@ void Project(uint3 tid:SV_DispatchThreadID) {
     uint3 extent=Grid.xyz;extent[axis]++;if(any(right>=int3(extent)))return;
     int3 left=right;left[axis]--;
     float4 f=Faces[id];
+#if FLUID_HAMILTONIAN
+    if(waveFace(right,axis)) {
+        f=waveFaceValue(right,axis,f);
+        if((inGrid(left)&&solid(left))||(inGrid(right)&&solid(right)))f.x=boundaryVelocity(left,right,axis);
+        if(axis==1&&(right.y==0||right.y==int(Grid.y)))f.x=0;
+        Faces[id]=f;return;
+    }
+#endif
     if(solid(left)||solid(right)){f.x=boundaryVelocity(left,right,axis);f.w=1;}
     else if(liquid(left)||liquid(right)) {
         float pl=PressureIn[cellIndex(left)],pr=PressureIn[cellIndex(right)];

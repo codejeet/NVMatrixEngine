@@ -17,7 +17,8 @@ DiffuseLightSample diffuseLightSample(Hit h,float3 n,float3 sigma,uint candidate
         if(Lighting.x<=0)return s;
         uint i=candidate-1;
         float3 position=i==0?float3(-3,4,-3):float3(4,3,3);
-        if(CameraState.w)position=position*float3(4,1,4)+float3(0,8,0);
+        if(CameraState.w==2)position.y+=1.16;
+        if(CameraState.w==1)position=position*float3(4,1,4)+float3(0,8,0);
         delta=position-h.p;s.hint=i;
         power=(Lighting.w==2?float3(80,80,80):(i==0?float3(25,4,38):float3(3,25,32))*(Play.x?8:1))/(4*PI);
     } else if(candidate==3) {
@@ -88,6 +89,64 @@ float3 diffuseLightPair(Hit h,float3 n,float3 reflectance,DiffuseLightSample a,D
     return result;
 }
 float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 reflectance=1) {
+    if(CameraState.w==3) {
+        float3 irradiance=0;
+        if(h.material==18&&h.chart==0xffffffff) {
+            // Outside the simulation the ocean is a flat optical slab. Its
+            // refracted sunlight has an analytic solution; the inner domain
+            // retains photon caustics. This avoids ending illumination at the
+            // rectangular photon atlas and does not add interactive fluid.
+            float3 sun=OceanEnvironment[1].xyz;
+            if(Lighting.w<5&&sun.y>0) {
+                float3 direction=-refract(-sun,float3(0,1,0),1/mediumIndex(8,550));
+                float distance=(6.02-h.p.y)/max(.01,direction.y);
+                float3 entry=h.p+direction*distance;
+                if(!occluded(entry+sun*EPS*4,sun,255,0,10000)) {
+                    float3 xyz=0;
+                    for(uint band=0;band<32;++band) {
+                        float nm=380+(band+.5)*(400.0/32);
+                        float ni=mediumIndex(8,nm);
+                        float cosine=sqrt(1-(1-sun.y*sun.y)/(ni*ni));
+                        float attenuation=exp(-extinction(8,nm)*(6.02-h.p.y)/cosine);
+                        xyz+=spectralPower(nm,OceanEnvironment[1].w/32)*(1-fresnel(sun.y,1,ni))*attenuation;
+                    }
+                    irradiance=max(0,xyzToRgb(xyz));
+                }
+            }
+            return irradiance;
+        }
+        uint samples=max(2,areaSamples);
+        for(uint i=0;i<samples;++i) {
+            float3 direction;float pdf;
+            float3 radiance=oceanEnvironmentSample(rng,direction,pdf);
+            float cosine=max(0,dot(n,direction));
+            if(pdf>0&&cosine>0&&!occluded(h.p+n*EPS*2,direction,255,0,10000))
+                irradiance+=radiance*(cosine/(pdf*samples));
+        }
+        if(oceanLayer())for(uint lamp=0;lamp<OCEAN_LANTERN_COUNT;++lamp) {
+            if(h.material==24+lamp)continue;
+            float3 origin=h.p+n*EPS*2,delta=oceanLanternPosition(lamp)-origin;
+            float d2=dot(delta,delta),r2=OCEAN_LANTERN_RADIUS*OCEAN_LANTERN_RADIUS;
+            if(d2<=r2)continue;
+            float3 axis=delta*rsqrt(d2),x,y;basis(axis,x,y);
+            float cosMax=sqrt(max(0,1-r2/d2));
+            // Stable 1-cos(theta), including distant lamps. Sample their visible
+            // solid angle for area-light falloff and soft, ray-traced shadows.
+            float oneMinusCos=(r2/d2)/(1+cosMax);
+            float cosTheta=1-random(rng)*oneMinusCos;
+            float sinTheta=sqrt(max(0,1-cosTheta*cosTheta)),phi=2*PI*random(rng);
+            float3 direction=axis*cosTheta+sinTheta*(x*cos(phi)+y*sin(phi));
+            float projection=dot(delta,direction);
+            float distance=projection-sqrt(max(0,r2-d2+projection*projection));
+            float cosine=max(0,dot(n,direction));
+            if(cosine>0&&!occluded(origin,direction,255,0,distance-EPS*4))
+                irradiance+=oceanLanternRadiance()*(cosine*2*PI*oneMinusCos)*exp(-Medium.x*distance);
+        }
+        DiffuseLightSample torch=diffuseLightSample(h,n,extinctionRgb(ambientMedium(h.p)),0,rng,1);
+        if(any(torch.irradiance>0)&&!occluded(h.p+n*EPS*2,torch.direction,255,4,torch.distance-EPS*4))
+            irradiance+=torch.irradiance;
+        return irradiance;
+    }
     float3 result=laserIrradiance(h,n);
     // Higher optical budgets request full visibility as well as more area
     // samples. Parent RNG consumption is fixed in all modes, including replay.

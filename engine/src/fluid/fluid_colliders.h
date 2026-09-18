@@ -10,7 +10,7 @@
 namespace lab {
 // Rigid transforms only. SDF samples and these structured records share this ABI.
 // Moving solids are one-way coupled; future force feedback belongs on the GPU.
-enum class FluidColliderType : uint32_t { Sphere, Box, Capsule, Cylinder, Plane, Mesh };
+enum class FluidColliderType : uint32_t { Sphere, Box, Capsule, Cylinder, Plane, Mesh, OceanTerrain };
 struct FluidCollider {
     DirectX::XMFLOAT4X4 worldToLocal;
     DirectX::XMFLOAT4 centerRestitution;

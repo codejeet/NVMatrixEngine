@@ -17,6 +17,7 @@ Runtime and source dependencies retain their own copyrights and licenses. Setup 
 | FreeType 2.14.1 | Font rasterization; `FreeType-LICENSE.txt` |
 | miniaudio 0.11.25 | Audio playback; `miniaudio-LICENSE.txt` |
 | Poppins font | UI typography; `Font-LICENSE.txt` |
+| Poly Haven sky HDRIs | CC0 day/night environments; [sources and attribution](engine/assets/ocean/README.md) |
 
 ## CIE observer dataset
 

@@ -1,8 +1,16 @@
 #include "common.hlsli"
+#if FLUID_HAMILTONIAN
+#include "hamiltonian-shared.hlsli"
+#endif
 [numthreads(256,1,1)]
 void Initialize(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=Counts.x)return;
     FluidParticle p=(FluidParticle)0;
+#if FLUID_HAMILTONIAN
+    // Adaptive initialization samples only selected regions through the same
+    // wave reservoir used for later promotion. No partial full-room top layer.
+    if(WaveMass.w!=0){Particles[id]=p;return;}
+#endif
     if(id<Counts.y) {
         uint n=max(Counts.z,1),x=id%n,y=(id/n)%n,z=id/(n*n);
         float3 uv=(float3(x,y,z)+.5)/n;

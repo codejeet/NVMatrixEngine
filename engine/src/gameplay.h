@@ -1,7 +1,8 @@
 #pragma once
 #include "game.h"
 namespace lab {
-Level makePlayLevel(bool fluidRoom = false, bool boat = false, bool deepPool = false);
+Level makePlayLevel(bool fluidRoom = false, bool boat = false, bool deepPool = false,
+                    bool largeWaterLab = false, bool oceanLab = false);
 void runPlayTests();
 // Receiver calibration is radiant flux in the 510–570 nm band, before the visual EMA.
 constexpr float receiverThreshold = .10f;

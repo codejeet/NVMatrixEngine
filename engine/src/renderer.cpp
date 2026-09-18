@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "ocean_environment.h"
 #include "gpu_diagnostics.h"
 #include "hud.h"
 #include "water.h"
@@ -61,14 +62,17 @@ float halton(uint32_t n, uint32_t base) {
     return x;
 }
 Camera camera(float aspect, float azimuth, float elevation, bool liquid = false, bool room = false,
-              bool deep = false) {
+              bool deep = false, bool large = false, bool ocean = false) {
     Camera c{};
     XMVECTOR target = liquid ? XMVectorSet(3.7f, 1.1f, -3.1f, 1) : XMVectorSet(0, 1.2f, 1, 1);
     if (room)
         target = XMVectorSet(-3.f, 1.1f, 2.4f, 1);
     if (deep)
         target = XMVectorSet(-4, 6, 4, 1);
-    const float radius = deep ? 43.f : (room ? 5.5f : (liquid ? 6.f : 10.f));
+    if (large)
+        target = XMVectorSet(0, largeWater::depth, 2, 1);
+    if (ocean) target = XMVectorSet(-20, 7, -16, 1);
+    const float radius = ocean ? 68.f : deep ? 43.f : (large ? 12.5f : (room ? 5.5f : (liquid ? 6.f : 10.f)));
     XMVECTOR pos = XMVectorAdd(target, XMVectorSet(radius * std::sin(azimuth) * std::cos(elevation),
                                                    radius * std::sin(elevation),
                                                    -radius * std::cos(azimuth) * std::cos(elevation), 0));
@@ -247,6 +251,12 @@ Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options 
         experience.particleCapacity = options.fluidCapacity;
         experience.cellSize = options.fluidCellSize;
         experience.deepPool = options.fluidDeepPool;
+        experience.largeWaterLab = options.largeWaterLab;
+        experience.oceanLab = options.oceanLab;
+        if (options.oceanLab) {
+            experience.environment = options.oceanNight ? 1 : 0;
+            experience.ballFloats = true;
+        }
         experience.simulationHz = options.fluidSimulationHz;
         if (options.fluid)
             createFluid();
@@ -436,7 +446,7 @@ void Renderer::pipelines() {
     D3D12_DESCRIPTOR_RANGE ranges[] = {{D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 12, 0, 0, 0},
                                        {D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 31, 1, 0},
                                        {D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2, 12, 0, 0}};
-    D3D12_ROOT_PARAMETER params[20]{};
+    D3D12_ROOT_PARAMETER params[21]{};
     params[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     for (int i = 1; i < 5; ++i) {
         params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
@@ -466,7 +476,9 @@ void Renderer::pipelines() {
     }
     params[19].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     params[19].Descriptor.ShaderRegister = 8;
-    D3D12_ROOT_SIGNATURE_DESC rd{20, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    params[20].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    params[20].Descriptor.ShaderRegister = 9;
+    D3D12_ROOT_SIGNATURE_DESC rd{21, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     check(D3D12SerializeRootSignature(&rd, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
           "Serialize transport root");
@@ -622,6 +634,7 @@ void Renderer::setFrameGeneration(uint32_t multiplier) {
 }
 void Renderer::createFluid() {
     FluidSystemDesc fluidDesc;
+    fluidDesc.hamiltonian = options.hamiltonian;
     fluidDesc.cudaBackend = options.fluidBackend == "cuda";
     fluidDesc.cudaGraphs = options.fluidCudaGraphs;
     fluidDesc.cudaGraphicsContext = options.fluidCudaGraphicsContext;
@@ -643,6 +656,17 @@ void Renderer::createFluid() {
         fluidDesc.simulationRate = options.fluidSimulationHz;
         fluidDesc.particleRadius = .035f;
         fluidDesc.maxParticles = options.fluidCapacity;
+        if (options.largeWaterLab) {
+            fluidDesc.minimum = largeWater::minimum;
+            fluidDesc.maximum = largeWater::maximum;
+        }
+        if (options.oceanLab) {
+            fluidDesc.minimum = ocean::minimum;
+            fluidDesc.maximum = ocean::maximum;
+            fluidDesc.particleRadius = .035f * options.fluidCellSize / .16f;
+            fluidDesc.density = 1025.f;
+            fluidDesc.surfaceCellScale = 1.f;
+        }
         if (options.fluidDeepPool) {
             fluidDesc.minimum = deepPool::minimum;
             fluidDesc.maximum = deepPool::maximum;
@@ -660,6 +684,13 @@ void Renderer::createFluid() {
         }
     }
     fluidDesc.transferTest = options.fluidTransferTest;
+    if (options.hamiltonian.enabled) {
+        fluidDesc.waveMinimum = fluidDesc.minimum;
+        fluidDesc.waveMaximum = fluidDesc.maximum;
+        // Address the entire basin so separate bodies and disturbances can own
+        // independent 3D regions. GPU activity selects actual particle/pressure
+        // work; initialParticles remains the equivalent full-room rest density.
+    }
     fluidDesc.pressureIterations = options.fluidPressureIterations;
     fluidDesc.densityIterations = options.fluidDensityIterations < 0
                                       ? (options.fluidMacMultigrid ? 120 : 60)
@@ -711,6 +742,10 @@ void Renderer::createFluid() {
     if (fluid->cutCells)
         fluid->cutCells->debugVisible = options.fluidCutView;
     fluid->emitter.enabled = options.fluidEmitter;
+    if (options.largeWaterLab)
+        fluid->emitter.position = largeWater::inlet;
+    if (options.oceanLab)
+        fluid->emitter.position = ocean::inlet;
     if (options.fluidDeepPool) {
         fluid->emitter.position = deepPool::inlet;
         fluid->emitter.radius = .32f;
@@ -720,10 +755,16 @@ void Renderer::createFluid() {
         for (const auto &v : meshes[2].vertices)
             triangleSoup.push_back(v.position);
         fluidPrismSdf = MeshSdfAsset::bake(triangleSoup, .04f);
-        fluid->setMeshSdf(fluidPrismSdf);
+        auto collisionSdfs = fluidPrismSdf;
+        if (options.boat) {
+            auto hull = watercraft::hullTriangles();
+            fluidBoatSdf = MeshSdfAsset::bake({hull.begin(),hull.end()}, .06f);
+            collisionSdfs.phi.insert(collisionSdfs.phi.end(),fluidBoatSdf.phi.begin(),fluidBoatSdf.phi.end());
+        }
+        fluid->setMeshSdf(collisionSdfs);
         fluidSurface = std::make_unique<FluidSurface>(device.Get(), folder, fluidDesc);
         fluidSurface->fixture = options.fluidSurfaceFixture;
-        fluidSurface->anisotropic = !options.fluidIsotropic;
+        fluidSurface->anisotropic = !options.fluidIsotropic && !options.hamiltonian.enabled;
         fluidSurface->adaptive = options.fluidSurfaceLod;
         fluidSurface->forceFine = options.fluidSurfaceLodFine;
         fluidSurface->lodCoarseAxes = options.fluidSurfaceLodAxes;
@@ -735,9 +776,9 @@ void Renderer::createFluid() {
             fluidComplexity->frozen = options.fluidComplexityFreeze;
         }
         if (options.boat)
-            buoyancy = std::make_unique<FluidBuoyancy>(device.Get(), folder);
+            buoyancy = std::make_unique<FluidBuoyancy>(device.Get(), folder, options.hamiltonian.enabled);
         if (options.fluidRoom && options.whitewater)
-            whitewater = std::make_unique<Whitewater>(device.Get(), folder, *fluidSurface);
+            whitewater = std::make_unique<Whitewater>(device.Get(), folder, *fluidSurface, *fluid);
         if (options.fluidSurfaceFixture)
             fluid->paused = true;
         fluid->debugVisible = options.fluidWorkView;
@@ -751,8 +792,8 @@ void Renderer::applyWaterSettings() {
     dlss.suspend();
     options.fluidCapacity =
         std::clamp(experience.particleCapacity, std::max(100000u, options.fluidParticles), 1000000u);
-    options.fluidCellSize = std::clamp(experience.cellSize, options.fluidDeepPool ? .5f : .10f,
-                                       options.fluidDeepPool ? 1.f : .24f);
+    options.fluidCellSize = std::clamp(experience.cellSize, options.oceanLab ? .8f : options.fluidDeepPool ? .5f : (options.largeWaterLab ? .20f : .10f),
+                                       options.oceanLab ? 1.2f : options.fluidDeepPool ? 1.f : (options.largeWaterLab ? .32f : .24f));
     options.fluidSimulationHz = std::clamp(experience.simulationHz, 60.f, 180.f);
     experience.particleCapacity = options.fluidCapacity;
     whitewater.reset();
@@ -783,7 +824,7 @@ void Renderer::loadScene() {
     meshes = options.fixture ? makeScene()
                              : makePlayScene(options.water, options.flatWater,
                                              options.fluid && !options.fluidSolverOnly && !options.fluidRoom,
-                                             options.fluidRoom, options.boat, options.fluidDeepPool);
+                                             options.fluidRoom, options.boat, options.fluidDeepPool, options.largeWaterLab, options.oceanLab);
     sceneObjects.resize(meshes.size() + (options.fluid && !options.fluidSolverOnly ? 1 : 0) +
                         (options.fluidRoom && options.whitewater ? 1 : 0));
     if (sceneObjects.size() > meshes.size()) {
@@ -872,9 +913,22 @@ void Renderer::loadScene() {
     if (!std::all_of(loaded.begin(), loaded.end(), [](bool b) { return b; }))
         throw std::runtime_error("Invalid CIE 1931 LUT");
     for (int i = 0; i < 401; ++i)
-        table[401 + i] = {float(waterIndex(i + 380) / 1.00027), waterAbsorption(float(i + 380)), 0, 0};
+        table[401 + i] = {float((waterIndex(i + 380) + (options.oceanLab ? .006f : 0.f)) / 1.00027), waterAbsorption(float(i + 380)), 0, 0};
     cieData = buffer(sizeof(table), D3D12_HEAP_TYPE_UPLOAD);
     memcpy(cieData.mapped, table.data(), sizeof(table));
+    if (options.oceanLab) {
+        auto environment = ocean::loadEnvironment(folder / "assets/ocean");
+        oceanSun = environment[1];
+        const auto size = environment.size() * sizeof(XMFLOAT4);
+        auto staging = buffer(size, D3D12_HEAP_TYPE_UPLOAD);
+        memcpy(staging.mapped, environment.data(), size);
+        oceanEnvironment = buffer(size, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
+        begin();
+        commands->CopyBufferRegion(oceanEnvironment.resource.Get(),0,staging.resource.Get(),0,size);
+        transition(commands.Get(),oceanEnvironment.resource.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+        submit(false);
+        wait();
+    }
 }
 void Renderer::buildTlas() {
     auto out = static_cast<D3D12_RAYTRACING_INSTANCE_DESC *>(instances.mapped);
@@ -1103,6 +1157,8 @@ void Renderer::bind() {
     commands->SetComputeRootShaderResourceView(19, whitewater
                                                        ? whitewater->foamResource()->GetGPUVirtualAddress()
                                                        : cieData.resource->GetGPUVirtualAddress());
+    commands->SetComputeRootShaderResourceView(20, oceanEnvironment.resource
+        ? oceanEnvironment.resource->GetGPUVirtualAddress() : cieData.resource->GetGPUVirtualAddress());
 }
 void Renderer::dispatch(uint32_t raygen, uint32_t w, uint32_t h) {
     commands->SetPipelineState1(transport.state.Get());
@@ -1154,11 +1210,11 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                      (options.fluidRoom ? 1.55f : -2.45f) +
                          (options.orbitTest ? frame * .003f : (game ? game->azimuth - .42f : 0)),
                      game ? std::clamp(game->elevation, .1f, 1.4f) : .56f, true, options.fluidRoom,
-                     options.fluidDeepPool);
+                     options.fluidDeepPool, options.largeWaterLab, options.oceanLab);
     Constants c{};
     const float aspect = float(options.width) / options.height;
     float tanHalf = lens.tanHalfVertical(aspect);
-    auto projection = XMMatrixPerspectiveFovRH(2 * std::atan(tanHalf), aspect, .05f, 200.f);
+    auto projection = XMMatrixPerspectiveFovRH(2 * std::atan(tanHalf), aspect, .05f, options.oceanLab ? 10000.f : 200.f);
     XMStoreFloat4x4(&cam.projection, projection);
     XMStoreFloat4x4(&cam.viewProjection, XMLoadFloat4x4(&cam.view) * projection);
     c.camera = {cam.position.x, cam.position.y, cam.position.z, 1};
@@ -1181,7 +1237,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         XMStoreFloat4x4(&ball, XMMatrixTranslation(ball._41, ball._42, ball._43));
         angle = std::atan2(sceneObjects[2].world._31, sceneObjects[2].world._11);
         c.play = {1, game->charge, game->elapsed, fluid && fluid->emitter.enabled ? 1.f : 0.f};
-        c.sensor = receiverTarget;
+        c.sensor = {game->level().receiver.x, game->level().receiver.y, game->level().receiver.z,
+                    game->level().receiverHalf.z};
         reset = reset || game->resetHistory;
         game->resetHistory = false;
     } else
@@ -1192,7 +1249,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     c.jitter = {halton(frame % 1024 + 1, 2) - .5f, halton(frame % 1024 + 1, 3) - .5f,
                 halton((frame ? frame - 1 : 0) % 1024 + 1, 2) - .5f,
                 halton((frame ? frame - 1 : 0) % 1024 + 1, 3) - .5f};
-    c.lightOrigin = {0, 2, -5, 0};
+    c.lightOrigin = {0, 2 + (options.largeWaterLab ? largeWater::lift : 0.f), -5, 0};
     if (options.fluidDeepPool)
         c.lightOrigin = {0, 10, -20, 0};
     XMVECTOR ld = XMVector3Normalize(XMVectorSet(0, -.07f, 1, 0));
@@ -1207,6 +1264,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     c.medium = {game && options.haze ? .012f : 0.f, .005f, 1.5f, 28.f};
     if (options.fluidRoom)
         c.medium.w = 140.f; // Broad, real overhead fill: ~0.86 radiant W/m^2, not an emissive floor.
+    if (options.largeWaterLab)
+        c.medium.w = 560.f; // Four times the aperture area, same irradiance as Water Lab.
     if (options.fluidDeepPool)
         c.medium.w = 2240.f; // 16x aperture area, same irradiance; still below energy-ledger overflow.
     c.lighting = {1, 1, 1, float(experience.environment)}; // local lights, emissives, sky, preset
@@ -1222,7 +1281,14 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
             c.medium.w = 0;
     }
     c.cameraState = {game && game->firstPerson ? 1u : 0u, 0, 0, 0};
-    c.cameraState.w = options.fluidDeepPool ? 1u : 0u;
+    c.cameraState.w = options.fluidDeepPool ? 1u : (options.largeWaterLab ? 2u : 0u);
+    if (options.oceanLab) {
+        c.cameraState.w = 3;
+        c.lighting = {0, 0, 1, 4.f + float(experience.environment % 2)};
+        c.water.z = c.optics.w = 0;
+        c.medium.x = options.haze ? .00002f : 0;
+        c.medium.w = experience.environment ? 0 : oceanSun.w * 256.f * 256.f;
+    }
     if (game && experience.flashlight) {
         const auto ball = game->playerPosition();
         c.flashlightOrigin = {ball.x + cam.forward.x * .74f, ball.y + cam.forward.y * .74f,
@@ -1316,23 +1382,12 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                     }
                 }
                 if (int(i) == game->boatBody + 1 && game->boatBody >= 0) {
-                    for (const auto &part : watercraft::hull) {
-                        auto partCollider = collider;
-                        auto local = XMMatrixTranslation(part.center.x, part.center.y, part.center.z);
-                        XMFLOAT4X4 current, old;
-                        XMStoreFloat4x4(&current, XMMatrixMultiply(local, XMLoadFloat4x4(&now)));
-                        XMStoreFloat4x4(&old, XMMatrixMultiply(local, XMLoadFloat4x4(&previous)));
-                        XMStoreFloat4x4(&partCollider.worldToLocal,
-                                        XMMatrixInverse(nullptr, XMLoadFloat4x4(&current)));
-                        partCollider.centerRestitution = {current._41, current._42, current._43, 0};
-                        partCollider.extentType = {part.half.x, part.half.y, part.half.z, 1};
-                        partCollider.velocityFriction = {(current._41 - old._41) * invDt,
-                                                         (current._42 - old._42) * invDt,
-                                                         (current._43 - old._43) * invDt, .08f};
-                        colliders.push_back(partCollider);
-                    }
-                } else
-                    colliders.push_back(collider);
+                    collider.extentType = {1.3f,.45f,3.1f,5};
+                    collider.meshMinimumSpacing = fluidBoatSdf.minimumSpacing;
+                    collider.meshDimensions = fluidBoatSdf.dimensions;
+                    collider.meshDimensions.w = uint32_t(fluidPrismSdf.phi.size());
+                }
+                colliders.push_back(collider);
                 if (i - 1 < game->poseDiscontinuities.size() && game->poseDiscontinuities[i - 1]) {
                     for (size_t slot = firstCollider; slot < colliders.size(); ++slot) {
                         if (slot >= FluidColliderTimeline::capacity)
@@ -1353,9 +1408,9 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                 collider.angularSlip.w = 1;
                 colliders.push_back(collider);
             }
-            if (options.fluidRoom) {
-                const float pedestal = options.fluidDeepPool ? 4.29f : .29f;
-                const float column = options.fluidDeepPool ? 5.2f : 1.2f;
+            if (options.fluidRoom && !options.oceanLab) {
+                const float pedestal = options.fluidDeepPool ? 4.29f : .29f + (options.largeWaterLab ? largeWater::lift * .5f : 0.f);
+                const float column = options.fluidDeepPool ? 5.2f : 1.2f + (options.largeWaterLab ? largeWater::lift * .5f : 0.f);
                 const float sourceZ = options.fluidDeepPool ? -20.25f : -5.25f;
                 for (auto [p, e] : {std::pair{XMFLOAT3{0, pedestal, 0}, XMFLOAT3{1.05f, pedestal, 1.05f}},
                                     std::pair{XMFLOAT3{0, column, sourceZ}, XMFLOAT3{.30f, column, .25f}}}) {
@@ -1365,6 +1420,21 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                     collider.extentType = {e.x, e.y, e.z, 1};
                     collider.angularSlip.w = 1;
                     colliders.push_back(collider);
+                }
+            }
+            if (options.oceanLab) {
+                FluidCollider terrain{};
+                XMStoreFloat4x4(&terrain.worldToLocal, XMMatrixIdentity());
+                terrain.extentType = {128, 11, 128, 6};
+                terrain.angularSlip.w = 1;
+                colliders.push_back(terrain);
+                for (const auto &part : ocean::pier) {
+                    FluidCollider solid{};
+                    XMStoreFloat4x4(&solid.worldToLocal, XMMatrixTranslation(-part.center.x,-part.center.y,-part.center.z));
+                    solid.centerRestitution = {part.center.x,part.center.y,part.center.z,0};
+                    solid.extentType = {part.half.x,part.half.y,part.half.z,1};
+                    solid.angularSlip.w = 1;
+                    colliders.push_back(solid);
                 }
             }
             fluid->setColliders(colliders, discontinuities);
@@ -1419,7 +1489,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
             if (whitewater)
                 whitewater->record(commands.Get(), *fluid, *fluidSurface);
             if (buoyancy && game)
-                buoyancy->record(commands.Get(), *fluid, *fluidSurface, game->waterQueries());
+                buoyancy->record(commands.Get(), *fluid, *fluidSurface,
+                    game->waterQueries(2.5f * fluid->description().gridCellSize));
             c.fluidMinimumSpacing = fluidSurface->minimumSpacing;
             c.fluidBricks = fluidSurface->brickGrid;
             c.fluidState = {
@@ -1456,6 +1527,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         options.opticalView | (options.opticalUniform ? 256u : 0u) | (options.retracePrimary ? 512u : 0u) |
             (options.lambertianReference ? 1024u : 0u) | (options.waterVisibilityReference ? 2048u : 0u)};
     c.opticalParameters = {delta, .015f, .0008f, .25f};
+    if (options.oceanSwimTest) c.opticalControls.w |= 4096u;
     if (optical && optical->world)
         c.opticalControls.x |= 8u;
     if (ptTemporal)
@@ -1471,7 +1543,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     dispatch(2, 2, 1);
     uav(commands.Get(), beams.resource.Get());
     dispatch(0, options.photons, 1);
-    if (fluidSurface && options.fluidValidate)
+    if (fluidSurface && (options.fluidValidate || options.oceanSwimTest))
         dispatch(7, 4096, 1);
     uav(commands.Get(), photonSum.resource.Get());
     uav(commands.Get(), fluidPhotonSum.resource.Get());
@@ -1585,13 +1657,15 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         transition(commands.Get(), guides[2].Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
                    D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
         fluid->recordTimings(commands.Get());
+        if (fluid->hamiltonian)
+            fluid->hamiltonian->recordReadback(commands.Get());
         if (fluidSurface)
             fluidSurface->recordReadback(commands.Get());
         if (fluidComplexity)
             fluidComplexity->recordReadback(commands.Get(),
                                             options.fluidComplexityValidate && frame + 1 == options.frames);
         if (whitewater)
-            whitewater->recordReadback(commands.Get(), options.fluidValidate && frame + 1 == options.frames);
+            whitewater->recordReadback(commands.Get(), (options.fluidValidate || options.oceanSwimTest) && frame + 1 == options.frames);
         if (options.fluidValidate && frame + 1 == options.frames)
             fluid->recordValidationReadback(commands.Get());
     }
@@ -1645,6 +1719,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                            -fluid->description().gravity.y);
     if (fluid)
         fluid->collectTimings(frequency);
+    if (fluid && fluid->hamiltonian)
+        fluid->collectHamiltonian();
     if (fluidSurface)
         fluidSurface->collect(frequency);
     if (fluidComplexity)
@@ -1668,6 +1744,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     check(statsReadback.resource->Map(0, &range, &mapped), "Read photon diagnostics");
     memcpy(counters.data(), mapped, sizeof(counters));
     statsReadback.resource->Unmap(0, nullptr);
+    if (options.oceanSwimTest && counters[28])
+        throw std::runtime_error("Artificial air pocket beside submerged player at frame " + std::to_string(frame));
     receiverWatts = counters[12] / 1048576.f;
     cameraGlassPixels += counters[8];
     cameraTransmissions += counters[9];
@@ -1709,6 +1787,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     ++frame;
 }
 void Renderer::report(const std::filesystem::path &path) {
+    const double energyLedgerScale = options.oceanLab ? 1024.0 : 1048576.0;
     std::ofstream out(path);
     if (!out)
         throw std::runtime_error("Cannot write lab report");
@@ -1781,13 +1860,13 @@ void Renderer::report(const std::filesystem::path &path) {
         << ", \"lasersEnabled\": " << (!options.fixture && options.lasers ? "true" : "false")
         << ", \"laserNm\": " << laserWavelength << ", \"laserWattsEach\": 1.5"
         << ", \"deepPool\": " << (options.fluidDeepPool ? "true" : "false")
-        << ", \"waterFloodWatts\": " << (options.fluidDeepPool ? 2240 : (options.fluidRoom ? 140 : 28))
+        << ", \"waterFloodWatts\": " << (options.oceanLab ? (experience.environment ? 0 : oceanSun.w * 65536.) : (options.fluidDeepPool ? 2240 : (options.largeWaterLab ? 560 : (options.fluidRoom ? 140 : 28))))
         << ", \"waterPhotonEntries\": " << counters[14]
-        << ", \"waterFloorWatts\": " << counters[15] / 1048576.0 << ", \"laserDeposits\": " << counters[16]
+        << ", \"waterFloorWatts\": " << counters[15] / energyLedgerScale << ", \"laserDeposits\": " << counters[16]
         << ", \"beamSegments\": " << counters[17] << ", \"beamTruncated\": " << counters[18]
-        << ",\n  \"photonEnergyWatts\": [" << counters[20] / 1048576.0 << ", " << counters[21] / 1048576.0
-        << ", " << counters[22] / 1048576.0 << ", " << counters[23] / 1048576.0 << ", "
-        << counters[24] / 1048576.0 << ", " << counters[25] / 1048576.0 << ", " << counters[26] / 1048576.0
+        << ",\n  \"photonEnergyWatts\": [" << counters[20] / energyLedgerScale << ", " << counters[21] / energyLedgerScale
+        << ", " << counters[22] / energyLedgerScale << ", " << counters[23] / energyLedgerScale << ", "
+        << counters[24] / energyLedgerScale << ", " << counters[25] / energyLedgerScale << ", " << counters[26] / energyLedgerScale
         << "]"
         << ",\n  \"photonEnergyColumns\": "
            "[\"emitted\",\"deposited\",\"mediumLoss\",\"escaped\",\"unmappedOrBlocked\",\"truncated\","
@@ -1832,6 +1911,20 @@ void Renderer::report(const std::filesystem::path &path) {
     if (fluid) {
         out << ",\n  \"fluid\": ";
         fluid->validateAndReport(out);
+    }
+    out << ",\n  \"largeWaterLab\":" << (options.largeWaterLab ? "true" : "false");
+    out << ",\n  \"oceanLab\":" << (options.oceanLab ? "true" : "false");
+    if (options.oceanLab)
+        out << ",\n  \"oceanEnvironment\":{\"timeOfDay\":\"" << (experience.environment ? "night" : "day")
+            << "\",\"referenceLux\":" << (experience.environment ? .002 : 80000.)
+            << ",\"exposure\":" << (experience.environment ? 4096. : 1./128)
+            << ",\"activeLanterns\":" << (experience.environment ? ocean::OCEAN_LANTERN_COUNT : 0)
+            << ",\"lanternLumensEach\":" << ocean::OCEAN_LANTERN_LUMENS
+            << ",\"interactiveWidthMetres\":256,\"interactiveLengthMetres\":256}";
+    out << ",\n  \"waterPath\":\"" << (options.hamiltonian.enabled ? "hamiltonian" : "baseline") << '"';
+    if (fluid && fluid->hamiltonian) {
+        out << ",\n  \"hamiltonian\":";
+        fluid->hamiltonian->report(out);
     }
     if (fluidSurface) {
         out << ",\n  \"fluidSurface\": ";

@@ -16,6 +16,7 @@
 #include "fluid_bulk_pressure.h"
 #include "fluid_particle_grid_exchange.h"
 #include "fluid_uniforms.h"
+#include "hamiltonian_wave.h"
 #if PT_FLUID_CUDA
 #include "fluid_cuda.h"
 #endif
@@ -23,6 +24,8 @@
 namespace lab {
 enum class FluidTransfer { Apic, Flip };
 struct FluidSystemDesc {
+    HamiltonianConfig hamiltonian;
+    DirectX::XMFLOAT3 waveMinimum{-5.95f,.02f,-5.95f}, waveMaximum{5.95f,3.06f,7.95f};
     bool cudaBackend = false;            // explicit CUDA backend; particles/transfer remain uniform
     bool cudaGraphs = false;             // optional replay; direct launch remains the reference
     bool cudaGraphicsContext = false;    // explicit CUDA-in-Graphics scheduling experiment
@@ -31,6 +34,7 @@ struct FluidSystemDesc {
     uint32_t cudaPressureBricks = 512, cudaPressureChanges = 64, cudaCgIterations = 32;
     DirectX::XMFLOAT3 minimum{1.82f, .03f, -4.88f}, maximum{5.58f, 4.03f, -1.32f};
     float gridCellSize = .08f, particleRadius = .02f;
+    float surfaceCellScale = .5f; // Render field spacing relative to the simulation grid.
     uint32_t maxParticles = 100000, initialParticles = 100000;
     float simulationRate = 120, flipRatio = .95f;
     uint32_t maxSubsteps = 8, pressureIterations = 120;
@@ -132,6 +136,7 @@ class FluidSystem {
     uint32_t debugMode = 0; // particles, MAC velocity, pressure, divergence, classification
     bool validatePressureThisFrame = false;
     std::unique_ptr<FluidPressure> pressureSolver;
+    std::unique_ptr<HamiltonianWave> hamiltonian;
     std::unique_ptr<FluidMac> mac;
     std::unique_ptr<FluidWork> work;
     bool validateWorkThisFrame = false;
@@ -149,6 +154,7 @@ class FluidSystem {
     void validateAndReport(std::ostream &); // caller must have completed the submission
     void recordTimings(ID3D12GraphicsCommandList *);
     void collectTimings(uint64_t frequency); // existing renderer fence only
+    void collectHamiltonian();
     uint64_t stepCount = 0;
     double simulationMs = 0, droppedSeconds = 0;
     std::array<double, 5> cudaTelemetry() const {

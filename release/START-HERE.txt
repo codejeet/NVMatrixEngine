@@ -1,38 +1,46 @@
-NVMatrixEngine - Game Engine Preview - Water Lab
+NVMatrixEngine 0.1.3-preview - Water Labs and Ocean Island
 https://github.com/codejeet/NVMatrixEngine
 
-Extract the entire ZIP into a writable folder. Open Play Water Lab.cmd.
-Windows 11 x64 and a compatible high-end NVIDIA RTX GPU/driver are required.
-Developed on RTX 5090; other hardware is not certified. No installer or admin
-rights are needed. CUDA Toolkit is not needed to run the optional CUDA demo.
+Extract the entire ZIP into a writable folder. Choose a launcher:
+  Play Water Lab.cmd             Small indoor lab, legacy DX12 water
+  Play Large Water Lab.cmd       Larger indoor lab, Hamiltonian water
+  Play Extra Large Water Lab.cmd Outdoor ocean and island, Hamiltonian water
 
-Esc: settings. WASD: roll. Space: jump. Right drag: look. Wheel: zoom.
-Tab: first person. Ctrl: dive. E: interact / board nearby boat / exit boat.
-Boat W/S: thrust, A/D: steer. T: wall inlet. I: inspect inlet.
+Windows 11 x64 and a compatible high-end NVIDIA RTX GPU/driver are required.
+Developed on RTX 5090; other hardware is not certified. No installer, admin
+rights or CUDA Toolkit are needed. This package uses the DX12 fluid backend.
+
+Esc: settings. WASD: move. Space: jump / hold underwater to swim upward.
+Right drag: look. Wheel: zoom. Tab: first person. Ctrl: dive.
+E: interact / board nearby boat / exit boat. Boat W/S: thrust, A/D: steer.
+T: water inlet. I: inspect inlet / ocean overview. Y: ocean day/night.
 P: pause water. Period: one step. B: reset water. U: HUD details. F8: frame gen.
 
-The default launcher uses DX12 simulation, Balanced DLSS and automatic frame
-generation where supported. Normal and fisheye lenses both support FG.
-Esc offers DLSS RR Quality, Balanced and Performance without resetting water.
-The HUD separates Render FPS from actual DLSS output FPS, including generated
-presentations. Ray Reconstruction upscaling alone does not add frames.
-Change lighting, flashlight, ball sink/float, music volume and water quality
-in Esc. Applying water quality resets the pool. Filling stops at capacity.
-The glass ball is constructed in Sink mode (solid glass, 2500 kg/m^3).
-Choose Float in Esc to use a hollow ball. New sessions always start in Sink;
-chamber resets preserve your current session's selection.
+The ocean spans 256 x 256 metres with 6 m offshore water depth. It uses fixed
+1 m fluid cells and a 2 m wave grid. Dynamic cell sizing around rigid bodies
+has been removed. The beach, pier, night lanterns, powered boat and simulated
+foam, bubbles and spray remain. Calm regions use Hamiltonian waves; complex
+flow and body interactions activate 3D fluid regions without changing cell size.
 
-Optional launchers: CUDA water (uniform solver), larger deep pool, experimental
-narrow-band CUDA ownership, and ReSTIR PT indirect lighting. These are not
-promised speedups. Deep-pool and high particle-count modes are more demanding.
+Indoor labs start with a solid sinking glass ball. The ocean starts with a
+lighter hollow ball. Settings can switch Sink/Float; reset preserves the choice.
+Hold Space underwater to swim upward even in Sink mode.
 
-This unsigned preview may receive a Windows reputation warning. Obtain it only
-from the official repository/release. Verify the release ZIP SHA-256 sidecar.
+Balanced DLSS and automatic frame generation are selected where supported.
+Both normal and fisheye lenses support FG. Settings offers DLSS RR Quality,
+Balanced and Performance without resetting water. Render FPS and actual DLSS
+output FPS are separate. Generated frames do not accelerate fluid simulation.
+FG initialization is checked; see the release verification report for whether
+additional generated presentations were observed on the test machine.
+
+Change lighting, flashlight, ball mode, music volume and water quality in Esc.
+Applying water quality resets the water. Filling stops at capacity.
+Optional launchers also include Hamiltonian small water and ReSTIR PT lighting.
+
 If startup fails, read NVMatrixEngine.log and lab-error.txt in this folder.
-Do not copy the executable away from its shaders, assets, DLLs or D3D12 folder.
+Keep the executable beside its shaders, assets, DLLs and D3D12 folder.
+Verify the ZIP with its SHA-256 sidecar. The build is unsigned.
 
-README.md has features and links. COPYRIGHT.md and THIRD_PARTY_NOTICES.md describe
-terms; bundled component licenses are in licenses/. No blanket 60 FPS guarantee.
-Generated presentation frames are not extra simulation/rendered frames.
-Version 0.1.2 packages the existing build without fresh release validation.
-See docs/VALIDATION.md and the release report for the measurement scope.
+See README.md, engine/OCEAN_LAB.md and engine/HAMILTONIAN_WATER.md for details.
+COPYRIGHT.md, THIRD_PARTY_NOTICES.md and licenses/ describe distribution terms.
+The adjacent .verification.json records the checks for this exact archive.

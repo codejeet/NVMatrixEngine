@@ -1,5 +1,7 @@
 #pragma once
 #include "deep_pool.h"
+#include "large_water.h"
+#include "ocean.h"
 #include "scene.h"
 #include "streamline.h"
 #include "gameplay.h"
@@ -31,6 +33,7 @@ struct Options {
     bool fluidTemporalTest = false;
     bool water = true, flatWater = false, lasers = true, haze = true;
     bool restirPt = false;
+    HamiltonianConfig hamiltonian;
     bool opticalImportance = false, adaptiveRays = false, opticalValidate = false;
     bool opticalUniform = false, opticalFreeze = false, retracePrimary = false;
     bool opticalControlsTest = false;
@@ -57,7 +60,8 @@ struct Options {
     float laserNm = 532;
     bool fluid = false, fluidValidate = false, gpuValidation = false;
     bool fluidRoom = false, fluidEmitter = false, fluidRoomTest = false, whitewater = true;
-    bool fluidDeepPool = false;
+    bool fluidDeepPool = false, largeWaterLab = false;
+    bool oceanLab = false, oceanNight = false, oceanSwimTest = false;
     uint32_t fluidCapacity = 500000;
     float fluidCellSize = .16f, fluidSimulationHz = 120;
     bool fisheye = false;
@@ -139,6 +143,10 @@ class Renderer {
     }
     bool nearWallValve(const Game &game) const {
         auto p = game.playerPosition();
+        if (options.oceanLab)
+            return std::hypot(p.x - ocean::inlet.x, p.z - ocean::inlet.z) < 2.2f;
+        if (options.largeWaterLab)
+            return std::hypot(p.x - largeWater::inlet.x, p.z - largeWater::inlet.z) < 2.2f;
         if (options.fluidDeepPool)
             return std::hypot(p.x - deepPool::inlet.x, p.z - deepPool::inlet.z) < 2.2f;
         return options.fluidRoom && std::hypot(p.x + 5.6f, p.z - 2.4f) < 2.2f;
@@ -250,9 +258,11 @@ class Renderer {
     uint32_t ptTemporalFrames = 0, ptStableFrames = 0;
     uint64_t lastPtTransportHash = 0;
     std::vector<std::array<double, 2>> ptTimings;
-    MeshSdfAsset fluidPrismSdf;
+    MeshSdfAsset fluidPrismSdf, fluidBoatSdf;
     Buffer uniforms, vertices, objects, cieData, instances, photonSum, beams, stats, statsReadback, tlas,
         tlasScratch;
+    Buffer oceanEnvironment;
+    XMFLOAT4 oceanSun{};
     std::vector<Buffer> blas, blasScratch;
     std::vector<Mesh> meshes;
     std::vector<Object> sceneObjects;

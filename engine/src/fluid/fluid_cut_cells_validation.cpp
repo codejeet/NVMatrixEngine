@@ -166,7 +166,7 @@ double solidReference(const FluidCollider &c, XMFLOAT3 world, const MeshSdfAsset
     }
     if (outside)
         return (2 + std::sqrt(outside)) * c.meshMinimumSpacing.w;
-    return mesh.sample(p);
+    return mesh.sample(p, c.meshMinimumSpacing, c.meshDimensions);
 }
 } // namespace
 void FluidCutCells::validateSnapshot() {

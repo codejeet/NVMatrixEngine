@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 using namespace DirectX;
@@ -39,11 +40,15 @@ struct Level {
     std::vector<Prop> props;
     std::vector<Material> materials;
     std::vector<std::vector<Vertex>> meshes;
+    // Interior of a playable water room, shared by the camera and boat exit.
+    std::optional<Solid> roomBounds;
+    // Static triangle terrain, in world metres. Shared with visible geometry.
+    std::vector<XMFLOAT3> terrain;
 };
 std::vector<Level> loadLevels(const std::filesystem::path &path);
 struct Input {
     bool forward = false, back = false, left = false, right = false, jump = false, turnLeft = false,
-         turnRight = false, fine = false, dive = false;
+         turnRight = false, fine = false, dive = false, ascend = false;
 };
 constexpr uint32_t MaxBeams = 256, MaxSensors = 8, BeamNodes = 512;
 struct LaserResult {
@@ -117,6 +122,7 @@ class Game {
     // Small body-level readback, not particles. Heights/velocities are sampled
     // from the GPU fluid field; callers deliver results after their existing fence.
     std::vector<XMFLOAT4> waterQueries() const;
+    std::vector<XMFLOAT4> waterQueries(float solidClearance) const;
     void receiveWater(const std::vector<XMFLOAT4> &samples, float density, float gravity);
     float submergedBoat = 0;
     void clearInput() {
@@ -144,13 +150,14 @@ class Game {
     // Construct solid glass immediately, even before a renderer/UI exists.
     // The selected session preference still survives chamber/water resets.
     bool ballFloating = false;
-    void waterForces(float dt);
+    bool waterForces(float dt); // True while the unpiloted player touches sampled water.
     std::unique_ptr<btDefaultCollisionConfiguration> config;
     std::unique_ptr<btCollisionDispatcher> dispatcher;
     std::unique_ptr<btDbvtBroadphase> broadphase;
     std::unique_ptr<btSequentialImpulseConstraintSolver> solver;
     std::unique_ptr<btDiscreteDynamicsWorld> world;
     std::vector<std::unique_ptr<btCollisionShape>> shapes;
+    std::unique_ptr<btTriangleMesh> terrainMesh;
     std::vector<std::unique_ptr<btRigidBody>> owned;
     std::vector<btRigidBody *> bodies;
     std::vector<btTransform> previousStep;

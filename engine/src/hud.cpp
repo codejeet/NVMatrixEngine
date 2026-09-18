@@ -34,6 +34,16 @@ Hud::Hud(ID3D12Device *device, HWND hwnd, const std::filesystem::path &folder, G
         document->AddEventListener("click", this);
         document->AddEventListener("change", this);
         document->Show();
+        if (settings.oceanLab) {
+            auto grid = document->GetElementById("grid-resolution");
+            grid->SetAttribute("min", "80"); grid->SetAttribute("max", "120"); grid->SetAttribute("step", "10");
+        }
+        if (settings.largeWaterLab) {
+            auto grid = document->GetElementById("grid-resolution");
+            grid->SetAttribute("min", "20");
+            grid->SetAttribute("max", "32");
+            grid->SetAttribute("step", "2");
+        }
         if (settings.deepPool) {
             auto grid = document->GetElementById("grid-resolution");
             grid->SetAttribute("min", "50");
@@ -127,7 +137,8 @@ void Hud::ProcessEvent(Rml::Event &event) {
                 settings.particleCapacity = uint32_t(std::clamp(value, 100.f, 1000.f)) * 1000;
             if (e->GetId() == "grid-resolution")
                 settings.cellSize =
-                    std::clamp(value, settings.deepPool ? 50.f : 10.f, settings.deepPool ? 100.f : 24.f) *
+                    std::clamp(value, settings.oceanLab ? 80.f : settings.deepPool ? 50.f : (settings.largeWaterLab ? 20.f : 10.f),
+                               settings.oceanLab ? 120.f : settings.deepPool ? 100.f : (settings.largeWaterLab ? 32.f : 24.f)) *
                     .01f;
             if (e->GetId() == "simulation-rate")
                 settings.simulationHz = std::clamp(value, 60.f, 180.f);
@@ -147,7 +158,7 @@ void Hud::ProcessEvent(Rml::Event &event) {
     if (action == "dlss-quality")
         requestedDlssQuality = e->GetAttribute<int>("data-quality", 0);
     if (action == "environment")
-        settings.environment = (settings.environment + 1) % 4;
+        settings.environment = (settings.environment + 1) % (settings.oceanLab ? 2 : 4);
     if (action == "flashlight")
         settings.flashlight = !settings.flashlight;
     if (action == "lens")
@@ -248,7 +259,10 @@ void Hud::update(float dt, float watts) {
     }
     visible("pause", game.paused || game.won);
     const char *environments[] = {"Neon night", "Single overhead light", "White studio", "Blackout"};
-    text("environment", std::string("Lighting: ") + environments[settings.environment % 4]);
+    text("environment", settings.oceanLab ? (settings.environment ? "Lighting: starry night [Y]" : "Lighting: daylight [Y]")
+                                         : std::string("Lighting: ") + environments[settings.environment % 4]);
+    text("ocean-time", settings.environment ? "SWITCH TO DAY  [Y]" : "SWITCH TO NIGHT  [Y]");
+    visible("ocean-controls", settings.oceanLab && !game.paused);
     text("flashlight", settings.flashlight ? "Ball flashlight: On" : "Ball flashlight: Off");
     text("lens", settings.lens.fisheye ? "Lens: equisolid fisheye" : "Lens: rectilinear");
     text("view", settings.firstPerson ? "View: first person [Tab]" : "View: orbit [Tab]");
@@ -260,18 +274,24 @@ void Hud::update(float dt, float watts) {
     text("lens-value",
          "Diagonal field of view: " + std::to_string(int(settings.lens.diagonalDegrees)) + " degrees");
     text("capacity-value", "Particle capacity: " + std::to_string(settings.particleCapacity / 1000) + "k");
+    visible("capacity-value", !hamiltonianWater);
+    visible("particle-limit", !hamiltonianWater);
+    text("water-quality-description", hamiltonianWater
+        ? "Finer cells and higher rates cost GPU time. Applying resets the water."
+        : "Capacity reserves room for the inlet; it does not spawn particles. Finer cells and higher rates cost GPU time. Applying resets the water.");
     text("grid-value", "MAC cell size: " + std::to_string(int(std::round(settings.cellSize * 100))) +
                            " cm (smaller = finer)");
     text("rate-value", "Simulation rate: " + std::to_string(int(settings.simulationHz)) + " Hz");
     visible("water-settings", fluidRoom);
     const bool compact = game.firstPerson || game.piloting;
-    visible("wall-controls", fluidRoom && !game.won && !compact);
-    visible("receiver", !compact);
+    visible("wall-controls", fluidRoom && !settings.oceanLab && !game.won && !compact);
+    visible("receiver", !settings.oceanLab && !compact);
     text("wall-water", waterFull ? "CAPACITY FULL — B to reset"
                                  : (wallWater ? "STOP WALL WATER  [T]" : "SPEW WALL WATER  [T]"));
-    text("water-state", waterFull ? "Safety valve closed. No particles discarded."
+    text("water-state", std::string(waterFull ? "Safety valve closed. No particles discarded."
                                   : (wallWater ? "Inlet open · flowing into the room"
-                                               : "Wall valve closed · click or press T"));
+                                               : "Wall valve closed · click or press T")) +
+                        (hamiltonianWater ? " · " + waterFillStatus : ""));
     visible("details", game.ui || game.hint);
     text("pt-mode", rendererStatus);
     visible("tuning", game.tuning >= 0);
@@ -304,20 +324,35 @@ void Hud::update(float dt, float watts) {
         text("fluid", fluidStatus);
         readingTime = 0;
     }
-    text("hint", game.level().hint);
+    text("hint", settings.oceanLab ? game.level().hint : hamiltonianWater
+                     ? "T fills the room. Throw objects or pilot the boat to send waves through it. B drains/resets the water; P pauses it."
+                     : game.level().hint);
     const bool fluidLab = !fluidStatus.empty();
     text("objective-title",
-         fluidRoom ? "Flood the chamber." : (fluidLab ? "GPU liquid lab." : "Bend the night."));
+         settings.oceanLab ? "Ocean Island."
+         : largeWaterLab ? "Large Water Lab."
+         : hamiltonianWater ? "Hamiltonian waves."
+         : fluidRoom ? "Flood the chamber." : (fluidLab ? "GPU liquid lab." : "Bend the night."));
     text("objective-description",
-         fluidRoom  ? "Room-wide water · wall inlet · physically traced foam and bubbles."
+         settings.oceanLab ? "An island, open water, and a changing sky."
+         : largeWaterLab ? "24 × 28 metre Water Lab · 1.5 metre starting depth · boat and caustics."
+         : hamiltonianWater ? "Nonlinear waves · boat wakes · ray-traced water and caustics."
+         : fluidRoom  ? "Room-wide water · wall inlet · physically traced foam and bubbles."
          : fluidLab ? "GPU APIC / FLIP. Reconstructed water bends light, lasers and caustics."
                     : "Bring the green spectrum into the marked receiver.");
     text("shortcuts",
-         compact                     ? "Tab: view · Ctrl: dive · Right drag: look · Esc: settings"
+         settings.oceanLab ? "Y: day / night · I: overview · Tab: view · Space / Ctrl: swim up / down · P: pause water · Esc: settings"
+         : compact                     ? "Tab: view · Space / Ctrl: swim up / down · Right drag: look · Esc: settings"
          : !complexityStatus.empty() ? complexityStatus
+         : hamiltonianWater ? "T: fill water · P: pause water · .: step · B: drain/reset · U: details · F8: Frame Gen"
          : fluidRoom ? "T: wall water · P: pause water · B: drain/reset · U: details · F8: Frame Gen"
          : fluidLab  ? "I: inspect pool · P: pause · .: step · B: reset · V/G: grid · N: surface · U: details"
                      : "L: laser color · U / H: hints &amp; details · Esc: pause · R: reset");
+    text("water-description", settings.oceanLab
+        ? "Explore the beach and board the boat from the pier. The offshore depth is six metres. T operates the pier inlet; B resets the water."
+        : hamiltonianWater
+        ? "Nonlinear waves and local splashes share the surface that bends light and casts caustics."
+        : "GPU liquid uses the actual animated surface for refraction and caustics. Secondary whitewater follows the flow; the wall inlet stops safely at capacity.");
     text("laser", "L: laser wavelength  /  " + std::to_string(int(laserWavelength)) + " nm  /  1.5 W each");
     std::string prompt =
         game.tuning >= 0
@@ -330,8 +365,12 @@ void Hud::update(float dt, float watts) {
         : game.nearbyOptic() > 0
             ? "F: lock prism + top-down tuning  ·  E: pick up"
             : "WASD: roll  ·  Space: jump  ·  E: grab  ·  Right drag: orbit  ·  Wheel: zoom";
+    if (settings.oceanLab)
+        prompt = game.held >= 0 ? "Left click / X: throw  ·  E: release"
+                               : "WASD: move  ·  Space: jump / swim up  ·  Ctrl: dive  ·  E: grab  ·  Right drag: look";
     text("context",
-         nearbyValve && game.tuning < 0 ? "E: press wall valve  ·  T: remote valve  ·  B: drain/reset"
+         nearbyValve && game.tuning < 0 ? (settings.oceanLab ? "E: operate pier outlet  ·  T: remote outlet  ·  B: reset water"
+                                                           : "E: press wall valve  ·  T: remote valve  ·  B: drain/reset")
          : game.piloting
              ? "W/S: throttle / reverse · A/D: steer · E: leave boat · Tab: first person · Right drag: look"
          : game.nearBoat() ? "E: board the boat · Tab: first person · Right drag: look"

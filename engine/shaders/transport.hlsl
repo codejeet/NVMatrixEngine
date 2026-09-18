@@ -1,4 +1,7 @@
 #include "common.hlsli"
+#include "ocean-environment.hlsli"
+#include "ocean-terrain.hlsli"
+#include "ocean-lights.hlsli"
 #if HIT_MODE == 1 || FLOAT_ATOMICS
 #define NV_SHADER_EXTN_SLOT u31
 #define NV_SHADER_EXTN_REGISTER_SPACE space1
@@ -30,6 +33,7 @@ void Closest(inout Payload p, BuiltInTriangleIntersectionAttributes a) {
 [shader("miss")]
 void Miss(inout Payload p) { p.t=RayTCurrent(); p.object=0xffffffff; p.primitive=0; p.bary=0; }
 Payload trace(float3 origin,float3 direction,uint mask,uint hint,float limit=100,bool visibility=false) {
+    if(CameraState.w==3 && limit==100)limit=10000;
     if(OpticalControls.x&1)++OpticalRayCount;
     RayDesc ray; ray.Origin=origin; ray.Direction=direction; ray.TMin=EPS; ray.TMax=limit;
     // Visibility needs ANY occluder, not the closest surface or its attributes.
@@ -75,7 +79,12 @@ Hit surface(Payload p,float3 o,float3 d,float cone=0) {
     h.uv=a.uv+(b.uv-a.uv)*bary.x+(c.uv-a.uv)*bary.y;
     h.n=normalize(mul(normalize(cross(e,f)),(float3x3)obj.world));
     if(a.material==2)h.n=normalize(mul(normalize(h.local),(float3x3)obj.world));
-    if(a.material==8&&h.n.y>.5) {
+    if(a.material==18&&h.p.y>.001) {
+        float dx=oceanTerrainHeight(h.p.x+.05,h.p.z)-oceanTerrainHeight(h.p.x-.05,h.p.z);
+        float dz=oceanTerrainHeight(h.p.x,h.p.z+.05)-oceanTerrainHeight(h.p.x,h.p.z-.05);
+        h.n=normalize(float3(-dx,.1,-dz));
+    }
+    if(a.material==8&&h.n.y>.5&&CameraState.w!=3) {
         float2 k=float2(3.7,2.9),j=float2(-4.3,1.7);
         float2 slope=Water.y?0:.065*cos(dot(h.p.xz,k))*k+.035*cos(dot(h.p.xz,j)+.8)*j;
         h.n=normalize(float3(-slope.x,1,-slope.y));
@@ -107,14 +116,14 @@ float3 refractDifferential(float3 dd,float3 n,float3 d,float eta) {
 }
 #include "interface-media.hlsli"
 float3 normalDifferential(Hit h,float3 dp) {
-    if(h.material==8&&FluidState.x) {
+    if(h.material==8&&FluidState.x&&Objects[h.object].info.z==8) {
         float e=FluidMinimumSpacing.w*.5;float3 result=0;
         [unroll]for(uint a=0;a<3;++a){float3 v=0;v[a]=e;result+=(liquidNormal(h.p+v)-liquidNormal(h.p-v))*(dp[a]/(2*e));}
         return result-h.n*dot(result,h.n);
     }
     if(h.material==2)return (dp-h.n*dot(dp,h.n))/.68;
     if(h.material==12||h.material==13)return (dp-h.n*dot(dp,h.n))/max(h.uv.x,.001);
-    if(h.material==8&&h.n.y>.5&&!Water.y) {
+    if(h.material==8&&h.n.y>.5&&!Water.y&&CameraState.w!=3) {
         float2 k=float2(3.7,2.9),j=float2(-4.3,1.7);
         float2 slope=.065*cos(dot(h.p.xz,k))*k+.035*cos(dot(h.p.xz,j)+.8)*j;
         float2 ds=-.065*sin(dot(h.p.xz,k))*k*dot(k,dp.xz)-.035*sin(dot(h.p.xz,j)+.8)*j*dot(j,dp.xz);
@@ -126,6 +135,16 @@ float3 normalDifferential(Hit h,float3 dp) {
 [shader("raygeneration")]
 void FluidProbeRaygen() {
     uint id=DispatchRaysIndex().x,rng=hash(id+71);
+    if(OpticalControls.w&4096u) {
+        float3 ball=Objects[1].world[3].xyz;
+        if(id<64&&ball.y<3) {
+            float angle=(id%32)*(2*PI/32),radius=id<32?.85:1.5;
+            float3 q=ball+float3(cos(angle)*radius,.15,sin(angle)*radius);
+            if(liquidSample(q).x>=0)Stats.InterlockedAdd(112,1);
+            Stats.InterlockedAdd(108,1);
+        }
+        return;
+    }
     if(FluidState.w&32)for(uint secondaryId=id;secondaryId<8192;secondaryId+=4096) {
         WhitewaterParticle s=WhitewaterParticles[secondaryId];
         if(s.velocityLife.w<=0)continue;
@@ -226,14 +245,22 @@ Source source(uint i) {
     if(i==1) {s.halfSize=.025;s.power=Water.z*Medium.z;s.nm=Water.w;}
     if(i==2) {
         s.o=float3(2.40,3.9,-3.90);s.d=normalize(float3(.50,-1,.23));basis(s.d,s.right,s.up);
-        if(CameraState.w)s.o=float3(9.6,11.9,-15.6);
+        if(CameraState.w==2)s.o.y+=1.16;
+        if(CameraState.w==1)s.o=float3(9.6,11.9,-15.6);
         s.halfSize=.035;s.power=Water.x*Water.z*Medium.z;s.nm=Water.w;
     }
     if(i==3) {
         s.o=float3(3.70,4.56,-3.10);s.d=float3(0,-1,0);s.right=float3(1,0,0);s.up=float3(0,0,1);
         s.halfSize=float2(1.32,1.22);s.power=Water.x*Medium.w;s.nm=0;
         if(FluidState.w&16){s.o=float3(0,4.56,1);s.halfSize=float2(5.9,6.9);}
-        if(CameraState.w){s.o=float3(0,13.56,4);s.halfSize=float2(23.6,27.6);}
+        if(CameraState.w==2){s.o=float3(0,5.72,2);s.halfSize=float2(11.8,13.8);}
+        if(CameraState.w==1){s.o=float3(0,13.56,4);s.halfSize=float2(23.6,27.6);}
+        if(CameraState.w==3) {
+            s.d=-OceanEnvironment[1].xyz;
+            s.o=float3(0,32,0)-s.d*((32-6.02)/max(.01,-s.d.y));
+            s.o.y=32;
+            s.halfSize=128;
+        }
     }
     if(i==4) {
         s.o=FlashlightOrigin.xyz;s.d=FlashlightDirection.xyz;basis(s.d,s.right,s.up);
@@ -241,7 +268,7 @@ Source source(uint i) {
     }
     return s;
 }
-void ledger(uint lane,float watts) { Stats.InterlockedAdd(lane*4,uint(round(max(watts,0)*1048576))); }
+void ledger(uint lane,float watts) { Stats.InterlockedAdd(lane*4,uint(round(max(watts,0)*(CameraState.w==3?1024:1048576)))); }
 void addPower(uint address,float value,bool dynamic) {
     if(value<=0) return;
 #if FLOAT_ATOMICS
@@ -414,7 +441,23 @@ void PhotonRaygen() {
 }
 #include "lasers.hlsli"
 #include "direct-light.hlsli"
+float groundNoise(float2 p) {
+    float2 q=floor(p),f=frac(p);f=f*f*(3-2*f);
+    float4 v=frac(sin(float4(dot(q,float2(127.1,311.7)),dot(q+float2(1,0),float2(127.1,311.7)),
+                            dot(q+float2(0,1),float2(127.1,311.7)),dot(q+1,float2(127.1,311.7))))*43758.5453);
+    return lerp(lerp(v.x,v.y,f.x),lerp(v.z,v.w,f.x),f.y);
+}
 float3 baseColor(Hit h,float2 footprint=0) {
+    if(h.material==18) {
+        float grain=.96+.04*groundNoise(h.p.xz*2);
+        float wet=1-smoothstep(6.1,6.55,h.p.y);
+        float patch=groundNoise(h.p.xz*.35);
+        float grass=smoothstep(7.6,8.65,h.p.y+.35*(patch-.5));
+        return lerp(float3(.64,.51,.32)*lerp(1,.48,wet),float3(.085,.125,.035)*(.8+.2*patch),grass)*grain;
+    }
+    if(h.material==21)return float3(.25,.13,.055)*(.85+.15*sin(h.local.y*19+h.local.x*3));
+    if(h.material==22)return float3(.08,.24,.025);
+    if(oceanLanternMaterial(h.material))return .08;
     if(h.material==15)return float3(.82,.88,.86);
     if(h.material==16)return float3(.95,.24,.035);
     if(h.material==17)return float3(.04,.055,.065);
@@ -423,6 +466,7 @@ float3 baseColor(Hit h,float2 footprint=0) {
     return h.material==3?float3(.12,.16,.21):float3(.5,.5,.5);
 }
 float3 emission(Hit h) {
+    if(CameraState.w==3&&oceanLanternMaterial(h.material))return oceanLayer()?oceanLanternRadiance():0;
     if(!Lighting.y)return 0;
     if(h.material==14)return Play.w?float3(.1,3.5,1.0):float3(.2,.5,.65);
     if(h.material==9)return Water.z?xyzToRgb(spectralPower(Water.w,3)):0;
@@ -442,7 +486,11 @@ float3 emission(Hit h) {
     }
     return 0;
 }
+bool explicitlySampledEmitter(Hit h) {
+    return (Play.x&&(h.object==3||h.object==4)) || (CameraState.w==3&&oceanLanternMaterial(h.material));
+}
 float3 sky(float3 d) {
+    if(CameraState.w==3)return oceanSky(d);
     return Lighting.z*lerp(float3(.006,.009,.021),float3(.026,.048,.08),saturate(d.y*.5+.5));
 }
 float2 cameraReceiverFootprint(Payload payload,Hit h,float3 direction,float opticalDistance) {
@@ -459,7 +507,9 @@ float2 cameraReceiverFootprint(Payload payload,Hit h,float3 direction,float opti
 float3 endpoint(Hit h,float3 n,inout uint rng,float2 footprint=0,uint areaSamples=1) {
     opticalRecordReceiver(h.uv,h.chart);
     float3 albedo=baseColor(h,footprint);
-    return emission(h)+albedo*(directLight(h,n,rng,areaSamples,albedo)+causticIrradiance(h.uv,h.chart))/PI;
+    float3 caustics=causticIrradiance(h.uv,h.chart);
+    if(h.material==18)caustics*=max(0,h.n.y); // horizontal atlas area -> actual sloped surface area
+    return emission(h)+albedo*(directLight(h,n,rng,areaSamples,albedo)+caustics)/PI;
 }
 // Whitted-style specular prefix only (E S* D / E S* L), before any diffuse event.
 // Branch both Fresnel lobes, including repeated internal reflections and exact TIR.
@@ -541,7 +591,7 @@ void CameraRaygen() {
         float4 prev=mul(float4(old,1),PreviousViewProjection),now=mul(float4(primary.p,1),ViewProjection);
         Motion[pixel]=(prev.xy/prev.w-now.xy/now.w)*float2(.5,-.5)*Dimensions.xy;
         Depth[pixel]=max(.05,dot(primary.p-o,CameraForward.xyz));
-        NormalRoughness[pixel]=float4(n,glass(primary)?.015:(Play.x&&primary.chart==0?.025:1));
+        NormalRoughness[pixel]=float4(n,glass(primary)?.015:(Play.x&&primary.chart==0&&CameraState.w!=3?.025:1));
         uint pixelSamples=opticalBegin(pixel,primary.p,old,n,NormalRoughness[pixel].w,p.object,primary.material,
             Objects[p.object].info.z==8?p.primitive:0xffffffff);
         if(Objects[p.object].info.z==8&&(FluidState.w>>8)) {
@@ -569,7 +619,7 @@ void CameraRaygen() {
             Albedo[pixel]=float4(albedo,1);
             if(primary.chart<5)Surface[pixel]=float4(atlasPixel(primary.uv,primary.chart),primary.chart,p.t);
             radiance=emission(primary)+directLight(primary,n,rng,pixelSamples,albedo)*albedo/PI;
-            if(Play.x&&primary.chart==0) {
+            if(Play.x&&primary.chart==0&&CameraState.w!=3) {
                 // A small polished-floor lobe carries reflected glass/neon appearance.
                 // Its caustics endpoint lookup observes the same atlas, never re-traces L S D.
                 float distance;uint3 events;
@@ -588,15 +638,20 @@ void CameraRaygen() {
             for(uint bounce=0;bounce<2;++bounce) {
                 Payload secondary=trace(o,d,255,bounce+1);
                 throughput*=exp(-extinctionRgb(ambientMedium(o))*secondary.t);
-                if(secondary.object==0xffffffff) { radiance+=throughput*sky(d); break; }
+                if(secondary.object==0xffffffff) {
+                    // Ocean skylight was already sampled by NEE at this diffuse
+                    // vertex. Specular sky paths remain in dielectricView.
+                    if(CameraState.w!=3)radiance+=throughput*sky(d);
+                    break;
+                }
                 Hit h=surface(secondary,o,d);
                 if(glass(h)) break; // After a diffuse event, photons exclusively own refractive caustics.
                 float3 normal=dot(h.n,d)<0?h.n:-h.n;
                 float3 a=baseColor(h);
                 radiance+=throughput*endpoint(h,normal,rng);
-                // Cube area lights were already explicitly sampled at the previous
+                // Area lights were already explicitly sampled at the previous
                 // diffuse vertex. Do not count their BSDF-hit emission a second time.
-                if(Play.x&&(h.object==3||h.object==4))radiance-=throughput*emission(h);
+                if(explicitlySampledEmitter(h))radiance-=throughput*emission(h);
                 throughput*=a; o=h.p+normal*EPS*2; d=diffuseDirection(normal,rng);
             }
             }}

@@ -1,5 +1,6 @@
 #ifndef FLUID_SOLID
 #define FLUID_SOLID
+#include "../ocean-terrain.hlsli"
 #ifndef FLUID_COLLIDER_REGISTER
 #define FLUID_COLLIDER_REGISTER t1
 #define FLUID_MESH_REGISTER t2
@@ -20,6 +21,7 @@ float colliderPhi(FluidCollider c,float3 world) {
     if(type==2){p.y-=clamp(p.y,-e.y,e.y);return length(p)-e.x;}
     if(type==3){float2 q=float2(length(p.xz)-e.x,abs(p.y)-e.y);return length(max(q,0))+min(max(q.x,q.y),0);}
     if(type==4)return p.y;
+    if(type==6)return (p.y-oceanTerrainHeight(p.x,p.z))/1.5;
     float3 g=(p-c.meshMinimumSpacing.xyz)/c.meshMinimumSpacing.w;
     float3 q=clamp(g,0,float3(c.meshDimensions.xyz-1));
     // Imported volumes include two positive padding voxels on every side.

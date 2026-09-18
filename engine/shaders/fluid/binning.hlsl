@@ -8,7 +8,7 @@ void ClearBins(uint3 tid:SV_DispatchThreadID) {
 [numthreads(256,1,1)]
 void CountBins(uint3 tid:SV_DispatchThreadID) {
     if(tid.x>=Counts.x)return;FluidParticle p=Particles[tid.x];
-    if(p.velocityFlags.w){uint cell=cellIndex(cellCoord(p.positionRadius.xyz));InterlockedAdd(CellCounts[cell],1);
+    if(p.velocityFlags.w==1){uint cell=cellIndex(cellCoord(p.positionRadius.xyz));InterlockedAdd(CellCounts[cell],1);
         if(Display.w==1)InterlockedAdd(CellQuanta[cell],uint(round(16*particleWeight(p))));}
 }
 #if FLUID_PARTICLE_AUTHORITY
@@ -45,7 +45,7 @@ void FinishScan(uint3 tid:SV_DispatchThreadID) {
 }
 [numthreads(256,1,1)]
 void Scatter(uint3 tid:SV_DispatchThreadID) {
-    if(tid.x>=Counts.x)return;FluidParticle p=Particles[tid.x];if(!p.velocityFlags.w)return;
+    if(tid.x>=Counts.x)return;FluidParticle p=Particles[tid.x];if(p.velocityFlags.w!=1)return;
     uint cell=cellIndex(cellCoord(p.positionRadius.xyz)),offset;InterlockedAdd(CellCursor[cell],1,offset);
     SortedIndices[CellOffsets[cell]+offset]=tid.x;
 }

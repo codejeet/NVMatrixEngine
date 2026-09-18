@@ -44,13 +44,19 @@ float4 foamLayer(float3 world) {
 float foamCoverage(float3 world,float footprint=0) {
     float4 layer=foamLayer(world);float density=layer.x;
     if(density<=.1)return 0;
+    float3 material=world+layer.yzw/density;
+    // Subgrid foam gathers into irregular rafts with open water between them.
+    // Advect those rafts with the simulated layer, and filter them at distance.
+    // A metre-scale source grid must not appear as a smooth painted white tube.
+    float rafts=.65*(1-smoothstep(.08,.5,footprint))*foamGrainNoise(material.xz/.47,1931)
+               +.35*(1-smoothstep(.25,1.2,footprint))*foamGrainNoise(material.xz/1.37,7193);
+    density*=max(0,1+2.8*rafts);
     float envelope=smoothstep(.1,.75,density)*(1-exp(-density));
     // Preserve the previous layer's average coverage, but replace its visible
     // cell structure with bounded, zero-mean irregular grain. No hard cutouts.
     float scatter=.1219625+density*(.06671875-.00146484375*density);
     float wet=lerp(.04,.35,smoothstep(1.5,4,density));
     float mean=lerp(wet,1,scatter);
-    float3 material=world+layer.yzw/density;
     float variation=.85*min(mean,1-mean)*foamGrain(material.xz,footprint);
     return envelope*(mean+variation);
 }

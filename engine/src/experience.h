@@ -35,12 +35,13 @@ struct Lens {
 };
 struct ExperienceSettings {
     Lens lens;
-    // 0 neon, 1 overhead only, 2 white studio, 3 blackout.
+    // Indoor: 0 neon, 1 overhead only, 2 white studio, 3 blackout. Ocean: 0 day, 1 night.
     uint32_t environment = 0;
     bool flashlight = false, firstPerson = false, ballFloats = false;
     uint32_t particleCapacity = 500000;
     float cellSize = .16f, simulationHz = 120;
-    bool deepPool = false;
+    bool deepPool = false, largeWaterLab = false;
+    bool oceanLab = false;
     bool rebuildWater = false;
 };
 } // namespace lab

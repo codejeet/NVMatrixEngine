@@ -29,6 +29,89 @@ RWByteAddressBuffer Arguments : register(u9);
 uint3 brickCoord(uint i){return uint3(i%Bricks.x,(i/Bricks.x)%Bricks.y,i/(Bricks.x*Bricks.y));}
 uint simIndex(int3 p){return (p.z*SimulationGrid.y+p.y)*SimulationGrid.x+p.x;}
 #include "anisotropy.hlsli"
+#if FLUID_HAMILTONIAN
+#define WAVE_DATA_REGISTER u22
+#include "hamiltonian-shared.hlsli"
+#define WAVE_PARTICLE_MINIMUM SimulationMinimumCell
+#define WAVE_PARTICLE_GRID SimulationGrid.xyz
+#define WAVE_PARTICLE_OFFSETS Offsets
+#define WAVE_PARTICLE_INDICES Indices
+#define WAVE_PARTICLE_PREVIOUS Previous
+#include "hamiltonian-surface.hlsli"
+RWStructuredBuffer<uint> FreeHeads : register(u23);
+RWStructuredBuffer<uint> FreeNext : register(u24);
+uint freeBrickIndex(int3 p){return (p.z*Bricks.y+p.y)*Bricks.x+p.x;}
+[numthreads(128,1,1)]void SurfaceFreeClear(uint i:SV_DispatchThreadID) {
+    if(i<Bricks.w){FreeHeads[i]=0xffffffff;FreeHeads[Bricks.w+i]=0;}
+}
+[numthreads(128,1,1)]void SurfaceFreeBin(uint i:SV_DispatchThreadID) {
+    if(i>=uint(Reconstruction.z)||Particles[i].velocityFlags.w!=2)return;
+    int3 p=int3(floor((Particles[i].positionRadius.xyz-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w)));
+    if(any(p<0)||any(p>=int3(Bricks.xyz)))return;
+    uint old;InterlockedExchange(FreeHeads[freeBrickIndex(p)],i,old);FreeNext[i]=old;
+    float3 position=Particles[i].positionRadius.xyz;
+    int3 a=max(0,int3(floor((position-Reconstruction.x-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    int3 b=min(int3(Bricks.xyz)-1,int3(floor((position+Reconstruction.x-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    for(int z=a.z;z<=b.z;++z)for(int y=a.y;y<=b.y;++y)for(int x=a.x;x<=b.x;++x)
+        InterlockedOr(FreeHeads[Bricks.w+freeBrickIndex(int3(x,y,z))],1);
+}
+bool freeWaterBrickActive(float3 lo,float3 hi) {
+    int3 a=max(0,int3(floor((lo-Reconstruction.x-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    int3 b=min(int3(Bricks.xyz)-1,int3(floor((hi+Reconstruction.x-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    for(int z=a.z;z<=b.z;++z)for(int y=a.y;y<=b.y;++y)for(int x=a.x;x<=b.x;++x)
+        if(FreeHeads[freeBrickIndex(int3(x,y,z))]!=0xffffffff)return true;
+    return false;
+}
+float4 freeWaterNode(float3 p) {
+    float support=Reconstruction.x,wsum=0;float3 offset=0,motion=0;
+    int3 brick=clamp(int3(floor((p-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))),0,int3(Bricks.xyz)-1);
+    if(FreeHeads[Bricks.w+freeBrickIndex(brick)]==0)return float4(support,0,0,0);
+    int3 a=max(0,int3(floor((p-support-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    int3 b=min(int3(Bricks.xyz)-1,int3(floor((p+support-FieldMinimumSpacing.xyz)/(8*FieldMinimumSpacing.w))));
+    for(int z=a.z;z<=b.z;++z)for(int y=a.y;y<=b.y;++y)for(int x=a.x;x<=b.x;++x) {
+        uint id=FreeHeads[freeBrickIndex(int3(x,y,z))];
+        while(id!=0xffffffff) {
+            float3 q=Particles[id].positionRadius.xyz-p;
+            float w=max(0,1-dot(q,q)/(support*support));w=w*w*w*Particles[id].apic0.w;
+            wsum+=w;offset+=q*w;motion+=(Previous[id].xyz-Particles[id].positionRadius.xyz)*w;
+            id=FreeNext[id];
+        }
+    }
+    return float4(wsum>1e-8?length(offset/wsum)-Reconstruction.y:support,wsum>1e-8?motion/wsum:0);
+}
+float waveField(float3 p,float height) {
+    float2 edge=max(WaveDomain.xy-p.xz,p.xz-WaveDomain.xy-WaveDomain.zw);
+    float phi=max(p.y-height,WavePhysics.y-WavePhysics.x-p.y);
+    // An optical ocean continues past the simulation domain. Its numerical
+    // boundary is not a vertical water/air wall visible to the ray tracer.
+    return WaveSpectrum.y>0?p.y-height:max(phi,max(edge.x,edge.y));
+}
+float4 waveNode(float3 p) {
+    float4 wave=wavePlane(p.xz,0);
+    if(WaveSpectrum.y>0) {
+        float2 edge=min(p.xz-WaveDomain.xy,WaveDomain.xy+WaveDomain.zw-p.xz);
+        float blend=smoothstep(0,2*max(WaveDomain.z,WaveDomain.w)/WaveGrid.x,min(edge.x,edge.y));
+        wave.xy=lerp(WavePhysics.yy,wave.xy,blend);
+    }
+    return float4(waveField(p,wave.x),0,wave.y-wave.x,0);
+}
+bool waveBrickActive(float3 lo,float3 hi) {
+    if(WaveSpectrum.y==0&&(any(hi.xz<WaveDomain.xy)||any(lo.xz>WaveDomain.xy+WaveDomain.zw)))return false;
+    // Bound every bilinear sample overlapping this brick on the GPU. This
+    // remains conservative for changing wave heights without a CPU readback.
+    int2 a=clamp(int2(floor((lo.xz-WaveDomain.xy)/WaveDomain.zw*WaveGrid.x-.5)),0,int(WaveGrid.x)-1);
+    int2 b=clamp(int2(floor((hi.xz-WaveDomain.xy)/WaveDomain.zw*WaveGrid.x-.5))+1,0,int(WaveGrid.x)-1);
+    float upper=-1e30;
+    for(int z=a.y;z<=b.y;++z)for(int x=a.x;x<=b.x;++x)
+        upper=max(upper,WaveData[z*WaveGrid.x+x].x);
+    // The optical continuation can raise a trough to the mean surface. Keep
+    // its upper brick as well, including the normal filter's boundary samples.
+    if(WaveSpectrum.y>0)upper=max(upper,WavePhysics.y+FieldMinimumSpacing.w);
+    // Keep signed underwater cells: camera medium detection, buoyancy and
+    // bubbles also sample the field between its optical boundary surfaces.
+    return hi.y>=WavePhysics.y-WavePhysics.x && lo.y<=upper;
+}
+#endif
 #if FLUID_PHASE_SURFACE
 #include "owned-surface.hlsli"
 #endif
@@ -63,6 +146,9 @@ void SurfaceMark(uint3 id:SV_DispatchThreadID) {
     int3 a=max(0,int3(floor((lo-halo-SimulationMinimumCell.xyz)/SimulationMinimumCell.w)));
     int3 b=min(int3(SimulationGrid.xyz)-1,int3(floor((lo+8*FieldMinimumSpacing.w+halo-SimulationMinimumCell.xyz)/SimulationMinimumCell.w)));
     bool active=Reconstruction.w!=0;
+#if FLUID_HAMILTONIAN
+    active=waveBrickActive(lo,lo+8*FieldMinimumSpacing.w)||freeWaterBrickActive(lo,lo+8*FieldMinimumSpacing.w);
+#endif
     for(int z=a.z;z<=b.z&&!active;++z)for(int y=a.y;y<=b.y&&!active;++y)for(int x=a.x;x<=b.x;++x) {
         uint i=simIndex(int3(x,y,z));if(Offsets[i+1]>Offsets[i]||(Collision.z&&interiorCellQuanta(uint3(x,y,z),SimulationGrid.xyz,SimulationMinimumCell))){active=true;break;}
     }
@@ -85,6 +171,35 @@ float4 reconstructNode(uint brick,uint3 local) {
     return reconstructOwnedNode(v);
 #else
     float3 p=FieldMinimumSpacing.xyz+float3(v)*FieldMinimumSpacing.w;
+#if FLUID_HAMILTONIAN
+    float blend=waveInterior(p.xz);
+    float4 wave=waveNode(p);
+    float4 freeWater=freeWaterNode(p);
+    float4 result=blend>0?lerp(wave,waveParticleNode(p,true),blend):wave;
+    if(freeWater.x<result.x)result=freeWater;
+    for(uint i=0;i<Collision.x;++i) {
+        FluidCollider solid=Colliders[i];
+        float distance=colliderPhi(solid,p);
+        if(solid.extentType.w==6) {
+            // Extrapolate the free-surface level set through opaque terrain.
+            // Carving an air gap above the submerged beach invents a second
+            // dielectric interface and produces spurious total reflection.
+            // The actual terrain triangles terminate both eye and light rays;
+            // pressure/particle collision still uses the solid boundary.
+            if(distance<=0)result=wave;
+        }
+        {
+            // Solid exclusion removes particles, not water into an air cavity.
+            // Extend the submerged level set through the solid and its kernel
+            // footprint. Exact mesh hits own the water/solid optical interface.
+            // Fade this correction out at the free surface to retain wakes.
+            float support=1.5*SimulationMinimumCell.w+FieldMinimumSpacing.w;
+            float weight=(1-smoothstep(0,support,max(0,distance)))*saturate(-wave.x/(.25*support));
+            if(wave.x<result.x)result=lerp(result,wave,weight);
+        }
+    }
+    return result;
+#else
     if(Reconstruction.w!=0) {
         float phi=Reconstruction.w==1?length(p-float3(3.7,1.99,-3.1))-.75:
             max(abs(p.y-1.99)-.01,max(abs(p.x-3.7)-1,abs(p.z+3.1)-1));
@@ -135,6 +250,7 @@ float4 reconstructNode(uint brick,uint3 local) {
     for(uint i=0;i<Collision.x;++i)phi=max(phi,.002-colliderPhi(Colliders[i],p));
     if(LodControl.x&&!(LodControl.w&4u))motion=0;
     return float4(phi,wsum>1e-8?motion/wsum:0);
+#endif
 #endif
 }
 [numthreads(128,1,1)]

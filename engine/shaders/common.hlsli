@@ -67,6 +67,7 @@ float waterHeight(float2 p) {
     return 1.10+(Water.y?0:.065*sin(dot(p,float2(3.7,2.9)))+.035*sin(dot(p,float2(-4.3,1.7))+.8));
 }
 bool inWater(float3 p) {
+    if(CameraState.w==3&&max(abs(p.x),abs(p.z))>=128)return p.y<6.02;
     if(FluidState.x)return liquidSample(p).x<0;
     return Water.x&&p.x>1.75&&p.x<5.65&&p.z>-4.95&&p.z<-1.25&&p.y>-.05&&p.y<waterHeight(p.xz);
 }
@@ -99,7 +100,9 @@ float3 diffuseDirection(float3 n,inout uint rng) {
     return x*(sqrt(u)*cos(p))+y*(sqrt(u)*sin(p))+n*sqrt(1-u);
 }
 float chartArea(uint chart) {
-    if(CameraState.w)return chart==0?2688:((chart==1||chart==4)?672:784);
+    if(CameraState.w==3)return 65536;
+    if(CameraState.w==2)return chart==0?672:(chart==1?171.84:200.48);
+    if(CameraState.w==1)return chart==0?2688:((chart==1||chart==4)?672:784);
     return chart==4?13.68:(chart==0?168:(chart==1?72:84));
 }
 float2 atlasPixel(float2 uv,uint chart) { return float2(chart*Atlas.z,0)+saturate(uv)*Atlas.z-.5; }
@@ -119,7 +122,8 @@ float gridCoverage(float2 uv,float2 footprint,float halfLine) {
 float3 receiverAlbedo(uint chart,float2 uv,float2 footprint=0) {
     if(Play.x) {
         if(CameraState.w) {
-            float2 metres=chart==0?float2(56,48):float2(14,(chart==1||chart==4)?48:56);
+            float2 metres=CameraState.w==2?(chart==0?float2(28,24):float2(7.16,chart==1?24:28)):
+                (chart==0?float2(56,48):float2(14,(chart==1||chart==4)?48:56));
             float coverage=gridCoverage(uv*metres,footprint*metres,.013);
             return (chart==0?float3(.82,.82,.82):float3(.33,.38,.43))*lerp(1,.18,coverage);
         }

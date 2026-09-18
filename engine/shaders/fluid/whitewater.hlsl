@@ -2,8 +2,8 @@
 // unchanged. Bounded birth/death, MAC advection and buoyancy, no secondary pairs.
 cbuffer WhitewaterFrame:register(b0) {
     float4 FluidMinimumSpacing,DomainMinimum,DomainMaximum;
-    uint4 FluidBricks,Grid,Control; // live carrier count, solver step, reset, aerated inlet
-    float4 TimeGravity,Emitter;
+    uint4 FluidBricks,Grid,Control; // carrier ID range, solver step, reset, reserved
+    float4 TimeGravity;
 };
 #include "field.hlsli"
 #define FLUID_COLLIDER_REGISTER t6
@@ -23,6 +23,7 @@ RWStructuredBuffer<uint> FoamDensity:register(u6);
 // Separate read/write history makes advection independent of dispatch order.
 RWStructuredBuffer<float4> FoamPrevious:register(u7);
 RWStructuredBuffer<float4> FoamNext:register(u8);
+RWStructuredBuffer<uint> SurfaceSources:register(u9);
 uint wwHash(uint s){s^=s>>16;s*=0x7feb352d;s^=s>>15;s*=0x846ca68b;return s^(s>>16);}
 float wwRandom(inout uint s){s=wwHash(s);return (s>>8)*(1.0/16777216.0);}
 float3 gridVelocity(float3 p) {
@@ -67,8 +68,17 @@ bool submerged(float3 p,float radius) {
     }
     return true;
 }
-[numthreads(8,1,1)]
+[numthreads(16,1,1)]
 void WhitewaterClear(uint id:SV_GroupIndex){Counters.Store(id*4,0);}
+[numthreads(128,1,1)]
+void WhitewaterSources(uint3 tid:SV_DispatchThreadID) {
+    uint id=tid.x;if(id>=Control.x||TimeGravity.x<=0)return;
+    Carrier c=Carriers[id];
+    if(!c.velocityFlags.w||dot(c.velocityFlags.xyz,c.velocityFlags.xyz)<.36)return;
+    float phi=liquidSample(c.positionRadius.xyz).x;
+    if(abs(phi)>FluidMinimumSpacing.w*.8)return;
+    uint slot;Counters.InterlockedAdd(32,1,slot);SurfaceSources[slot]=id;
+}
 [numthreads(128,1,1)]
 void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=8192)return;
@@ -114,8 +124,9 @@ void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
         if(any(p.positionRadius.xyz<DomainMinimum.xyz)||any(p.positionRadius.xyz>DomainMaximum.xyz))p.velocityLife.w=0;
         if(p.velocityLife.w<=0){p=(Secondary)0;Counters.InterlockedAdd(16,1);alive=false;}
     }
-    if(!alive&&dt>0&&Control.x) {
-        Carrier c=Carriers[wwHash(rng)%Control.x];
+    uint sourceCount=Counters.Load(32);
+    if(!alive&&dt>0&&sourceCount) {
+        Carrier c=Carriers[SurfaceSources[wwHash(rng)%sourceCount]];
         float speed=length(c.velocityFlags.xyz),phi=liquidSample(c.positionRadius.xyz).x;
         float3 u=gridVelocity(c.positionRadius.xyz);
         float deformation=DomainMinimum.w*(length(c.c0.xyz)+length(c.c1.xyz)+length(c.c2.xyz));
@@ -123,17 +134,24 @@ void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
         float curvature=MaterialGrid[(cell.z*Grid.y+cell.y)*Grid.x+cell.x].y;
         float interfaceWeight=1-saturate(abs(phi)/(h*1.5));
         float agitation=saturate(length(c.velocityFlags.xyz-u)*.6+deformation*.15+max(curvature,0)*h*.25);
-        // An aerated wall nozzle seeds entrained air only in its moving jet.
-        if(Control.w&&distance(c.positionRadius.xyz,Emitter.xyz)<Emitter.w*6)agitation=max(agitation,.7);
-        // Bounded secondary effect: weight the proposal by carrier rest mass,
-        // not its sample multiplicity. Saturation still enforces this emitter's
-        // one-secondary-per-slot budget; it is not a fluid mass transfer.
-        float probability=saturate(smoothstep(.6,3,speed)*interfaceWeight*agitation*dt*12*c.c0.w);
+        // Each source proposes births at a per-second rate weighted by rest
+        // mass. Divide by the proposal budget, not the carrier ID capacity:
+        // one isolated source must not fill every secondary slot. This is a
+        // bounded diffuse phase, not a transfer of resolved liquid mass.
+        float probability=saturate(smoothstep(.6,3,speed)*interfaceWeight*agitation*dt*12*c.c0.w
+                                   *(float(sourceCount)/8192));
         if(c.velocityFlags.w&&wwRandom(rng)<probability) {
             float3 jitter=float3(wwRandom(rng),wwRandom(rng),wwRandom(rng))-.5;
-            p.positionRadius=float4(c.positionRadius.xyz+jitter*h*.6,lerp(.008,.021,wwRandom(rng)));
+            float3 surface=attachFoam(c.positionRadius.xyz+jitter*h*.6,0);
+            float3 n=liquidNormal(surface);
+            // Entrainment occurs at the interface. Carrier centres can lie half
+            // a coarse cell below it; using their position spawned almost only
+            // deep bubbles and starved the wake of foam and airborne spray.
+            float offset=(wwRandom(rng)-.5)*min(.16,h*.8);
+            p.positionRadius=float4(surface+n*offset,lerp(.008,.021,wwRandom(rng)));
             phi=liquidSample(p.positionRadius.xyz).x;
-            uint kind=submerged(p.positionRadius.xyz,p.positionRadius.w)?2:(phi<h*.4?1:3);
+            uint kind=submerged(p.positionRadius.xyz,p.positionRadius.w)?2:
+                (phi<p.positionRadius.w*1.5?1:3);
             p.velocityLife=float4(c.velocityFlags.xyz,kind==2?lerp(3,6,wwRandom(rng)):lerp(1.2,3,wwRandom(rng)));
             if(kind==1)p.positionRadius.xyz=attachFoam(p.positionRadius.xyz,p.positionRadius.w);
             p.previousType=float4(p.positionRadius.xyz,kind);
@@ -199,8 +217,12 @@ void FoamSplat(uint3 tid:SV_DispatchThreadID) {
     // Buoyant surface rafts accumulate on upward interfaces, not the sides of
     // a falling jet. Underwater aeration keeps its separate bubble geometry.
     fade*=smoothstep(.1,.65,n.y);
-    float radius=max(max(.065,p.positionRadius.w*4),h*1.1);
-    float3 axes=float3(2.75*radius*(1+1.5*saturate(speed/2)),2.75*radius,1.75*h);
+    float radius=max(.065,p.positionRadius.w*4);
+    // Deposit on enough nodes to survive interpolation, but do not stretch
+    // the grid-sized minimum radius with velocity: that created metre-wide
+    // white tubes behind a boat on the coarse ocean grid.
+    float3 axes=float3(max(2.75*radius*(1+1.5*saturate(speed/2)),1.75*h),
+                       max(2.75*radius,1.75*h),1.75*h);
     float3 extent=sqrt(tangent*tangent*axes.x*axes.x+bitangent*bitangent*axes.y*axes.y+n*n*axes.z*axes.z);
     uint3 size=FluidBricks.xyz*8+1;
     int3 lo=max(0,int3(ceil((p.positionRadius.xyz-extent-FluidMinimumSpacing.xyz)/h)));
@@ -245,8 +267,12 @@ void FoamTransport(uint3 tid:SV_DispatchThreadID) {
             // Overlapping entrainment grows a continuous, advected layer.
             float production=3.5*smoothstep(.5,1.8,source);
             float decay=exp(-dt/1.4);
-            float density=min(4,old.x*decay+production*2*1.4*(1-decay));
-            float3 displacement=old.x>1e-5?old.yzw/old.x+back-world:0;
+            float retained=old.x*decay,added=production*2*1.4*(1-decay);
+            float total=retained+added,density=min(4,total);
+            // Newly entrained foam starts with fresh material coordinates.
+            // Assigning it the entire old history repeatedly stretched new
+            // wake foam into long, solid stripes behind fast-moving bodies.
+            float3 displacement=total>1e-5?(old.yzw*decay+retained*(back-world))/total:0;
             // Keep a finite, broad-band extension around the moving interface.
             // Shading still occurs ONLY on the canonical liquid zero crossing.
             if(density>1e-5)result=float4(density,displacement*density);

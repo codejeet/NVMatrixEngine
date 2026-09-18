@@ -10,6 +10,15 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 FluidSystem::FluidSystem(ID3D12Device *device, const std::filesystem::path &folder, const FluidSystemDesc &d)
     : desc(d) {
+    if (desc.hamiltonian.enabled) {
+        desc.hamiltonian.validate(desc.initialDepth, -desc.gravity.y);
+        if (!desc.roomPool || !desc.initialParticles || desc.cudaBackend || desc.bulkInventory ||
+            desc.cutCells || desc.adaptiveParticles || desc.ownedParticles || desc.coarseInterior ||
+            desc.adaptiveMac || desc.sparseWork || desc.pressureMode != FluidPressureMode::Uniform ||
+            desc.ballisticTest || desc.transferTest || desc.materialTest)
+            throw std::runtime_error("Hamiltonian waves require the DX12 uniform room solver without "
+                                     "ownership, adaptive or solver fixtures");
+    }
     if (desc.narrowBand && (!desc.cudaBackend || !desc.ownedParticles || desc.ballisticTest ||
                             desc.transferTest || desc.materialTest))
         throw std::runtime_error(
@@ -219,7 +228,7 @@ FluidSystem::FluidSystem(ID3D12Device *device, const std::filesystem::path &fold
     q.Count = 2;
     gpu::check(device->CreateQueryHeap(&q, IID_PPV_ARGS(&queries)), "Fluid timestamps");
     D3D12_DESCRIPTOR_RANGE depthRange{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, 0};
-    D3D12_ROOT_PARAMETER p[31]{};
+    D3D12_ROOT_PARAMETER p[33]{};
     p[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     p[0].Descriptor.ShaderRegister = 0;
     p[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
@@ -260,7 +269,12 @@ FluidSystem::FluidSystem(ID3D12Device *device, const std::filesystem::path &fold
     p[29].Descriptor.ShaderRegister = 36;
     p[30].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
     p[30].Descriptor.ShaderRegister = 37;
-    D3D12_ROOT_SIGNATURE_DESC r{31, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    p[31].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    p[31].Descriptor.ShaderRegister = 3;
+    p[32].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+    p[32].Descriptor.ShaderRegister = 38;
+    D3D12_ROOT_SIGNATURE_DESC r{desc.hamiltonian.enabled ? 33u : 31u, p, 0, nullptr,
+                                D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     gpu::check(D3D12SerializeRootSignature(&r, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
                "Fluid root serialization");
@@ -271,7 +285,14 @@ FluidSystem::FluidSystem(ID3D12Device *device, const std::filesystem::path &fold
         work = std::make_unique<FluidWork>(device, folder, root.Get(), grid, desc.coarseInterior,
                                            desc.ownedParticles);
     auto compute = [&](const char *name, ComPtr<ID3D12PipelineState> &out) {
-        auto code = gpu::bytes(folder / "shaders" / (std::string("Fluid") + name + ".dxil"));
+        const bool wavePass = desc.hamiltonian.enabled &&
+                              (std::string_view(name) == "Classify" || std::string_view(name) == "Forces" ||
+                               std::string_view(name) == "Divergence" || std::string_view(name) == "Project" ||
+                               std::string_view(name) == "P2G" || std::string_view(name) == "DensityGather" ||
+                               std::string_view(name) == "DensityGatherAdaptive" || std::string_view(name) == "DensityDisplace" ||
+                               std::string_view(name) == "Initialize");
+        auto code = gpu::bytes(folder / "shaders" /
+                               (std::string("Fluid") + name + (wavePass ? "Hamiltonian" : "") + ".dxil"));
         D3D12_COMPUTE_PIPELINE_STATE_DESC c{};
         c.pRootSignature = root.Get();
         c.CS = {code.data(), code.size()};
@@ -341,10 +362,16 @@ FluidSystem::FluidSystem(ID3D12Device *device, const std::filesystem::path &fold
     g.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     g.SampleDesc.Count = 1;
     gpu::check(device->CreateGraphicsPipelineState(&g, IID_PPV_ARGS(&debug)), "Fluid debug PSO");
+    if (desc.hamiltonian.enabled)
+        hamiltonian = std::make_unique<HamiltonianWave>(device, folder, desc, grid);
 }
 void FluidSystem::bind(ID3D12GraphicsCommandList *cmd) {
     cmd->SetComputeRootSignature(root.Get());
     cmd->SetComputeRootConstantBufferView(0, uniforms.resource->GetGPUVirtualAddress());
+    if (hamiltonian) {
+        cmd->SetComputeRootConstantBufferView(31, hamiltonian->constants());
+        cmd->SetComputeRootUnorderedAccessView(32, hamiltonian->surface()->GetGPUVirtualAddress());
+    }
     if (exchange)
         cmd->SetComputeRootUnorderedAccessView(30, exchange->particleQuantities()->GetGPUVirtualAddress());
     if (bulkPressure)
@@ -398,8 +425,9 @@ void FluidSystem::setColliders(const std::vector<FluidCollider> &c, uint32_t dis
 void FluidSystem::setMeshSdf(const MeshSdfAsset &asset) {
     if (hasRecorded)
         throw std::runtime_error("Mesh SDF replacement requires a quiescent fluid system");
-    if (asset.phi.empty() ||
-        uint64_t(asset.dimensions.x) * asset.dimensions.y * asset.dimensions.z != asset.phi.size())
+    if (asset.phi.empty() || asset.dimensions.x < 2 || asset.dimensions.y < 2 || asset.dimensions.z < 2 ||
+        !std::isfinite(asset.minimumSpacing.w) || asset.minimumSpacing.w <= 0 ||
+        uint64_t(asset.dimensions.x) * asset.dimensions.y * asset.dimensions.z + asset.dimensions.w > asset.phi.size())
         throw std::runtime_error("Invalid mesh SDF asset dimensions");
     ComPtr<ID3D12Device> device;
     gpu::check(particles.resource->GetDevice(IID_PPV_ARGS(&device)), "Fluid SDF device");
@@ -822,28 +850,40 @@ void FluidSystem::record(ID3D12GraphicsCommandList *cmd, float dt, const Camera 
     memcpy(static_cast<char *>(colliderData.mapped) + startOffset, colliderTimeline.simulationStart.data(),
            FluidColliderTimeline::sliceBytes);
     colliderOffset = 0;
+    if (hamiltonian)
+        emitterFull = !resetPending && (emittedParticles >= hamiltonian->sourceCapacity() || hamiltonian->full());
     if (emitterFull)
         emitter.enabled = false;
+    double inletFlow = 0;
     if (emitter.enabled && desc.roomPool && steps && !emitterFull) {
         const auto v = emitter.velocity;
         const double speed = std::sqrt(double(v.x) * v.x + double(v.y) * v.y + double(v.z) * v.z);
         if (!std::isfinite(speed) || speed < .01 || speed > 10 || !std::isfinite(emitter.radius) ||
             emitter.radius < .01f || emitter.radius > .5f)
             throw std::runtime_error("Invalid fluid inlet speed/radius");
+        const auto &inletMinimum = hamiltonian ? desc.waveMinimum : desc.minimum;
+        const auto &inletMaximum = hamiltonian ? desc.waveMaximum : desc.maximum;
         for (int axis = 0; axis < 3; ++axis)
             if (!std::isfinite((&emitter.position.x)[axis]) ||
-                (&emitter.position.x)[axis] - emitter.radius < (&desc.minimum.x)[axis] ||
-                (&emitter.position.x)[axis] + emitter.radius > (&desc.maximum.x)[axis])
+                (&emitter.position.x)[axis] - emitter.radius < (&inletMinimum.x)[axis] ||
+                (&emitter.position.x)[axis] + emitter.radius > (&inletMaximum.x)[axis])
                 throw std::runtime_error("Fluid inlet disc leaves the simulation domain");
-        emissionRemainder +=
-            XM_PI * emitter.radius * emitter.radius * speed * advancedSeconds / particleVolume;
+        inletFlow = XM_PI * emitter.radius * emitter.radius * speed;
+    }
+    if (hamiltonian)
+        hamiltonian->prepareTransfers(advancedSeconds, resetPending);
+    if (inletFlow > 0) {
+        emissionRemainder += inletFlow * advancedSeconds / particleVolume;
+        const uint32_t available = hamiltonian ? hamiltonian->sourceCapacity() - uint32_t(emittedParticles)
+                                               : desc.maxParticles - activeParticles;
         const uint32_t count =
-            uint32_t(std::min(double(desc.maxParticles - activeParticles), std::floor(emissionRemainder)));
+            uint32_t(std::min(double(available), std::floor(emissionRemainder)));
         c.emission = {activeParticles, count, uint32_t(emittedParticles), 0};
-        activeParticles += count;
+        if (!hamiltonian)
+            activeParticles += count;
         emittedParticles += count;
         emissionRemainder -= count;
-        emitterFull = activeParticles == desc.maxParticles;
+        emitterFull = hamiltonian ? emittedParticles >= hamiltonian->sourceCapacity() : activeParticles == desc.maxParticles;
         if (emitterFull) {
             emitter.enabled = false;
             emissionRemainder = 0;
@@ -894,11 +934,22 @@ void FluidSystem::record(ID3D12GraphicsCommandList *cmd, float dt, const Camera 
         }
         resetPending = false;
         stepCount = 0;
+        if (hamiltonian) {
+            hamiltonian->reset(cmd);
+            hamiltonian->reseed(cmd, gpuView(), uniforms.resource.Get(), true);
+            bind(cmd);
+            activeParticles = desc.maxParticles; // reusable ID range; occupancy remains GPU-owned
+        }
+    }
+    if (hamiltonian) {
+        hamiltonian->snapshot(cmd);
+        hamiltonian->rebase(cmd);
+        bind(cmd);
     }
     cmd->SetPipelineState(snapshot.Get());
     cmd->Dispatch((desc.maxParticles + 255) / 256, 1, 1);
     gpu::uav(cmd);
-    if (c.emission.y) {
+    if (c.emission.y && !hamiltonian) {
         gpu::Event event(cmd, L"Fluid / swept-disc GPU inlet");
         cmd->SetPipelineState(emit.Get());
         cmd->Dispatch((c.emission.y + 255) / 256, 1, 1);
@@ -999,7 +1050,14 @@ void FluidSystem::record(ID3D12GraphicsCommandList *cmd, float dt, const Camera 
                 bind(cmd);
             }
             // Collider motion only changes the SDF, not particle membership.
-            transferToGrid(cmd, i != 0 || sourceBinsCurrent);
+            if (hamiltonian) {
+                hamiltonian->reseed(cmd, gpuView(), uniforms.resource.Get());
+                const uint32_t start = uint32_t(uint64_t(c.emission.y) * i / steps);
+                const uint32_t end = uint32_t(uint64_t(c.emission.y) * (i + 1) / steps);
+                hamiltonian->advanceFreeWater(cmd, gpuView(), uniforms.resource.Get(), start, end - start, c.emission.z);
+                bind(cmd);
+            }
+            transferToGrid(cmd, !hamiltonian && (i != 0 || sourceBinsCurrent));
             // Capacity transport belongs to an actual simulation substep, not
             // the display-only grid rebuild used for paused edits and reset.
             if (desc.bulkCoupled) {
@@ -1040,6 +1098,11 @@ void FluidSystem::record(ID3D12GraphicsCommandList *cmd, float dt, const Camera 
             // substep or renderer. No readback is used to decide on repair.
             for (uint32_t repair = 0; repair < (desc.cutPressure ? 4u : 1u); ++repair)
                 repairDensity(cmd, repair != 0);
+            if (hamiltonian) {
+                hamiltonian->advance(cmd);
+                hamiltonian->couple(cmd, gpuView(), uniforms.resource.Get());
+                bind(cmd);
+            }
         }
         if (exchange) {
             // Includes G2P, boundary impulses and all contact/density repairs.
@@ -1152,6 +1215,17 @@ void FluidSystem::collectTimings(uint64_t frequency) {
     if (work)
         work->collect(frequency);
 }
+void FluidSystem::collectHamiltonian() {
+    hamiltonian->collect();
+    // GPU admission owns source mass. A blocked stream can exhaust free IDs
+    // before the basin-volume limit; close the valve without deleting water.
+    emittedParticles = hamiltonian->emittedSamples();
+    emitterFull = hamiltonian->full();
+    if (emitterFull) {
+        emitter.enabled = false;
+        emissionRemainder = 0;
+    }
+}
 void FluidSystem::recordValidationReadback(ID3D12GraphicsCommandList *cmd) {
     {
         gpu::Event event(cmd, L"Fluid / validation-only post-step density");
@@ -1199,7 +1273,8 @@ void FluidSystem::recordValidationReadback(ID3D12GraphicsCommandList *cmd) {
 void FluidSystem::validateAndReport(std::ostream &out) {
     out << "{\"milestone\":12,\"transfer\":\""
         << (desc.ballisticTest ? "ballistic-test" : (desc.transfer == FluidTransfer::Flip ? "FLIP" : "APIC"))
-        << "\",\"particles\":" << activeParticles << ",\"initialParticles\":" << desc.initialParticles
+        << "\",\"particles\":" << (hamiltonian ? hamiltonian->activeSamples() : activeParticles)
+        << ",\"initialParticles\":" << desc.initialParticles
         << ",\"capacity\":" << desc.maxParticles << ",\"roomPool\":" << (desc.roomPool ? "true" : "false")
         << ",\"emittedParticles\":" << emittedParticles << ",\"particleVolume\":" << particleVolume
         << ",\"cellSize\":" << desc.gridCellSize << ",\"initialDepth\":" << desc.initialDepth
@@ -1366,7 +1441,7 @@ void FluidSystem::validateAndReport(std::ostream &out) {
                               std::min(std::max({q.x, q.y, q.z}), 0.f));
                 }
                 if (e.w == 5)
-                    d = meshAsset.sample(local);
+                    d = meshAsset.sample(local, collider.meshMinimumSpacing, collider.meshDimensions);
                 if (p[i].positionRadius.w - d > maxSolidPenetration) {
                     maxSolidPenetration = p[i].positionRadius.w - d;
                     penetrationParticle = i;

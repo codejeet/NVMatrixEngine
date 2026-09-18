@@ -85,6 +85,7 @@ float capillaryPressure(int3 liquidCell,int3 airCell) {
 }
 float pressureStencil(uint id) {
     float4 stencil=FaceScratch[id];uint mask=uint(stencil.z);
+    if(stencil.y==0)return 0;
     float sum=0;uint strides[3]={1,Grid.x,Grid.x*Grid.y};
     [unroll]for(uint axis=0;axis<3;++axis) {
         if(mask&(1u<<(axis*2)))sum+=PressureIn[id-strides[axis]];

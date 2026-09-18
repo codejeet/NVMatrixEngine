@@ -6,13 +6,15 @@
 namespace lab {
 using Microsoft::WRL::ComPtr;
 Whitewater::Whitewater(ID3D12Device5 *device, const std::filesystem::path &folder,
-                       const FluidSurface &surface) {
+                       const FluidSurface &surface, const FluidSystem &fluid) {
     auto make = [&](uint64_t size, const wchar_t *name) {
         return gpu::buffer(device, size, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
                            D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name);
     };
     particles = make(capacity * sizeof(Particle), L"Whitewater foam bubble spray particles");
     aabbs = make(capacity * sizeof(D3D12_RAYTRACING_AABB), L"Bubble and spray procedural AABBs");
+    sourceCapacity = fluid.description().maxParticles;
+    sources = make(uint64_t(sourceCapacity) * sizeof(uint32_t), L"Whitewater live surface source IDs");
     const auto grid = surface.brickGrid;
     const uint64_t nodes = uint64_t(grid.x * 8 + 1) * (grid.y * 8 + 1) * (grid.z * 8 + 1);
     if (!nodes || nodes > 65535ull * 128)
@@ -26,7 +28,7 @@ Whitewater::Whitewater(ID3D12Device5 *device, const std::filesystem::path &folde
                             D3D12_RESOURCE_STATE_GENERIC_READ, L"Whitewater constants");
     readback = gpu::buffer(device, 256, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE,
                            D3D12_RESOURCE_STATE_COPY_DEST, L"Whitewater timings and counts");
-    D3D12_ROOT_PARAMETER p[14]{};
+    D3D12_ROOT_PARAMETER p[15]{};
     p[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     for (uint32_t i = 1; i <= 6; ++i) {
         p[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
@@ -36,11 +38,11 @@ Whitewater::Whitewater(ID3D12Device5 *device, const std::filesystem::path &folde
         p[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
         p[i].Descriptor.ShaderRegister = i - 3;
     }
-    for (uint32_t i = 11; i < 14; ++i) {
+    for (uint32_t i = 11; i < 15; ++i) {
         p[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
         p[i].Descriptor.ShaderRegister = i - 5;
     }
-    D3D12_ROOT_SIGNATURE_DESC r{14, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    D3D12_ROOT_SIGNATURE_DESC r{15, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     gpu::check(D3D12SerializeRootSignature(&r, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
                "Whitewater root serialize");
@@ -55,6 +57,7 @@ Whitewater::Whitewater(ID3D12Device5 *device, const std::filesystem::path &folde
         gpu::check(device->CreateComputePipelineState(&d, IID_PPV_ARGS(&out)), name);
     };
     compute("WhitewaterClear", clear);
+    compute("WhitewaterSources", findSources);
     compute("WhitewaterUpdate", update);
     compute("FoamClear", foamClear);
     compute("FoamSplat", foamSplat);
@@ -97,9 +100,8 @@ void Whitewater::record(ID3D12GraphicsCommandList4 *cmd, const FluidSystem &flui
         surface.brickGrid,
         v.grid,
         {fluid.activeParticles, uint32_t(fluid.stepCount), !recorded || fluid.resetThisFrame ? 1u : 0u,
-         fluid.emitter.enabled ? 1u : 0u},
-        {fluid.advancedSeconds, desc.gravity.x, desc.gravity.y, desc.gravity.z},
-        {fluid.emitter.position.x, fluid.emitter.position.y, fluid.emitter.position.z, fluid.emitter.radius}};
+         0},
+        {fluid.advancedSeconds, desc.gravity.x, desc.gravity.y, desc.gravity.z}};
     memcpy(constants.mapped, &c, sizeof(c));
     cmd->SetComputeRootSignature(root.Get());
     cmd->SetComputeRootConstantBufferView(0, constants.resource->GetGPUVirtualAddress());
@@ -117,8 +119,12 @@ void Whitewater::record(ID3D12GraphicsCommandList4 *cmd, const FluidSystem &flui
     cmd->SetComputeRootUnorderedAccessView(11, foam.resource->GetGPUVirtualAddress());
     cmd->SetComputeRootUnorderedAccessView(12, foamHistory[foamIndex].resource->GetGPUVirtualAddress());
     cmd->SetComputeRootUnorderedAccessView(13, foamHistory[foamIndex ^ 1].resource->GetGPUVirtualAddress());
+    cmd->SetComputeRootUnorderedAccessView(14, sources.resource->GetGPUVirtualAddress());
     cmd->SetPipelineState(clear.Get());
     cmd->Dispatch(1, 1, 1);
+    gpu::uav(cmd);
+    cmd->SetPipelineState(findSources.Get());
+    cmd->Dispatch((fluid.activeParticles + 127) / 128, 1, 1);
     gpu::uav(cmd);
     cmd->SetPipelineState(update.Get());
     cmd->Dispatch(capacity / 128, 1, 1);
@@ -190,7 +196,7 @@ void Whitewater::collect(uint64_t frequency) {
     memcpy(counts.data(), static_cast<const char *>(data) + 24, sizeof(counts));
     readback.resource->Unmap(0, &written);
     if (counts[5] || counts[0] + counts[1] + counts[2] > capacity || counts[6] > foamNodes ||
-        counts[7] > 4u * 65536)
+        counts[7] > 4u * 65536 || counts[8] > sourceCapacity)
         throw std::runtime_error("Invalid whitewater state/capacity");
     if (validatePending) {
         range = {0, capacity * sizeof(Particle)};
@@ -228,6 +234,7 @@ void Whitewater::report(std::ostream &out) const {
         << ",\"foamActiveNodes\":" << counts[6] << ",\"foamMaxDensity\":" << float(counts[7]) / 65536.f
         << ",\"foam\":" << counts[0] << ",\"bubbles\":" << counts[1] << ",\"spray\":" << counts[2]
         << ",\"bornLastFrame\":" << counts[3] << ",\"expiredLastFrame\":" << counts[4]
+        << ",\"surfaceSourceParticles\":" << counts[8] << ",\"sourceIndexBytes\":" << uint64_t(sourceCapacity) * 4
         << ",\"invalid\":" << counts[5] << ",\"simulationMs\":" << simulationMs << ",\"blasMs\":" << blasMs
         << ",\"validated\":" << (validated ? "true" : "false") << "}";
 }

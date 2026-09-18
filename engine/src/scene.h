@@ -44,7 +44,8 @@ struct Mesh {
 std::vector<Mesh> makeScene();
 // The opt-in liquid lab appends a static dielectric tank after the gameplay bodies.
 std::vector<Mesh> makePlayScene(bool water = true, bool flat = false, bool glassPit = false,
-                                bool fluidRoom = false, bool boat = false, bool deepPool = false);
+                                bool fluidRoom = false, bool boat = false, bool deepPool = false,
+                                bool largeWaterLab = false, bool oceanLab = false);
 XMFLOAT4X4 prismTransform(float angle);
 // Conservative world-space displacement bound for a rigid object's bounding sphere.
 bool transportMoved(const XMFLOAT4X4 &now, const XMFLOAT4X4 &anchor, float radius);

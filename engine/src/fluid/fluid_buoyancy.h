@@ -7,7 +7,7 @@ namespace lab {
 // force latency), with no additional queue wait.
 class FluidBuoyancy {
   public:
-    FluidBuoyancy(ID3D12Device *, const std::filesystem::path &);
+    FluidBuoyancy(ID3D12Device *, const std::filesystem::path &, bool hamiltonian = false);
     void record(ID3D12GraphicsCommandList *, const FluidSystem &, const FluidSurface &,
                 const std::vector<DirectX::XMFLOAT4> &queries);
     std::vector<DirectX::XMFLOAT4> collect();

@@ -24,7 +24,7 @@ void diagonalize(inout float3x3 a,out float3x3 v) {
 void SurfaceShape(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=uint(Reconstruction.z))return;
     ParticleShape shape;shape.row0=float4(1,0,0,0);shape.row1=float4(0,1,0,0);shape.row2=float4(0,0,1,0);
-    if(Particles[id].velocityFlags.w==0||Collision.y==0){Shapes[id]=shape;return;}
+    if(Particles[id].velocityFlags.w!=1||Collision.y==0){Shapes[id]=shape;return;}
     float3 p=Particles[id].positionRadius.xyz;float radius=SimulationMinimumCell.w*2;
     int3 a=max(0,int3(floor((p-radius-SimulationMinimumCell.xyz)/SimulationMinimumCell.w)));
     int3 b=min(int3(SimulationGrid.xyz)-1,int3(floor((p+radius-SimulationMinimumCell.xyz)/SimulationMinimumCell.w)));

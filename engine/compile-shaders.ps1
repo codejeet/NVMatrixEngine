@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $deps = "$PSScriptRoot/../shared/.deps"
 $dxc = "$deps/dxc-1.9.2607/bin/x64/dxc.exe"
 New-Item -ItemType Directory -Force $OutputDir | Out-Null
+& "$PSScriptRoot/compile-hamiltonian.ps1" -OutputDir $OutputDir
 & $dxc -T cs_6_6 -E BuoyancySample -HV 2021 -O3 "$PSScriptRoot/shaders/fluid/buoyancy.hlsl" -Fo "$OutputDir/BuoyancySample.dxil"
 if ($LASTEXITCODE) { throw 'Buoyancy sample compilation failed' }
 & "$PSScriptRoot/compile-fluid-precision.ps1" -OutputDir $OutputDir
@@ -122,7 +123,7 @@ foreach ($stage in @(@('FGComposite','ps_6_6'),@('FGDepth','cs_6_6'))) {
 }
 & $dxc -T cs_6_6 -E FGDistortion -HV 2021 -O3 "$PSScriptRoot/shaders/lens-distortion.hlsl" -Fo "$OutputDir/FGDistortion.dxil"
 if ($LASTEXITCODE) { throw 'Frame generation lens distortion compilation failed.' }
-foreach ($entry in 'WhitewaterClear','WhitewaterUpdate','FoamClear','FoamSplat','FoamTransport') {
+foreach ($entry in 'WhitewaterClear','WhitewaterSources','WhitewaterUpdate','FoamClear','FoamSplat','FoamTransport') {
   & $dxc -T cs_6_6 -E $entry -HV 2021 -O3 "$PSScriptRoot/shaders/fluid/whitewater.hlsl" -Fo "$OutputDir/$entry.dxil"
   if ($LASTEXITCODE) { throw "Whitewater compilation failed: $entry" }
 }

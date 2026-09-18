@@ -15,6 +15,7 @@ struct FluidSurfaceInput {
     ID3D12Resource *phase = nullptr, *planes = nullptr;
     ID3D12Resource *gridOwned = nullptr;
     float particleVolume = 0;
+    HamiltonianWave *hamiltonian = nullptr;
 };
 // Sparse active work/page mapping, fixed-capacity backing pool and page table. The canonical render
 // surface is trilinear phi (with exact Cartesian-domain clipping for joint phase
@@ -28,7 +29,7 @@ class FluidSurface {
         record(cmd,
                {system.gpuView(), system.description(), system.stepCount, system.changedThisFrame,
                 system.resetThisFrame, system.advancedSeconds, nullptr, nullptr, system.gridOwnedResource(),
-                system.particleVolume},
+                system.particleVolume, system.hamiltonian.get()},
                camera, dt);
     }
     void setImportance(const FluidComplexityGpuView &);
@@ -72,6 +73,8 @@ class FluidSurface {
     };
     gpu::Buffer uniforms, field, map, list, aabbs, counts, arguments, blas, scratch, readback;
     gpu::Buffer shapes;
+    gpu::Buffer freeHeads, freeNext;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> freeClear, freeBin;
     gpu::Buffer phaseHeights;
     gpu::Buffer lodState, lodNext, lodLists, lodReference, lodSnapshot;
     ID3D12Resource *importance = nullptr;

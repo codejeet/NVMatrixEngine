@@ -2,7 +2,7 @@
 #include <d3dcompiler.h>
 #include <cstring>
 namespace lab {
-FluidBuoyancy::FluidBuoyancy(ID3D12Device *device, const std::filesystem::path &folder) {
+FluidBuoyancy::FluidBuoyancy(ID3D12Device *device, const std::filesystem::path &folder, bool hamiltonian) {
     constants = gpu::buffer(device, 256, D3D12_HEAP_TYPE_UPLOAD);
     queries = gpu::buffer(device, capacity * 16, D3D12_HEAP_TYPE_UPLOAD);
     samples = gpu::buffer(device, capacity * 16, D3D12_HEAP_TYPE_DEFAULT,
@@ -10,7 +10,7 @@ FluidBuoyancy::FluidBuoyancy(ID3D12Device *device, const std::filesystem::path &
                           L"Buoyancy / water height and MAC flow");
     readback = gpu::buffer(device, capacity * 16, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE,
                            D3D12_RESOURCE_STATE_COPY_DEST, L"Buoyancy / small body samples only");
-    D3D12_ROOT_PARAMETER p[6]{};
+    D3D12_ROOT_PARAMETER p[8]{};
     p[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     p[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     p[2].ParameterType = p[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
@@ -18,14 +18,18 @@ FluidBuoyancy::FluidBuoyancy(ID3D12Device *device, const std::filesystem::path &
     p[4].ParameterType = p[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     p[4].Descriptor.ShaderRegister = 4;
     p[5].Descriptor.ShaderRegister = 5;
-    D3D12_ROOT_SIGNATURE_DESC desc{6, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    p[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+    p[6].Descriptor.ShaderRegister = 2;
+    p[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    p[7].Descriptor.ShaderRegister = 3;
+    D3D12_ROOT_SIGNATURE_DESC desc{hamiltonian ? 8u : 6u, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     Microsoft::WRL::ComPtr<ID3DBlob> blob, error;
     gpu::check(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
                "Buoyancy root serialize");
     gpu::check(
         device->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&root)),
         "Buoyancy root");
-    auto code = gpu::bytes(folder / "shaders/BuoyancySample.dxil");
+    auto code = gpu::bytes(folder / "shaders" / (hamiltonian ? "BuoyancySampleHamiltonian.dxil" : "BuoyancySample.dxil"));
     D3D12_COMPUTE_PIPELINE_STATE_DESC pipeline{};
     pipeline.pRootSignature = root.Get();
     pipeline.CS = {code.data(), code.size()};
@@ -60,6 +64,10 @@ void FluidBuoyancy::record(ID3D12GraphicsCommandList *cmd, const FluidSystem &fl
     cmd->SetComputeRootUnorderedAccessView(3, view.faces->GetGPUVirtualAddress());
     cmd->SetComputeRootShaderResourceView(4, surface.fieldResource()->GetGPUVirtualAddress());
     cmd->SetComputeRootShaderResourceView(5, surface.mapResource()->GetGPUVirtualAddress());
+    if (fluid.hamiltonian) {
+        cmd->SetComputeRootUnorderedAccessView(6, fluid.hamiltonian->surface()->GetGPUVirtualAddress());
+        cmd->SetComputeRootConstantBufferView(7, fluid.hamiltonian->constants());
+    }
     cmd->SetPipelineState(sample.Get());
     cmd->Dispatch((count + 31) / 32, 1, 1);
     gpu::transition(cmd, samples.resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS,

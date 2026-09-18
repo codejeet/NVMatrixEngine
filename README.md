@@ -1,12 +1,16 @@
 # NVMatrixEngine — Real-Time Game Engine
 
+The [Hamiltonian wave/3D-flow path](engine/HAMILTONIAN_WATER.md) is the Large Water Lab default and optional in the small lab:
+launch with `--water-path=hamiltonian --normal-lens --boat`, or use
+**Play Hamiltonian Water Lab.cmd** in a built runtime.
+
 **A C++20 / DirectX 12 game engine with GPU liquid simulation, path-traced lighting and spectral caustics on NVIDIA RTX GPUs.**
 
 NVMatrixEngine couples **APIC/FLIP fluid simulation** with **DirectX Raytracing (DXR)**: a reconstructed liquid surface participates directly in path-traced reflection, refraction and light-side spectral photon mapping. It includes rigid-body gameplay, an interactive settings UI, audio, a staggered MAC pressure grid, anisotropic particle surface reconstruction, sparse procedural water geometry, DLSS Ray Reconstruction, and optional CUDA and ReSTIR PT modes.
 
 The flagship **Water Lab** is a playable, room-scale pool: open the wall inlet, roll or dive as a sinking glass ball, propel a buoyant boat, and watch animated water redirect light onto the white grid floor. Source, a portable Windows demo, real engine videos, numerical tests and implementation notes are included.
 
-[Download Water Lab v0.1.2](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.2-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
+[Download Water Lab v0.1.3](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.3-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
 
 ![NVMatrixEngine Water Lab: path-traced water, glass and spectral illumination](docs/screenshots/water-room.png)
 
@@ -73,7 +77,7 @@ Water is simulated in three dimensions, not as a displaced plane. Simulation par
 
 The default room starts with approximately **100,000 particles**. Settings reserve up to **1 million particles**, expose MAC cell spacing and simulation frequency, and keep filling bounded: the inlet closes at capacity instead of silently deleting water. Higher capacity is not the same as higher active particle count.
 
-The main release launcher uses the **DX12 uniform-grid baseline**. CUDA and adaptive modes are opt-in because their additional machinery is not yet a demonstrated end-to-end speedup in this scene. The larger deep-water pool is an optional stress/demo preset, not the default performance target.
+The main release launcher uses the **DX12 uniform-grid baseline**. CUDA and adaptive modes are opt-in because their additional machinery is not yet a demonstrated end-to-end speedup in this scene. The Large and Ocean launchers use Hamiltonian waves with fixed fluid cell sizes and local 3D activity regions. Optional CUDA/deep-pool experiments remain in the source and are excluded from this portable package.
 
 **Deep pool — a larger body of water with calmer interior regions:**
 
@@ -83,7 +87,7 @@ https://github.com/user-attachments/assets/74b52c64-3163-4d68-ab98-331f22f1a4bf
 
 ### Try it
 
-1. Download the ZIP from the [v0.1.2 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.2-preview).
+1. Download the ZIP from the [v0.1.3 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.3-preview).
 2. Extract the **entire** folder to a writable location; do not run inside the ZIP.
 3. Open **Play Water Lab.cmd**, or double-click `NVMatrixFluidLab.exe` for the default water room.
 4. Press **Esc** for DLSS RR Quality/Balanced/Performance, frame generation, lighting, lens, buoyancy, water quality, and music settings.
@@ -92,10 +96,11 @@ No installer, administrator access, CUDA Toolkit, Visual Studio, or SDK download
 
 | Controls | Action |
 | --- | --- |
-| WASD / Space | Roll the glass ball / jump |
+| WASD / Space | Move / jump; hold Space underwater to swim upward |
 | Right-drag / wheel | Orbit or look / zoom |
 | Tab / Ctrl | First-person view / dive |
-| T / I | Toggle the wall inlet / inspect the inlet |
+| T / I | Toggle the inlet / inlet view or ocean overview |
+| Y | Toggle ocean day/night |
 | E | Interact, grab, or board/exit the boat near it |
 | W/S, A/D aboard | Thrust and steering |
 | P / period / B | Pause water / single step / reset water |
@@ -104,15 +109,15 @@ No installer, administrator access, CUDA Toolkit, Visual Studio, or SDK download
 
 The camera defaults to a **90° diagonal FOV**, adjustable in settings for both the normal lens and optional equisolid fisheye. The fisheye models a lens projection, not a full compound lens assembly. **Both lens modes support frame generation**; fisheye supplies DLSS with a cached bidirectional distortion map.
 
-The glass ball starts as **solid glass in Sink mode (2,500 kg/m³)** from physics construction onward, including in the packaged demo. Esc → Ball buoyancy switches to the lighter hollow Float mode without resetting the scene. The selected mode survives chamber resets; a new session starts in Sink.
+In the indoor labs, the glass ball starts as **solid glass in Sink mode (2,500 kg/m³)** from physics construction onward. The ocean preset starts with a lighter hollow ball. Esc → Ball buoyancy switches to the lighter hollow Float mode without resetting the scene. The selected mode survives chamber resets; a new session uses its preset’s default.
 
 ## Hardware and performance
 
 - Windows 11 x64 and a high-end NVIDIA RTX GPU are the intended platform.
-- Development runs use an **RTX 5090**. The v0.1.2 package uses the existing build without a fresh release-validation run. Other GPUs are not certified by this preview.
+- Development runs use an **RTX 5090**. The v0.1.3 package is rebuilt and validated on that development machine. Other GPUs are not certified by this preview.
 - DLSS feature availability is queried at runtime. Frame generation depends on GPU, driver, OS configuration, and supported presentation mode; it does not accelerate simulation or raw rendering.
 - Both normal and fisheye lenses support FG. The HUD reports actual presentations so you can see whether extra frames are being generated. See [validation scope](docs/VALIDATION.md).
-- Optional CUDA kernels are built for SM 86, 89, and 120. This is architecture coverage, not evidence of equivalent performance or validation on every card.
+- This portable release uses DX12 fluid simulation. Optional CUDA experiments remain available in source builds.
 - Resolution, active particles, fluid depth, inlet activity, photon budget, and experimental solvers materially affect frame time. There is **no blanket 60 FPS guarantee**.
 
 The engine reports raw rendering/simulation timings separately from generated presentation frames. See [release validation and measurement scope](docs/VALIDATION.md). The project prioritizes reproducible comparisons over multiplying an FPS counter by the frame-generation factor.
@@ -149,3 +154,7 @@ For a paper, presentation or benchmark discussion, cite the software and identif
 Built around original engine integration with NVIDIA Streamline/DLSS, NVAPI, RTXDI PT, the DirectX 12 Agility SDK, Bullet, RmlUi, FreeType, and miniaudio. Spectral conversion uses the [CIE 1931 standard-observer dataset](https://doi.org/10.25039/CIE.DS.xvudnb9b). The demo includes a custom soundtrack; startup selection is randomized and volume defaults low.
 
 Public source is available for portfolio review; **an open-source license has not been granted**. See [COPYRIGHT.md](COPYRIGHT.md) and [third-party notices](THIRD_PARTY_NOTICES.md). Third-party components and the CIE dataset retain their own licenses. SDK caches and development credentials are not included in this repository.
+
+The new [Large Water Lab](engine/HAMILTONIAN_WATER.md#large-water-lab) keeps the Water Lab scene with four times the floor area and 1.5 m default depth. Launch [Play Large Water Lab.cmd](engine/Play%20Large%20Water%20Lab.cmd).
+
+For the outdoor scene, launch [Play Extra Large Water Lab.cmd](engine/Play%20Extra%20Large%20Water%20Lab.cmd): a 256 × 256 m Hamiltonian ocean with 6 m offshore depth, a beach island, palms, pier, boat, and HDRI day/night lighting (`Y`). [Controls, physical assumptions and limits](engine/OCEAN_LAB.md).

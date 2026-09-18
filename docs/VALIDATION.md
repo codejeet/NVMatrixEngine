@@ -1,5 +1,16 @@
 # Release validation
 
+## Version 0.1.3: fixed-grid Hamiltonian ocean
+
+The Windows Release executable and all 436 current shader outputs were rebuilt after removing dynamic contact-cell refinement. Every rebuilt shader matches the saved pre-refinement shader with the same name byte for byte. The source retains fixed fluid cell sizes and the existing Hamiltonian/3D activity regions.
+
+- 241 Node reference/contract tests passed; the whitewater and packaging checks were rerun after the final source cleanup.
+- The native experience fixture passed island/pier collision, hull draft, propulsion/steering, camera bounds, sink/float physics and sustained swimming.
+- Hamiltonian GPU fixtures passed on 32, 64 and 128 sample grids, including FFT/dispersion, nonlinear response, feedback, source transfer and adaptive activity selection.
+- All nine ocean/indoor GPU cases passed, including day/night, outlet controls, the 600-frame swimming/boat voyage, ReSTIR PT, both indoor defaults and inlet whitewater optics. Fresh results are in [ocean-validation.json](../engine/ocean-validation.json). Ocean surface storage is 42,834,756 bytes with no contact-refinement allocation.
+
+The portable package uses the DX12 backend; optional CUDA experiments remain in source builds. Packaging checks asset consistency, vendor signatures, archive hashes and relocated-extraction runtime tests. The adjacent `*.verification.json` is the authoritative result for the downloadable ZIP, including whether actual generated presentations were observed. Tests use the RTX 5090 development machine and do not certify other GPUs, a clean Windows installation or the D3D12 debug layer.
+
 ## Version 0.1.2: validation skipped
 
 This update packages the existing standalone executable and updated shaders. At the maintainer's request, no new build, test suite, signature check, ZIP extraction check or runtime-validation run was performed for this release. The archive still includes a per-file SHA-256 manifest and has an adjacent archive checksum.

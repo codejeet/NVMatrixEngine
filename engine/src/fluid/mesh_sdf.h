@@ -104,22 +104,25 @@ struct MeshSdfAsset {
         return out;
     }
     float sample(DirectX::XMFLOAT3 p) const {
+        return sample(p, minimumSpacing, dimensions);
+    }
+    float sample(DirectX::XMFLOAT3 p, DirectX::XMFLOAT4 origin, DirectX::XMUINT4 size) const {
         uint32_t c[3];
         float f[3], outside2 = 0;
         for (int a = 0; a < 3; ++a) {
-            float g = ((&p.x)[a] - (&minimumSpacing.x)[a]) / minimumSpacing.w;
-            float q = std::clamp(g, 0.f, float((&dimensions.x)[a] - 1));
+            float g = ((&p.x)[a] - (&origin.x)[a]) / origin.w;
+            float q = std::clamp(g, 0.f, float((&size.x)[a] - 1));
             outside2 += (g - q) * (g - q);
-            c[a] = std::min(uint32_t(q), (&dimensions.x)[a] - 2);
+            c[a] = std::min(uint32_t(q), (&size.x)[a] - 2);
             f[a] = q - c[a];
         }
         float value = 0;
         for (uint32_t i = 0; i < 8; ++i) {
             uint32_t x = i & 1, y = (i >> 1) & 1, z = i >> 2;
-            value += phi[((c[2] + z) * dimensions.y + c[1] + y) * dimensions.x + c[0] + x] *
+            value += phi[size.w + ((c[2] + z) * size.y + c[1] + y) * size.x + c[0] + x] *
                      (x ? f[0] : 1 - f[0]) * (y ? f[1] : 1 - f[1]) * (z ? f[2] : 1 - f[2]);
         }
-        return value + std::sqrt(outside2) * minimumSpacing.w;
+        return value + std::sqrt(outside2) * origin.w;
     }
 };
 } // namespace lab

@@ -1,4 +1,7 @@
 #include "common.hlsli"
+#if FLUID_HAMILTONIAN
+#include "hamiltonian-shared.hlsli"
+#endif
 #include "work-shared.hlsli"
 #if FLUID_SPACETIME
 #include "spacetime-shared.hlsli"
@@ -9,6 +12,10 @@ void gatherFace(uint id) {
     uint3 cell=uint3(k%(Grid.x+1),(k/(Grid.x+1))%(Grid.y+1),k/((Grid.x+1)*(Grid.y+1)));
     uint3 extent=Grid.xyz;extent[axis]++;
     if(any(cell>=extent)){Faces[id]=0;return;}
+#if FLUID_HAMILTONIAN
+    float3 world=DomainMinCell.xyz+(float3(cell)+faceOffset(axis))*DomainMinCell.w;
+    if(WaveMass.w!=0&&waveEdge(world.xz)<-1.5*DomainMinCell.w){Faces[id]=0;return;}
+#endif
     float3 gridPosition=float3(cell)+faceOffset(axis);
     int3 lo=int3(floor(gridPosition-1.5)),hi=int3(ceil(gridPosition+1.5))-1;
     lo=max(lo,0);hi=min(hi,int3(Grid.xyz)-1);
@@ -77,7 +84,7 @@ void Extrapolate(uint3 tid:SV_DispatchThreadID) {
 [numthreads(128,1,1)]
 void G2P(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=Counts.x)return;
-    FluidParticle p=Particles[id];if(!p.velocityFlags.w)return;
+    FluidParticle p=Particles[id];if(p.velocityFlags.w!=1)return;
     float3 pic=0,delta=0,rows[3];float h=DomainMinCell.w;
     for(uint axis=0;axis<3;++axis) {
         float3 gp=(p.positionRadius.xyz-DomainMinCell.xyz)/h-faceOffset(axis);

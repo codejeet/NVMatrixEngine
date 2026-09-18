@@ -10,3 +10,33 @@ Captured from the standalone NVMatrixEngine build with `engine/capture-portfolio
 | `underwater.png` | First-person beneath 1.4 m water, 400k particles and live inlet; frame 180 |
 
 PNG files are lossless conversions of the application's PPM capture with no retouching, compositing or AI generation. The HUD FPS in a bounded capture is not a controlled benchmark and should not be used as one.
+
+`hamiltonian-water.png` was captured separately with `engine/test-hamiltonian.ps1`:
+RTX 5090, 960×540 output, DLSS RR Balanced, frame generation off, HOS-2 with
+epsilon 0.2, frame 96. It uses the live coupled wave/3D solver and the same
+lossless PPM-to-PNG conversion. See [validation](../../engine/hamiltonian-validation.json).
+
+`large-water-lab.png` shows the new 24 × 28 m Water Lab with 1.5 m initial water depth, Hamiltonian HOS-2 and the expanded inspection camera. Captured from the running RTX 5090 build at 1280×720, DLSS Balanced, frame generation off, after 120 frames:
+
+```powershell
+NVMatrixFluidLab.exe --water-lab=large --water-path=hamiltonian --normal-lens --boat --fluid-view --quality=balanced --frame-gen=off --width=1280 --height=720 --frames=120 --capture --name=large-water-overview
+```
+
+The PNG is a lossless conversion of the runtime PPM capture. [Performance and validation](../../engine/large-water-validation.json).
+
+`hamiltonian-inlet.png` shows water emitted from the large Water Lab spout, reconstructed from simulated free-water particles. Captured at 960×540, DLSS Balanced, frame generation off, using `--water-lab=large --water-path=hamiltonian --inlet-view --fluid-emitter --normal-lens --boat --frames=120`.
+
+`hamiltonian-adaptive-regions.png` shows the activity-driven implementation after 600 frames, with separate 3D regions around wet solids and calm water handled by waves. Captured at 1280×720 with `--water-lab=large --water-path=hamiltonian --fluid-view --normal-lens --boat --quality=balanced --frame-gen=off --frames=600 --capture`. This is a visual regression capture, not an isolated performance measurement.
+
+`ocean-island-day.png` and `ocean-island-night.png` show the 256 × 256 m outdoor
+Ocean Island preset. Captured on RTX 5090 at 1280×720, DLSS RR Balanced, frame
+generation off, after 180 frames using `engine/test-ocean.ps1`. Day uses the
+player camera; night uses `--fluid-view --time-of-day=night` and shows the five
+warm pier/path lanterns, their ground illumination and water reflections. These are lossless
+PPM-to-PNG conversions. [Scene and physical limits](../../engine/OCEAN_LAB.md),
+[GPU validation](../../engine/ocean-validation.json).
+
+`ocean-boat-whitewater.png` shows the 5.8 m boat after the 600-frame ocean
+swimming and powered-voyage fixture, at the same rendering settings. The wake
+uses the 128² Hamiltonian grid and simulated secondary foam/bubbles/spray.
+The 1 m 3D grid still limits bow detail; this is not a paper-quality comparison.

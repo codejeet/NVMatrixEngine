@@ -26,10 +26,13 @@ class Hud final : public Rml::EventListener {
     float musicVolume = .15f;
     float laserWavelength = 532;
     std::string fluidStatus;
+    std::string waterFillStatus;
     std::string complexityStatus;
     std::string rendererStatus;
+    bool largeWaterLab = false;
     bool fluidRoom = false, wallWater = false, waterFull = false, nearbyValve = false;
     bool requestedWallWater = false;
+    bool hamiltonianWater = false;
     uint32_t frameMultiplier = 1, maxFrameMultiplier = 1;
     uint64_t renderedFrames = 0, presentedFrames = 0;
     uint32_t renderWidth = 0, renderHeight = 0, outputWidth = 0, outputHeight = 0;

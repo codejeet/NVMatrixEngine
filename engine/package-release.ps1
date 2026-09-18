@@ -1,7 +1,7 @@
 param(
-  [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineCUDA/build",
+  [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineHgi/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
-  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.2-preview',
+  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.3-preview',
   [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
   [switch]$AllowUnverifiedFrameGeneration,
   [switch]$SkipValidation
@@ -20,8 +20,10 @@ if ($LASTEXITCODE -or $commit -notmatch '^[a-f0-9]{40}$') { throw 'Commit the so
 $dirty = & git -c "safe.directory=$gitRepo" -C $gitRepo status --porcelain
 if ($LASTEXITCODE -or $dirty) { throw 'Package only a clean committed source tree.' }
 $cache = Get-Content "$BuildDir/CMakeCache.txt" -Raw
-if ($cache -notmatch 'NVMATRIXENGINE_CUDA_FLUID:BOOL=ON') { throw 'This preview package requires the optional CUDA build.' }
-foreach ($arch in @('86','89','120')) {
+$cudaEnabled = $cache -match 'NVMATRIXENGINE_CUDA_FLUID:BOOL=ON'
+$cudaArchitectures = @()
+if ($cudaEnabled) { $cudaArchitectures = @(86,89,120) }
+foreach ($arch in $cudaArchitectures) {
   if ($cache -notmatch "CMAKE_CUDA_ARCHITECTURES:[^=]+=[^\r\n]*\b$arch\b") { throw "Release CUDA architecture missing: $arch" }
 }
 $archiveName = "NVMatrixEngine-$Version-win64.zip"
@@ -32,7 +34,8 @@ foreach ($target in @($archive,"$archive.sha256","$archive.verification.json")) 
 $nvidia = @('sl.interposer.dll','sl.common.dll','sl.dlss_d.dll','sl.dlss.dll',
   'nvngx_dlss.dll','nvngx_dlssd.dll','sl.dlss_g.dll','nvngx_dlssg.dll','sl.reflex.dll','sl.pcl.dll')
 $payload = @('NVMatrixFluidLab.exe','WinPixEventRuntime.dll','D3D12/D3D12Core.dll',
-  'assets/CIE_xyz_1931_2deg.csv','ui/lab.rml','ui/lab.rcss','ui/Poppins-Regular.ttf','shaders/ui.hlsl') + $nvidia
+  'assets/CIE_xyz_1931_2deg.csv','assets/ocean/day.hdr','assets/ocean/night.hdr','assets/ocean/README.md',
+  'ui/lab.rml','ui/lab.rcss','ui/Poppins-Regular.ttf','shaders/ui.hlsl') + $nvidia
 $payload += @(Get-ChildItem "$runtime/shaders" -Filter '*.dxil' -File | ForEach-Object { "shaders/$($_.Name)" })
 if (@($payload | Where-Object { $_ -like '*.dxil' }).Count -lt 30) { throw 'Compile the renderer shaders first.' }
 foreach ($cue in @('tick','rotate','dock','grab','throw','jump','unlock','click','victory')) { $payload += "assets/audio/$cue.wav" }
@@ -43,8 +46,8 @@ foreach ($relative in $payload) {
   }
 }
 if (!$SkipValidation) {
-  foreach ($relative in @('ui/lab.rml','ui/lab.rcss')) {
-    if ((Get-FileHash "$PSScriptRoot/$relative").Hash -ne (Get-FileHash "$runtime/$relative").Hash) { throw "Stale runtime UI: $relative" }
+  foreach ($relative in @('ui/lab.rml','ui/lab.rcss','assets/ocean/day.hdr','assets/ocean/night.hdr','assets/ocean/README.md')) {
+    if ((Get-FileHash "$PSScriptRoot/$relative").Hash -ne (Get-FileHash "$runtime/$relative").Hash) { throw "Stale runtime asset: $relative" }
   }
   if ((Get-FileHash "$runtime/assets/CIE_xyz_1931_2deg.csv").Hash.ToLowerInvariant() -ne 'fa663e3535a7e0763a745993a1f0a192eb0275ac46ad2d1befd7626841e713c1') { throw 'CIE dataset differs from its licensed source.' }
 }
@@ -82,10 +85,16 @@ Copy-Payload "$deps/bin/x64/nvngx_dlss.license.txt" 'licenses/nvngx_dlss.license
 Copy-Payload "$deps/bin/x64/reflex.license.txt" 'licenses/reflex.license.txt'
 Copy-Payload "$deps/agility-1.619.5/LICENSE.txt" 'licenses/Agility-LICENSE.txt'
 Copy-Payload "$deps/agility-1.619.5/LICENSE-CODE.txt" 'licenses/Agility-LICENSE-CODE.txt'
-Copy-Payload "$CudaToolkit/EULA.txt" 'licenses/CUDA-EULA.txt'
+if ($cudaEnabled) { Copy-Payload "$CudaToolkit/EULA.txt" 'licenses/CUDA-EULA.txt' }
 Copy-Payload "$vs/Licenses/1033/Redist.txt" 'licenses/Microsoft-VC-REDIST.txt'
 foreach ($file in @('README.md','COPYRIGHT.md','THIRD_PARTY_NOTICES.md','CITATION.cff')) { Copy-Payload "$repo/$file" $file }
-foreach ($file in Get-ChildItem "$repo/release" -File | Where-Object { $_.Extension -in '.cmd','.txt' }) { Copy-Payload $file.FullName $file.Name }
+foreach ($file in Get-ChildItem "$repo/release" -File | Where-Object { $_.Extension -in '.cmd','.txt' }) {
+  if (!$cudaEnabled -and $file.Name -in @('Play CUDA Water Lab.cmd','Play Deep Pool.cmd','Play Narrow Band Deep Pool.cmd')) { continue }
+  Copy-Payload $file.FullName $file.Name
+}
+foreach ($file in @('README.md','HAMILTONIAN_WATER.md','OCEAN_LAB.md')) { Copy-Payload "$PSScriptRoot/$file" "engine/$file" }
+Copy-Payload "$PSScriptRoot/assets/ocean/README.md" 'engine/assets/ocean/README.md'
+Copy-Payload "$repo/release/NOTES.md" 'release/NOTES.md'
 foreach ($file in Get-ChildItem "$repo/docs" -Recurse -File | Where-Object { $_.Extension -in '.md','.png','.gif' }) {
   $relative = $file.FullName.Substring($repo.Length + 1).Replace('\','/')
   Copy-Payload $file.FullName $relative
@@ -93,7 +102,7 @@ foreach ($file in Get-ChildItem "$repo/docs" -Recurse -File | Where-Object { $_.
 $files = @(Get-ChildItem $stage -Recurse -File | Sort-Object FullName | ForEach-Object {
   [ordered]@{ path=$_.FullName.Substring($stage.Length + 1).Replace('\','/'); bytes=$_.Length; sha256=(Get-FileHash $_.FullName).Hash.ToLowerInvariant() }
 })
-[ordered]@{ product='NVMatrixEngine'; version=$Version; sourceCommit=$commit; cudaArchitectures=@(86,89,120);
+[ordered]@{ product='NVMatrixEngine'; version=$Version; sourceCommit=$commit; cudaEnabled=$cudaEnabled; cudaArchitectures=$cudaArchitectures;
   createdUtc=[DateTime]::UtcNow.ToString('o'); files=$files } | ConvertTo-Json -Depth 6 |
   Set-Content "$stage/release-manifest.json" -Encoding UTF8
 
@@ -142,7 +151,7 @@ $checks = @()
 $observed = @{}
 $requiredModules = @('sl.interposer.dll','sl.common.dll','sl.dlss_d.dll','nvngx_dlssd.dll',
   'sl.dlss_g.dll','nvngx_dlssg.dll','msvcp140.dll','vcruntime140.dll')
-function Run-Bounded([string]$Name,[string]$Arguments,[int]$Frames,[switch]$ObserveModules) {
+function Run-Bounded([string]$Name,[string]$Arguments,[int]$Frames,[switch]$ObserveModules,[switch]$Ocean) {
   $started = [DateTime]::UtcNow
   $p = Start-Process "$testRoot/NVMatrixFluidLab.exe" -ArgumentList $Arguments -WorkingDirectory $work -PassThru
   $null = $p.Handle
@@ -177,7 +186,7 @@ function Run-Bounded([string]$Name,[string]$Arguments,[int]$Frames,[switch]$Obse
   if ($r.frames -ne $Frames -or $r.dlssEvaluations -ne $Frames -or !$r.fluidSurface.surfaceBricks -or !$r.waterPhotonEntries) { throw "Incomplete fluid rendering: $Name" }
   if ((Get-Item "$testRoot/$Name.game.json").LastWriteTimeUtc -lt $started) { throw "Stale gameplay report: $Name" }
   $g = Get-Content "$testRoot/$Name.game.json" -Raw | ConvertFrom-Json
-  if ($g.ballFloats -ne $false -or [Math]::Abs($g.ballDensityKgM3 - 2500) -gt .01 -or $g.ballMassKg -lt 3000) {
+  if (!$Ocean -and ($g.ballFloats -ne $false -or [Math]::Abs($g.ballDensityKgM3 - 2500) -gt .01 -or $g.ballMassKg -lt 3000)) {
     throw "Packaged water avatar did not default to solid sinking glass: $Name"
   }
   Copy-Item "$testRoot/NVMatrixEngine.log" "$work/$Name.log"
@@ -204,25 +213,36 @@ if (!$fgVerified) {
 foreach ($module in $requiredModules) { if (!$observed.ContainsKey($module)) { throw "Did not observe packaged module: $module" } }
 $checks += 'DLSS FG / Reflex initialization and app-local vendor DLL loading'
 if ($fgVerified) { $checks += 'Actual DLSS 2x generated presentations' }
+$narrowEvidence = $null
+if ($cudaEnabled) {
 $cuda = Run-Bounded 'release-cuda' "$common --fluid-backend=cuda --fluid-cuda-graphs=on --frames=96 --frame-gen=off --name=release-cuda" 96
 if ($cuda.fluid.backend -ne 'cuda' -or !$cuda.fluid.cuda.graphReplays -or $cuda.fluid.cuda.rejectedFrames) { throw 'CUDA graph smoke test failed.' }
 $checks += 'CUDA uniform graph-replay water (96 frames)'
 $narrow = Run-Bounded 'release-narrow' '--fluid-deep-pool --boat --normal-lens --fluid-narrow-band --fluid-validate --width=1280 --height=720 --quality=balanced --frames=96 --frame-gen=off --name=release-narrow' 96
 if (!$narrow.fluid.cuda.narrowBand -or !$narrow.fluid.narrowBandOwnership.gridVolumeM3 -or $narrow.fluid.active -ge $narrow.fluid.particles -or $narrow.fluid.particleAuthority.relativeVolumeError -gt 1e-11 -or $narrow.fluidProbes.badRoots -or $narrow.fluidProbes.truncated) { throw 'Live narrow-band smoke/conservation failed.' }
 $checks += 'Deep-pool CUDA live particle retirement, conservation and optical validation (96 frames)'
+$narrowEvidence = [ordered]@{ activeParticles=$narrow.fluid.active; gridVolumeM3=$narrow.fluid.narrowBandOwnership.gridVolumeM3; relativeVolumeError=$narrow.fluid.particleAuthority.relativeVolumeError }
+}
+foreach ($scene in @('large','ocean')) {
+  $name = "release-$scene"
+  $r = Run-Bounded $name "--water-lab=$scene --boat --normal-lens --width=1280 --height=720 --quality=balanced --frames=180 --frame-gen=off --name=$name" 180 -Ocean:($scene -eq 'ocean')
+  if ($r.waterPath -ne 'hamiltonian' -or $r.hamiltonian.nonfinite -or $r.hamiltonian.boundaryOverflow -or !$r.hamiltonian.boundarySeeded) { throw "Invalid packaged Hamiltonian water: $scene" }
+  if ($scene -eq 'ocean' -and (!$r.oceanLab -or $r.fluid.initialDepth -ne 6 -or $r.fluidSurface.allocatedBytes -gt 50000000)) { throw 'Invalid packaged fixed-grid ocean.' }
+  $checks += "Hamiltonian $scene water (180 frames)"
+}
 $pt = Run-Bounded 'release-restir' "$common --restir-pt --frames=96 --frame-gen=off --name=release-restir" 96
 if (!$pt.restirPT.enabled -or !$pt.restirPT.pixelsLastFrame) { throw 'ReSTIR PT was not active in its smoke test.' }
 $checks += 'Optional ReSTIR PT room render (96 frames)'
 $hash = (Get-FileHash $candidate).Hash.ToLowerInvariant()
 "$hash  $archiveName" | Set-Content "$candidate.sha256" -Encoding ASCII
 [ordered]@{ archive=$archiveName; sourceCommit=$commit; sha256=$hash; zipBytes=(Get-Item $candidate).Length;
-  payloadFiles=$files.Count+1; verifiedUtc=[DateTime]::UtcNow.ToString('o'); adapter=$room.adapter;
+  payloadFiles=$files.Count+1; validationStatus='passed'; validationSkipped=$false; verifiedUtc=[DateTime]::UtcNow.ToString('o'); adapter=$room.adapter;
   windowsVersion=[Environment]::OSVersion.Version.ToString(); checks=@('ZIP round-trip SHA-256')+$checks;
   sinkingBallVerified=$true; ballDensityKgM3=2500;
   generatedPresentations=$fg.frameGeneration.extraPresents; frameGenerationOutputVerified=$fgVerified;
   knownIssues=@($(if (!$fgVerified) {'FG enabled with status 0 but no verified extra presentations; also reproduced with the predecessor executable on this PC.'}));
   appLocalModules=@($observed.Keys | Sort-Object);
-  narrowBand=[ordered]@{ activeParticles=$narrow.fluid.active; gridVolumeM3=$narrow.fluid.narrowBandOwnership.gridVolumeM3; relativeVolumeError=$narrow.fluid.particleAuthority.relativeVolumeError };
+  cudaEnabled=$cudaEnabled; narrowBand=$narrowEvidence;
   limitations='Same RTX 5090 development PC, relocated extraction. Not clean-OS, cross-GPU, performance or D3D12 debug-layer certification.' } |
   ConvertTo-Json -Depth 6 | Set-Content "$candidate.verification.json" -Encoding UTF8
 New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($archive)) | Out-Null

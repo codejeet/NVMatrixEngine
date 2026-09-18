@@ -1,26 +1,11 @@
-# NVMatrixEngine 0.1.2 — Fisheye DLSS and lighting improvements
+# NVMatrixEngine 0.1.3 — Hamiltonian water and Ocean Island
 
-NVMatrixEngine is a C++20 / DirectX 12 game engine with GPU liquid simulation, path-traced lighting and spectral caustics. Water Lab is the playable demo: a pool with a wall inlet, sinking glass ball, powered boat and underwater views.
+This release restores the working ocean simulation from before dynamic cell sizing around rigid bodies. The ocean uses fixed 1 m fluid cells and a 2 m wave grid. Hamiltonian waves handle calm regions, while body interactions and complex flow activate existing 3D simulation regions. The unstable local refinement solver and its feedback are removed.
 
-## Changes in 0.1.2
+The release includes the larger indoor lab and the 256 × 256 m ocean with 6 m offshore depth, a beach island, pier, day/night HDR environments and night lanterns. It retains the larger powered boat, simulated foam/bubbles/spray, underwater Space propulsion, filling controls and shared camera/player controls. Small Water Lab defaults to legacy DX12 water; Large and Ocean default to Hamiltonian water.
 
-- **Fisheye frame generation:** both normal and fisheye cameras support DLSS FG. A cached bidirectional lens-distortion map supplies the fisheye projection to DLSS while preserving the separate HUD composition.
-- **Separate FPS counters:** the HUD shows Render FPS and DLSS output FPS using actual presented-frame counts, plus RR/FG status.
-- **DLSS presets in Esc:** switch Ray Reconstruction upscaling between Quality, Balanced and Performance without resetting the water. The settings display the actual input/output resolution.
-- **Cheaper diffuse lighting:** contribution-weighted Lambertian visibility sampling reduces shadow-ray work with probability compensation. Water shadow intersections can stop once a surface crossing is established; camera and photon intersections retain refined roots. See the [implementation and earlier measurements](https://github.com/codejeet/NVMatrixEngine/blob/v0.1.2-preview/engine/LAMBERTIAN_REDUCTION.md).
-- **Camera and launcher:** 90° default diagonal FOV, shared forward/inverse fisheye mapping, and a development launcher that handles WSL UNC paths and locates the available CUDA build.
-- **Game-engine branding:** updated README, bundled instructions and software citation metadata.
+Download **NVMatrixEngine-0.1.3-preview-win64.zip**, extract the whole folder, and open **Play Water Lab.cmd**, **Play Large Water Lab.cmd** or **Play Extra Large Water Lab.cmd**. The portable DX12 build includes runtime dependencies. Optional CUDA and old deep-pool experiments remain in source builds and are excluded from this package.
 
-## Run
+Target: Windows 11 x64, high-end NVIDIA RTX GPU and compatible driver. Validation uses the RTX 5090 development PC; it does not certify other GPUs or a clean Windows installation. The source and shaders are rebuilt, with native numerical tests, nine ocean/indoor render cases and portable tests after extracting the ZIP to a different directory. The adjacent verification JSON records the checks and checksum for this exact archive.
 
-Download **NVMatrixEngine-0.1.2-preview-win64.zip**, extract the entire folder, and open **Play Water Lab.cmd**. The portable build includes its runtime dependencies; no installer, administrator access or CUDA Toolkit is required. GitHub's source-code ZIP does not contain the executable.
-
-Target: Windows 11 x64, a high-end NVIDIA RTX GPU and compatible driver. The default launcher uses DX12 water simulation, Balanced DLSS and automatic frame generation where supported. Both lens modes are available in Esc. See `START-HERE.txt` for controls.
-
-## Packaging and scope
-
-**Release validation was skipped for this update.** This archive packages the existing executable and updated shaders without a new build, relocated-extraction test or runtime-validation run. The adjacent `.verification.json` explicitly records `validationStatus: "skipped"`; earlier development results are not fresh validation of this ZIP.
-
-The ZIP includes dependency notices, a per-file manifest and the custom soundtrack. Its source commit and SHA-256 checksum identify the package. Development has used an RTX 5090; this release does not certify other hardware or a clean Windows installation.
-
-Frame generation adds presentation frames; it does not accelerate simulation or raw rendering. Performance varies with resolution, active particles, fluid depth and lighting. CUDA/adaptive modes remain experimental, and ReSTIR PT currently covers opaque-primary diffuse indirect paths. Full ReSTIR BDPT remains future work.
+DLSS frame generation initialization and app-local DLL loading are checked. Additional generated presentations may remain unverified on this machine; consult `frameGenerationOutputVerified` in the verification report. Generated frames do not increase simulation speed. Wakes and hull contact remain limited by the fixed grid; this is a hybrid engine integration, not a reproduction of the paper's complete rendering pipeline.

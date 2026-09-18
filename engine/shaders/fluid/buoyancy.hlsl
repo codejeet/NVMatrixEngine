@@ -6,6 +6,10 @@ cbuffer BuoyancyFrame:register(b0) {
 StructuredBuffer<float4> Queries:register(t0);
 RWStructuredBuffer<float4> Samples:register(u0);
 RWStructuredBuffer<float4> Faces:register(u1);
+#if FLUID_HAMILTONIAN
+#define WAVE_DATA_REGISTER u2
+#include "hamiltonian-shared.hlsli"
+#endif
 float3 flow(float3 p) {
     uint stride=(Grid.x+1)*(Grid.y+1)*(Grid.z+1);float3 velocity=0;
     [unroll]for(uint axis=0;axis<3;++axis) {
@@ -21,10 +25,18 @@ float3 flow(float3 p) {
         }
         velocity[axis]=w>1e-5?v/w:0;
     }
+#if FLUID_HAMILTONIAN
+    velocity=lerp(waveVelocity(p),velocity,waveInterior(p.xz));
+#endif
     return velocity;
 }
 float height(float2 xz) {
+#if FLUID_HAMILTONIAN
+    if(any(xz<WaveDomain.xy)||any(xz>=WaveDomain.xy+WaveDomain.zw))return -1e6;
+    if(waveInterior(xz)==0)return wavePlane(xz,0).x;
+#else
     if(any(xz<DomainMinimum.xz)||any(xz>=DomainMaximum.xz))return -1e6;
+#endif
     float step=FluidMinimumSpacing.w*.5,previous=DomainMinimum.y;
     bool connected=false;
     // Hydrostatic head belongs to the basin-connected body of water, NOT the

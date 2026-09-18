@@ -1,4 +1,7 @@
 #include "common.hlsli"
+#if FLUID_HAMILTONIAN
+#include "hamiltonian-shared.hlsli"
+#endif
 #include "work-shared.hlsli"
 #ifndef BULK_PRESSURE
 #define BULK_PRESSURE 0
@@ -49,6 +52,9 @@ void DensityMeasure(uint3 tid:SV_DispatchThreadID) {
     Density[id].w=particleDensity(int3(cellFromIndex(id)));
 }
 bool densityOccupied(uint id) {
+#if FLUID_HAMILTONIAN
+    if(!wavePressureCell(int3(cellFromIndex(id)),DomainMinCell))return false;
+#endif
 #if BULK_PRESSURE
     // Retain the filled interior's pressure connectivity during positional
     // correction too. The RHS still contains only measured particle/solid
@@ -60,6 +66,13 @@ bool densityOccupied(uint id) {
 }
 void gatherDensity(uint id,bool adaptive) {
     if(id>=Grid.w)return;
+#if FLUID_HAMILTONIAN
+    // Prescribed reservoir samples are not pressure unknowns. Moving them with
+    // the closed-volume density projection manufactures ridges at the seam.
+    if(!wavePressureCell(int3(cellFromIndex(id)),DomainMinCell)) {
+        Density[id]=0;PressureIn[id]=0;PressureOut[id]=0;FaceScratch[id]=0;return;
+    }
+#endif
     int3 c=int3(cellFromIndex(id));float mass=particleDensity(c);
     // Integral of the missing quadratic kernel beyond a flat domain wall is
     // 1/6 at the first cell center. Fill that *solid* portion, never air.
@@ -155,7 +168,10 @@ float displacementFace(int3 right,uint axis) {
 [numthreads(128,1,1)]
 void DensityDisplace(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=Counts.x)return;
-    FluidParticle p=Particles[id];if(!p.velocityFlags.w)return;
+    FluidParticle p=Particles[id];if(p.velocityFlags.w!=1)return;
+#if FLUID_HAMILTONIAN
+    if(waveEdge(p.positionRadius.xz)<WaveCoupling.y)return;
+#endif
     float3 displacement=0;
     for(uint a=0;a<3;++a) {
         float3 gp=(p.positionRadius.xyz-DomainMinCell.xyz)/DomainMinCell.w-faceOffset(a);

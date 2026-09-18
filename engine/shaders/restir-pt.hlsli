@@ -100,7 +100,8 @@ void RAB_PathTrace(inout RTXDI_PathTracerContext<Context> ctx,
         ctx.SetTraceResult(p);
         if(p.object==0xffffffff){
             ctx.RecordPathRadianceMiss(rng.initialRandomSamplerState);
-            ctx.RecordEnvironmentMapLightSample(sky(d),previous,rng.initialRandomSamplerState);break;
+            if(CameraState.w!=3)ctx.RecordEnvironmentMapLightSample(sky(d),previous,rng.initialRandomSamplerState);
+            break; // Ocean environment NEE already owns diffuse-to-sky transport.
         }
         Hit h=surface(p,ray.Origin,d);
         if(glass(h))break; // Photon ownership: never continue D -> S transport.
@@ -113,7 +114,7 @@ void RAB_PathTrace(inout RTXDI_PathTracerContext<Context> ctx,
             // Keep the stochastic NEE oracle in replay space, separate from RIS
             // selection. A replayed path must reproduce the same light samples.
             float3 light=endpoint(h,n,seed);
-            if(Play.x&&(h.object==3||h.object==4))light-=emission(h); // Already sampled by NEE.
+            if(explicitlySampledEmitter(h))light-=emission(h); // Already sampled by NEE.
             ctx.RecordEmissiveLightSample(max(0,light),previous,rng.initialRandomSamplerState);
         }
     }

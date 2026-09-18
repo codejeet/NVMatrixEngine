@@ -14,7 +14,7 @@ void BakeSolids(uint3 tid:SV_DispatchThreadID) {
 [numthreads(128,1,1)]
 void Collide(uint3 tid:SV_DispatchThreadID) {
     uint id=tid.x;if(id>=Counts.x)return;
-    FluidParticle p=Particles[id];if(p.velocityFlags.w==0)return;
+    FluidParticle p=Particles[id];if(p.velocityFlags.w!=1)return;
     // Two sweeps resolve intersections between neighboring solids. CFL-sized
     // substeps are required; this is SDF projection, not swept CCD.
     for(uint sweep=0;sweep<2;++sweep)for(uint i=0;i<Collision.x;++i) {
