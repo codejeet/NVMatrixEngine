@@ -3,6 +3,7 @@
 #include "large_water.h"
 #include "ocean.h"
 #include "scene.h"
+#include "model_asset.h"
 #include "streamline.h"
 #include "gameplay.h"
 #include "gpu_resources.h"
@@ -20,8 +21,16 @@
 #include <cmath>
 namespace lab {
 class Hud;
+class StartupScreen;
 using Microsoft::WRL::ComPtr;
 struct Options {
+    std::vector<std::filesystem::path> models;
+    bool neonNight = false, neonControlsTest = false;
+    SamplingSettings sampling;
+    bool samplingControlsTest = false;
+    bool modelAnyHitReference = false;
+    float modelScale = 1;
+    XMFLOAT3 modelPosition{};
     uint32_t width = 1280, height = 720, photons = 65536, frames = 0, history = 32;
     int quality = 0;
     std::string frameGeneration = "auto";
@@ -114,7 +123,8 @@ struct Options {
 };
 class Renderer {
   public:
-    Renderer(HWND window, const std::filesystem::path &folder, const Options &options);
+    Renderer(HWND window, const std::filesystem::path &folder, const Options &options,
+             StartupScreen *startup = nullptr);
     ~Renderer();
     void render(float angle, float azimuth, float elevation, Game *game = nullptr, Hud *hud = nullptr,
                 float delta = 1.f / 60);
@@ -213,6 +223,7 @@ class Renderer {
             latency->finish(wholeFrameMs, applicationElapsedMs);
     }
     void capture(const std::filesystem::path &prefix);
+    Level playLevel() const;
     uint32_t frame = 0, historyResets = 0, rrHistoryResets = 0, fluidHistoryResets = 0;
     double photonMs = 0, accumulationMs = 0, cameraMs = 0, compositeMs = 0, rrMs = 0, frameMs = 0;
 
@@ -243,12 +254,14 @@ class Renderer {
     HANDLE frameLatencyEvent = nullptr;
     UINT swapchainFlags = 0;
     uint64_t fenceValue = 0, frequency = 0;
-    ComPtr<ID3D12DescriptorHeap> heap, rtvHeap;
+    ComPtr<ID3D12DescriptorHeap> heap, rtvHeap, modelSamplerHeap;
     uint32_t descriptorSize = 0, rtvSize = 0;
     std::array<ComPtr<ID3D12Resource>, 2> backbuffers;
     std::array<ComPtr<ID3D12Resource>, 8> guides;
     ComPtr<ID3D12Resource> caustics, fluidCaustics, surfaceMap;
     ComPtr<ID3D12Resource> fgHudless, fgUi, fgDepth, fgDistortion;
+    std::array<ComPtr<ID3D12Resource>, 2> bloom;
+    ComPtr<ID3D12PipelineState> bloomDownsample, bloomHorizontal, bloomVertical;
     float fgDistortionFov = -1;
     uint64_t fgDistortionUpdates = 0;
     Buffer fluidPhotonSum;
@@ -265,6 +278,10 @@ class Renderer {
     XMFLOAT4 oceanSun{};
     std::vector<Buffer> blas, blasScratch;
     std::vector<Mesh> meshes;
+    size_t proceduralMeshCount = 0;
+    Buffer modelMaterials, modelAttributes, modelLights;
+    SamplingSettings previousSampling;
+    std::vector<ComPtr<ID3D12Resource>> modelTextures;
     std::vector<Object> sceneObjects;
     std::vector<XMFLOAT4X4> transportAnchors;
     std::vector<float> transportRadii;
@@ -287,10 +304,12 @@ class Renderer {
     uint64_t cameraGlassPixels = 0, cameraTransmissions = 0, cameraTir = 0, cameraReflections = 0;
     // Preserve the first six timing columns for existing capture consumers.
     std::vector<std::array<double, 11>> samples;
+    std::vector<std::array<double, 7>> gpuFrameBreakdown;
     std::unique_ptr<LatencyProfile> latency;
     std::array<uint64_t, 4> uiGeometryUploads{};
     Buffer buffer(uint64_t size, D3D12_HEAP_TYPE type, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,
                   D3D12_RESOURCE_STATES state = D3D12_RESOURCE_STATE_GENERIC_READ);
+    Buffer staticBuffer(const void *data, uint64_t size);
     ComPtr<ID3D12Resource> texture(uint32_t width, uint32_t height, DXGI_FORMAT format,
                                    D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
     D3D12_CPU_DESCRIPTOR_HANDLE cpu(uint32_t index) const;
@@ -302,6 +321,7 @@ class Renderer {
     void capabilities();
     void pipelines();
     void loadScene();
+    void loadModels();
     void targets();
     void createSwapchain();
     void buildTlas();

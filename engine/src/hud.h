@@ -22,6 +22,8 @@ class Hud final : public Rml::EventListener {
     POINT wallWaterButtonPoint() const;
     void testClick(const char *id);
     void testValue(const char *id, float value);
+    std::string testText(const char *id) const;
+    bool testVisible(const char *id) const;
     bool quit = false;
     float musicVolume = .15f;
     float laserWavelength = 532;

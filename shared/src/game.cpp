@@ -277,9 +277,9 @@ void Game::load(int index) {
     input = {};
     previousStep.clear();
     resetHistory = true;
-    azimuth = .42f;
-    elevation = .56f;
-    distance = 9.5f;
+    azimuth = l.cameraStart.x;
+    elevation = l.cameraStart.y;
+    distance = l.cameraStart.z;
     hint = false;
     toast = l.objective;
 }
@@ -830,7 +830,8 @@ void Game::receive(const LaserResult &laser, float delta) {
     power = std::isfinite(laser.stats.y) ? std::max(0.f, laser.stats.y) : 0;
     for (size_t i = 0; i < level().sensors.size(); i++)
         sensorPower[i] = std::isfinite(laser.sensors[i].x) ? std::max(0.f, laser.sensors[i].x) : 0;
-    if (paused || won)
+    // Exploration levels have no receiver or gate body.
+    if (paused || won || level().sensors.empty())
         return;
     if (!gateOpen) {
         charge = std::clamp(charge + (power >= .35f ? delta / 2 : -delta * 1.5f), 0.f, 1.f);

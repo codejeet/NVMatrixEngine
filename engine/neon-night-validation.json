@@ -1,0 +1,393 @@
+{
+  "date": "2026-09-18",
+  "scene": "NOCTURNE / Neon Night",
+  "capture": {
+    "adapter": "NVIDIA GeForce RTX 5090",
+    "frames": 240,
+    "hitMode": 0,
+    "serActive": false,
+    "floatAtomics": false,
+    "dlssEvaluations": 240,
+    "rrHistoryResets": 1,
+    "internalWidth": 1280,
+    "internalHeight": 720,
+    "outputWidth": 1920,
+    "outputHeight": 1080,
+    "frameGeneration": {
+      "supported": true,
+      "loaded": false,
+      "enabled": false,
+      "multiplier": 1,
+      "maximumMultiplier": 6,
+      "minimumDimension": 100,
+      "status": 0,
+      "reflex": true,
+      "presentedFrames": 240,
+      "extraPresents": 0,
+      "distortionTagged": false,
+      "distortionFrames": 0,
+      "frameTokens": 240,
+      "simulationMarkers": 240,
+      "submissionMarkers": 240,
+      "presentMarkers": 240
+    },
+    "fixture": false,
+    "experience": {
+      "fisheye": false,
+      "diagonalFov": 90,
+      "firstPerson": false,
+      "environment": 0,
+      "flashlight": false,
+      "camera": [
+        -0.25,
+        2.14466,
+        -8.41114
+      ]
+    },
+    "neonSampling": {
+      "paths": 1,
+      "lightSamples": 2,
+      "bounces": 4,
+      "lightCandidates": 4,
+      "resampledLighting": true,
+      "russianRoulette": true,
+      "inlineVisibility": false
+    },
+    "modelAnyHitReference": false
+  },
+  "import": {
+    "meshes": 66,
+    "triangles": 189370,
+    "materials": 30,
+    "textureViews": 45,
+    "normalMappedMaterials": 14,
+    "roughnessMappedMaterials": 14
+  },
+  "checks": {
+    "nodeTestsPassed": 243,
+    "portableImporterTestPassed": true,
+    "transportVariantsCompiled": 6,
+    "bloomAndPresentShadersCompiled": true,
+    "gltfGlbObjGpuRegressionPassed": true,
+    "gameplayRestirPbrGpuRegressionPassed": true,
+    "allCapturedGuidesFinite": true,
+    "d3d12DebugLayerEnabled": false,
+    "nativePlayerCameraWatercraftTestsPassed": 3,
+    "neonControlsGpuTestPassed": true,
+    "engineFolderLauncherPassed": true,
+    "responsiveStartupTestPassed": true,
+    "resampledReferenceGuidesEqual": true,
+    "profileScriptSmokeFrames": 64
+  },
+  "captureGuides": [
+    {
+      "index": 0,
+      "width": 1280,
+      "height": 720,
+      "min": 0.0,
+      "max": 214.375,
+      "nonfinite": 0
+    },
+    {
+      "index": 1,
+      "width": 1280,
+      "height": 720,
+      "min": -1.901388168334961e-05,
+      "max": 2.3603439331054688e-05,
+      "nonfinite": 0
+    },
+    {
+      "index": 2,
+      "width": 1280,
+      "height": 720,
+      "min": 3.0503416061401367,
+      "max": 200.0,
+      "nonfinite": 0
+    },
+    {
+      "index": 3,
+      "width": 1280,
+      "height": 720,
+      "min": -1.0,
+      "max": 1.0,
+      "nonfinite": 0
+    },
+    {
+      "index": 4,
+      "width": 1280,
+      "height": 720,
+      "min": 0.0,
+      "max": 1.0,
+      "nonfinite": 0
+    },
+    {
+      "index": 5,
+      "width": 1280,
+      "height": 720,
+      "min": 0.0,
+      "max": 1.0,
+      "nonfinite": 0
+    },
+    {
+      "index": 6,
+      "width": 1280,
+      "height": 720,
+      "min": 0.0,
+      "max": 36.03125,
+      "nonfinite": 0
+    },
+    {
+      "index": 7,
+      "width": 1920,
+      "height": 1080,
+      "min": 1.895427703857422e-05,
+      "max": 60.0625,
+      "nonfinite": 0
+    },
+    {
+      "index": 8,
+      "width": 1280,
+      "height": 256,
+      "min": 0.0,
+      "max": 32.0,
+      "nonfinite": 0
+    }
+  ],
+  "sha256": {
+    "engine/assets/neon-night/neon-night.gltf": "30658b56c09eb70fe01bc02f6503cb7b7273fb9a72a9615ec90f4023558a0ecb",
+    "engine/assets/neon-night/architecture.bin": "7884d67ad098c5aa4c4a7b1aa0d555ee3e2f4c8b266594b89d9bd4956aa207c5",
+    "engine/assets/neon-night/wet-asphalt-arm.png": "8fbdd42e4c7306e160eb4f950b13c2bccfe71df77db5933294cc2d19bac4014d",
+    "docs/screenshots/neon-night.png": "0cb8c8be4734530adbcd143d054f8be472364b7a4e4a3748be74b1c306d25c28",
+    "docs/screenshots/neon-night-settings.png": "83c07677c6ded3a20b68bd2c27aa942d352786465a4bc4f4bd0113fed453b78c",
+    "docs/screenshots/neon-night-loading.png": "751a1aa6619f08752924dcbd1698108e3e0708a44c64fa0d5d4f7f5a73491728",
+    "engine/src/startup.h": "d6f8c69c992a9b5a5024d99872cfe4b527831a1ec3b664295761958b6676ac25",
+    "engine/src/startup.cpp": "6be38019938dd248609343482dcddc8df80a8344c28c905d0303dda4887ca347",
+    "engine/assets/neon-night/signs/open.png": "a2c8256062776504081641b3735ea24080cfce79dfd1181af45a883ffa26ccb5",
+    "engine/assets/neon-night/signs/bar.png": "c726780e940e43bb0f81c869189f0e2e0b30894a72023344c9ab05467beb4661",
+    "engine/assets/neon-night/signs/ramen.png": "233159f50ae8bed5ef87d689f931130603065c38cbc0a61a2add741b7fa075b0",
+    "engine/assets/neon-night/signs/nocturne.png": "6b8eacc221e6bd10227c8815bc07ce33f6c673ff74eb5681b8608ce898889a57",
+    "engine/assets/neon-night/signs/motel.png": "20ede041a0f170a2a2f1eba23a96c7548eae71686339edcbe0094dd68d3ee762"
+  },
+  "earlierStaticSceneFrameGenerationSmoke": {
+    "frames": 32,
+    "supported": true,
+    "loaded": true,
+    "enabled": true,
+    "multiplier": 2,
+    "maximumMultiplier": 6,
+    "minimumDimension": 100,
+    "status": 0,
+    "reflex": true,
+    "presentedFrames": 32,
+    "extraPresents": 0,
+    "distortionTagged": false,
+    "distortionFrames": 0,
+    "frameTokens": 32,
+    "simulationMarkers": 32,
+    "submissionMarkers": 32,
+    "presentMarkers": 32,
+    "note": "Recorded before the playable ball/HUD integration; extra generated presentations were not observed."
+  },
+  "playableScene": {
+    "player": "Shared Water Lab glass sphere, Bullet controller and camera",
+    "collisionTriangles": 189370,
+    "nativeTests": [
+      "lab_neon_player",
+      "lab_rolling_camera",
+      "lab_camera_and_watercraft"
+    ],
+    "controlsTest": {
+      "frames": 180,
+      "passed": [
+        "WASD rolling",
+        "Space jump",
+        "right-drag orbit",
+        "wheel zoom",
+        "Tab view",
+        "live render/output FPS",
+        "Esc pause/resume",
+        "Resume button",
+        "DLSS quality/resolution",
+        "lens/FOV",
+        "lighting presets",
+        "flashlight",
+        "restart"
+      ],
+      "finalGame": {
+        "won": false,
+        "gateOpen": false,
+        "charge": 0,
+        "jumps": 1,
+        "throws": 0,
+        "tuneMoves": 0,
+        "tuneTurns": 0,
+        "ballFloats": false,
+        "ballMassKg": 3.95,
+        "ballDensityKgM3": 2.99904,
+        "ballHeightM": 0.679922,
+        "pose": "initial"
+      },
+      "menuCaptures": [
+        {
+          "frame": 96,
+          "experience": {
+            "fisheye": true,
+            "diagonalFov": 120,
+            "firstPerson": false,
+            "environment": 0,
+            "flashlight": false,
+            "camera": [
+              -0.25,
+              2.51269,
+              -1.93168
+            ]
+          },
+          "allGuidesFinite": true
+        },
+        {
+          "frame": 105,
+          "experience": {
+            "fisheye": true,
+            "diagonalFov": 120,
+            "firstPerson": false,
+            "environment": 3,
+            "flashlight": true,
+            "camera": [
+              -0.25,
+              2.51269,
+              -1.93168
+            ]
+          },
+          "allGuidesFinite": true
+        },
+        {
+          "frame": 132,
+          "experience": {
+            "fisheye": false,
+            "diagonalFov": 90,
+            "firstPerson": false,
+            "environment": 0,
+            "flashlight": false,
+            "camera": [
+              -0.25,
+              2.14394,
+              -8.41114
+            ]
+          },
+          "allGuidesFinite": true
+        }
+      ]
+    },
+    "launcher": {
+      "path": "engine/Play Neon Night.cmd",
+      "frames": 4,
+      "workingDirectory": "Windows temporary directory",
+      "passed": true
+    },
+    "neonBlocks": {
+      "count": 2,
+      "mesh": "Water Lab shared 0.76 m emissive cube",
+      "colors": [
+        "pink",
+        "cyan"
+      ],
+      "controls": {
+        "E": "grab/release",
+        "left click / X": "throw"
+      },
+      "nativePickupThrowRestartPassed": true,
+      "dynamicLightSampling": true
+    }
+  },
+  "startup": {
+    "loadingScreen": "docs/screenshots/neon-night-loading.png",
+    "backgroundSteps": [
+      "ray tracing and presentation pipelines",
+      "model/texture loading and GPU uploads",
+      "player collision setup",
+      "non-CUDA water setup"
+    ],
+    "nativeTest": {
+      "name": "lab_responsive_startup",
+      "passed": true,
+      "workerDelayMs": 6500,
+      "checks": [
+        "window messages",
+        "animation repainting",
+        "worker thread",
+        "result propagation",
+        "error propagation",
+        "safe cancellation"
+      ]
+    },
+    "interactiveLauncher": {
+      "path": "engine/Play Neon Night.cmd",
+      "defaultGraphicsOptions": true,
+      "windowMessagesPassed": 35,
+      "maximumResponseMs": 2472,
+      "readySeconds": 6.412642,
+      "resizeDuringLoadingPassed": true,
+      "outputWidth": 1096,
+      "outputHeight": 696,
+      "frames": 91,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": true,
+        "enabled": false,
+        "multiplier": 2,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 180,
+        "extraPresents": 89,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 91,
+        "simulationMarkers": 91,
+        "submissionMarkers": 91,
+        "presentMarkers": 91
+      }
+    },
+    "cancelDuringAssetLoadingPassed": true,
+    "neonControlsRegressionFrames": 180,
+    "waterLabRegressionFrames": 16,
+    "note": "The longest interactive response occurred during initial graphics setup on the window thread. Long compilation/import jobs pump the UI while workers run. Driver compilation finishes before cancellation releases graphics resources."
+  },
+  "signs": {
+    "count": 5,
+    "horizontalPixels": [
+      4096,
+      1024
+    ],
+    "verticalPixels": [
+      1024,
+      4096
+    ],
+    "freshGlyphRender": true,
+    "mipFootprint": "per-axis world-space UV gradients and transformed texture dimensions"
+  },
+  "performance": {
+    "report": "engine/RTXPT_COMPARISON.md",
+    "measurements": "engine/rtxpt-performance.json",
+    "script": "engine/profile-neon.ps1",
+    "unchangedSampling": false,
+    "frameGeneration": "off",
+    "traversalGuideComparison": "Exact equality for depth, normal/roughness, diffuse albedo and specular albedo at 1080p",
+    "gpuLocalStaticBuffers": true,
+    "defaultGraphicsLauncherFrames": 8,
+    "waterLabGpuRegressionFrames": 16,
+    "sampling": {
+      "paths": 1,
+      "lightSamples": 2,
+      "bounces": 4,
+      "lightCandidates": 4,
+      "resampledLighting": true,
+      "russianRoulette": true,
+      "inlineVisibility": false
+    },
+    "earlierMemoryTraversalReport": "engine/NEON_PERFORMANCE.md",
+    "equalBudgetSpeedup": 2.1,
+    "defaultBudgetSpeedup": 4.9
+  }
+}

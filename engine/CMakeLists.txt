@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(NVMatrixEngine LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+option(NVMATRIXENGINE_ASSET_TESTS_ONLY "Build portable model importer tests without the renderer" OFF)
+include(cmake/model-assets.cmake)
+if(NVMATRIXENGINE_ASSET_TESTS_ONLY)
+  return()
+endif()
 if(NOT WIN32)
   message(FATAL_ERROR "Use the Windows x64 MSVC toolchain through build.ps1.")
 endif()
@@ -22,7 +29,8 @@ file(GLOB_RECURSE BULLET_SOURCE CONFIGURE_DEPENDS "${DEPS}/bullet/src/LinearMath
 add_library(lab_bullet STATIC ${BULLET_SOURCE})
 target_include_directories(lab_bullet PUBLIC "${DEPS}/bullet/src")
 target_compile_definitions(lab_bullet PRIVATE _CRT_SECURE_NO_WARNINGS)
-add_executable(NVMatrixFluidLab WIN32 src/main.cpp src/renderer.cpp src/scene.cpp src/gameplay.cpp src/hud.cpp src/streamline.cpp src/fluid/fluid_system.cpp src/fluid/fluid_surface.cpp src/fluid/fluid_surface_lod_validation.cpp src/fluid/fluid_complexity.cpp src/fluid/fluid_pressure.cpp src/fluid/fluid_bulk.cpp src/fluid/fluid_resampling.cpp src/fluid/fluid_interior.cpp src/fluid/whitewater.cpp
+add_executable(NVMatrixFluidLab WIN32 src/main.cpp src/renderer.cpp src/model_gpu.cpp src/scene.cpp src/gameplay.cpp src/hud.cpp src/streamline.cpp src/fluid/fluid_system.cpp src/fluid/fluid_surface.cpp src/fluid/fluid_surface_lod_validation.cpp src/fluid/fluid_complexity.cpp src/fluid/fluid_pressure.cpp src/fluid/fluid_bulk.cpp src/fluid/fluid_resampling.cpp src/fluid/fluid_interior.cpp src/fluid/whitewater.cpp
+  src/startup.cpp
   src/fluid/fluid_mac.cpp src/fluid/fluid_mac_validation.cpp
   src/fluid/fluid_mac_pressure.cpp src/fluid/fluid_mac_pressure_validation.cpp
   src/fluid/fluid_work.cpp src/fluid/fluid_work_validation.cpp
@@ -50,7 +58,7 @@ add_custom_command(TARGET NVMatrixFluidLab POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/pix-1.0.240308001/license.txt" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/PIX-LICENSE.txt"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/pix-1.0.240308001/ThirdPartyNotices.txt" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/PIX-ThirdPartyNotices.txt")
 target_compile_options(NVMatrixFluidLab PRIVATE /W4 /EHsc /utf-8)
-target_link_libraries(NVMatrixFluidLab PRIVATE lab_bullet RmlUi::Core d3d12 dxgi dxguid d3dcompiler wintrust crypt32 shell32 imm32 ole32 windowscodecs "${DEPS}/nvapi/amd64/nvapi64.lib")
+target_link_libraries(NVMatrixFluidLab PRIVATE lab_model_assets lab_bullet RmlUi::Core d3d12 dxgi dxguid d3dcompiler wintrust crypt32 shell32 imm32 ole32 windowscodecs "${DEPS}/nvapi/amd64/nvapi64.lib")
 set_target_properties(NVMatrixFluidLab PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 foreach(dll sl.interposer sl.common sl.dlss_d sl.dlss nvngx_dlss nvngx_dlssd sl.dlss_g nvngx_dlssg sl.reflex sl.pcl)
   add_custom_command(TARGET NVMatrixFluidLab POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/bin/x64/${dll}.dll" "$<TARGET_FILE_DIR:NVMatrixFluidLab>")
@@ -60,6 +68,8 @@ add_custom_command(TARGET NVMatrixFluidLab POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${RMLUI}/Samples/basic/harfbuzz/data/Poppins-Regular.ttf" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/ui/Poppins-Regular.ttf"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/../shared/assets/audio" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/assets/audio"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets/ocean" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/assets/ocean"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets/neon-night" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/assets/neon-night"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/../release/Play Neon Night.cmd" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/Play Neon Night.cmd"
   COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:NVMatrixFluidLab>/shaders"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/../shared/shaders/ui.hlsl" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/shaders/ui.hlsl"
   COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:NVMatrixFluidLab>/D3D12"
@@ -71,7 +81,7 @@ add_custom_command(TARGET NVMatrixFluidLab POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/nvapi/License.txt" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/NVAPI-LICENSE.txt")
 add_custom_command(TARGET NVMatrixFluidLab POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DEPS}/rtxdi-f12037fa/LICENSE.txt" "$<TARGET_FILE_DIR:NVMatrixFluidLab>/RTXDI-LICENSE.txt")
-foreach(entry "bullet/LICENSE.txt|Bullet" "RmlUi-6.3/LICENSE.txt|RmlUi" "freetype-VER-2-14-1/docs/FTL.TXT|FreeType" "miniaudio-0.11.25/LICENSE|miniaudio" "RmlUi-6.3/Samples/basic/harfbuzz/data/LICENSE.txt|Font")
+foreach(entry "bullet/LICENSE.txt|Bullet" "RmlUi-6.3/LICENSE.txt|RmlUi" "freetype-VER-2-14-1/docs/FTL.TXT|FreeType" "miniaudio-0.11.25/LICENSE|miniaudio" "RmlUi-6.3/Samples/basic/harfbuzz/data/LICENSE.txt|Font" "assimp-5.4.3/LICENSE|Assimp" "assimp-5.4.3/contrib/rapidjson/license.txt|RapidJSON" "assimp-5.4.3/contrib/zlib/LICENSE|zlib" "assimp-5.4.3/contrib/stb/stb_image.h|stb-image")
   string(REPLACE "|" ";" parts "${entry}")
   list(GET parts 0 source)
   list(GET parts 1 name)
@@ -102,6 +112,16 @@ target_include_directories(NVMatrixEngineRollingTest PRIVATE ../shared/src)
 target_compile_options(NVMatrixEngineRollingTest PRIVATE /EHsc /utf-8)
 target_link_libraries(NVMatrixEngineRollingTest PRIVATE lab_bullet)
 add_test(NAME lab_rolling_camera COMMAND NVMatrixEngineRollingTest)
+add_executable(NVMatrixEngineStartupTest tests/startup.cpp src/startup.cpp)
+target_compile_definitions(NVMatrixEngineStartupTest PRIVATE UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_compile_options(NVMatrixEngineStartupTest PRIVATE /W4 /EHsc /utf-8)
+target_link_libraries(NVMatrixEngineStartupTest PRIVATE user32 gdi32)
+add_test(NAME lab_responsive_startup COMMAND NVMatrixEngineStartupTest)
+add_executable(NVMatrixEngineNeonPlayTest tests/neon_play.cpp src/gameplay.cpp src/scene.cpp ../shared/src/game.cpp)
+target_include_directories(NVMatrixEngineNeonPlayTest PRIVATE ../shared/src)
+target_compile_options(NVMatrixEngineNeonPlayTest PRIVATE /EHsc /utf-8)
+target_link_libraries(NVMatrixEngineNeonPlayTest PRIVATE lab_bullet lab_model_assets)
+add_test(NAME lab_neon_player COMMAND NVMatrixEngineNeonPlayTest "${CMAKE_CURRENT_SOURCE_DIR}/assets/neon-night/neon-night.gltf")
 add_executable(NVMatrixEngineExperienceTest tests/experience.cpp src/gameplay.cpp src/scene.cpp ../shared/src/game.cpp)
 target_include_directories(NVMatrixEngineExperienceTest PRIVATE ../shared/src)
 target_compile_options(NVMatrixEngineExperienceTest PRIVATE /EHsc /utf-8)

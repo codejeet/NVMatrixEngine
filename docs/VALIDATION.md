@@ -1,5 +1,19 @@
 # Release validation
 
+## Version 0.1.4: optimized rendering, release tests skipped
+
+This release packages the existing optimized executable and shaders after restoring
+the pre-experiment whitewater implementation. At the maintainer's request, no tests,
+scene launches or fresh release-validation runs were performed. Packaging uses
+`-SkipValidation`; the adjacent verification JSON records `validationStatus: "skipped"`
+and an empty checks list. The ZIP still includes a source-commit manifest and file
+hashes, with a separate archive SHA-256 checksum.
+
+Earlier development measurements for imported geometry, Neon Night and the shared
+fast sampler are recorded in [engine/RENDER_SAMPLING.md](../engine/RENDER_SAMPLING.md)
+and its linked reports. They are historical measurements, not fresh validation or
+performance certification of this downloadable archive.
+
 ## Version 0.1.3: fixed-grid Hamiltonian ocean
 
 The Windows Release executable and all 436 current shader outputs were rebuilt after removing dynamic contact-cell refinement. Every rebuilt shader matches the saved pre-refinement shader with the same name byte for byte. The source retains fixed fluid cell sizes and the existing Hamiltonian/3D activity regions.

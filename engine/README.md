@@ -6,6 +6,9 @@ The standalone application is **NVMatrixFluidLab.exe**. With no arguments it ope
 
 ## Current subsystem references
 
+- [glTF / GLB / OBJ model loading and PBR textures](MODEL_LOADING.md)
+- [Engine-wide path-tracing settings and fast light sampling](RENDER_SAMPLING.md)
+- [Neon Night: wet neon alley with imported CC0 props](NEON_NIGHT.md)
 - [Extra Large Water Lab: outdoor ocean, beach island and day/night HDRIs](OCEAN_LAB.md)
 - [Hamiltonian nonlinear waves and two-way 3D coupling](HAMILTONIAN_WATER.md)
 - [Live narrow-band particle/grid ownership](NARROW_BAND.md)

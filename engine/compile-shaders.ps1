@@ -185,3 +185,8 @@ foreach ($stage in @(@('DebugVS','vs_6_6'),@('DebugPS','ps_6_6'))) {
   & $dxc -T $stage[1] -E $stage[0] -HV 2021 -O3 "$PSScriptRoot/shaders/fluid/debug.hlsl" -Fo "$OutputDir/Fluid$($stage[0]).dxil"
   if ($LASTEXITCODE) { throw 'Fluid debug compilation failed.' }
 }
+
+foreach ($entry in 'BloomDownsample','BloomHorizontal','BloomVertical') {
+  & $dxc -T cs_6_6 -E $entry -HV 2021 -O3 "$PSScriptRoot/shaders/bloom.hlsl" -Fo "$OutputDir/$entry.dxil"
+  if ($LASTEXITCODE) { throw "Bloom compilation failed: $entry" }
+}

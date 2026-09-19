@@ -36,12 +36,16 @@ struct Constants {
     XMFLOAT4 opticalParameters;
     XMFLOAT4 lighting, flashlightOrigin, flashlightDirection;
     XMUINT4 cameraState;
+    XMUINT4 sampling, samplingState;
 };
 struct Mesh {
     std::vector<Vertex> vertices;
     uint32_t mask;
+    bool opaque = true, doubleSided = true;
 };
 std::vector<Mesh> makeScene();
+Mesh makePlayerMesh();
+Mesh makeNeonBlockMesh(uint32_t material);
 // The opt-in liquid lab appends a static dielectric tank after the gameplay bodies.
 std::vector<Mesh> makePlayScene(bool water = true, bool flat = false, bool glassPit = false,
                                 bool fluidRoom = false, bool boat = false, bool deepPool = false,
@@ -49,5 +53,5 @@ std::vector<Mesh> makePlayScene(bool water = true, bool flat = false, bool glass
 XMFLOAT4X4 prismTransform(float angle);
 // Conservative world-space displacement bound for a rigid object's bounding sphere.
 bool transportMoved(const XMFLOAT4X4 &now, const XMFLOAT4X4 &anchor, float radius);
-static_assert(sizeof(Vertex) == 32 && sizeof(Object) == 144 && sizeof(Constants) == 576);
+static_assert(sizeof(Vertex) == 32 && sizeof(Object) == 144 && sizeof(Constants) == 608);
 } // namespace lab

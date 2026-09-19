@@ -53,7 +53,11 @@ Hud::Hud(ID3D12Device *device, HWND hwnd, const std::filesystem::path &folder, G
         for (auto [id, value] : {std::pair{"lens-fov", settings.lens.diagonalDegrees},
                                  {"particle-limit", float(settings.particleCapacity / 1000)},
                                  {"grid-resolution", settings.cellSize * 100},
-                                 {"simulation-rate", settings.simulationHz}})
+                                 {"simulation-rate", settings.simulationHz},
+                                 {"path-samples", float(settings.sampling.paths)},
+                                 {"light-samples", float(settings.sampling.lights)},
+                                 {"light-candidates", float(settings.sampling.candidates)},
+                                 {"path-bounces", float(settings.sampling.bounces)}})
             if (auto control = dynamic_cast<Rml::ElementFormControl *>(document->GetElementById(id)))
                 control->SetValue(std::to_string(value));
     } catch (...) {
@@ -119,6 +123,14 @@ void Hud::testClick(const char *id) {
         throw std::runtime_error(std::string("Missing UI control: ") + id);
     element->DispatchEvent("click", {});
 }
+std::string Hud::testText(const char *id) const {
+    auto element = document->GetElementById(id);
+    if (!element) throw std::runtime_error(std::string("Missing UI element: ") + id);
+    return element->GetInnerRML();
+}
+bool Hud::testVisible(const char *id) const {
+    return visibility.at(id);
+}
 void Hud::testValue(const char *id, float value) {
     auto control = dynamic_cast<Rml::ElementFormControl *>(document->GetElementById(id));
     if (!control)
@@ -142,6 +154,10 @@ void Hud::ProcessEvent(Rml::Event &event) {
                     .01f;
             if (e->GetId() == "simulation-rate")
                 settings.simulationHz = std::clamp(value, 60.f, 180.f);
+            if (e->GetId() == "path-samples") settings.sampling.paths = uint32_t(std::clamp(value, 1.f, 8.f));
+            if (e->GetId() == "light-samples") settings.sampling.lights = uint32_t(std::clamp(value, 1.f, 8.f));
+            if (e->GetId() == "light-candidates") settings.sampling.candidates = uint32_t(std::clamp(value, 1.f, 8.f));
+            if (e->GetId() == "path-bounces") settings.sampling.bounces = uint32_t(std::clamp(value, 1.f, 8.f));
         }
         return;
     }
@@ -155,6 +171,8 @@ void Hud::ProcessEvent(Rml::Event &event) {
     if (!e || event.GetType() != "click")
         return;
     auto action = e->GetAttribute<Rml::String>("data-action", "");
+    if (action == "light-sampling") settings.sampling.mode = (settings.sampling.mode + 1) % 2;
+    if (action == "russian-roulette") settings.sampling.roulette = !settings.sampling.roulette;
     if (action == "dlss-quality")
         requestedDlssQuality = e->GetAttribute<int>("data-quality", 0);
     if (action == "environment")
@@ -259,11 +277,20 @@ void Hud::update(float dt, float watts) {
     }
     visible("pause", game.paused || game.won);
     const char *environments[] = {"Neon night", "Single overhead light", "White studio", "Blackout"};
-    text("environment", settings.oceanLab ? (settings.environment ? "Lighting: starry night [Y]" : "Lighting: daylight [Y]")
+    const char *neonEnvironments[] = {"Neon night", "Dim ambient", "Bright ambient", "Lights off"};
+    text("environment", settings.neonNight ? std::string("Lighting: ") + neonEnvironments[settings.environment % 4]
+                                         : settings.oceanLab ? (settings.environment ? "Lighting: starry night [Y]" : "Lighting: daylight [Y]")
                                          : std::string("Lighting: ") + environments[settings.environment % 4]);
     text("ocean-time", settings.environment ? "SWITCH TO DAY  [Y]" : "SWITCH TO NIGHT  [Y]");
     visible("ocean-controls", settings.oceanLab && !game.paused);
     text("flashlight", settings.flashlight ? "Ball flashlight: On" : "Ball flashlight: Off");
+    const char *samplingModes[] = {"Independent reference", "Fast resampled (RIS)"};
+    text("light-sampling", std::string("Light sampling: ") + samplingModes[settings.sampling.mode]);
+    text("russian-roulette", settings.sampling.roulette ? "Weak-path termination: On" : "Weak-path termination: Off");
+    text("path-samples-value", "Base paths per pixel: " + std::to_string(settings.sampling.paths));
+    text("light-samples-value", "Full light samples: " + std::to_string(settings.sampling.lights));
+    text("light-candidates-value", "Light candidates: " + std::to_string(settings.sampling.candidates));
+    text("path-bounces-value", "Surface bounce limit: " + std::to_string(settings.sampling.bounces));
     text("lens", settings.lens.fisheye ? "Lens: equisolid fisheye" : "Lens: rectilinear");
     text("view", settings.firstPerson ? "View: first person [Tab]" : "View: orbit [Tab]");
     visible("ball-settings", fluidRoom && game.boatBody >= 0);
@@ -285,7 +312,7 @@ void Hud::update(float dt, float watts) {
     visible("water-settings", fluidRoom);
     const bool compact = game.firstPerson || game.piloting;
     visible("wall-controls", fluidRoom && !settings.oceanLab && !game.won && !compact);
-    visible("receiver", !settings.oceanLab && !compact);
+    visible("receiver", !settings.oceanLab && !settings.neonNight && !compact);
     text("wall-water", waterFull ? "CAPACITY FULL — B to reset"
                                  : (wallWater ? "STOP WALL WATER  [T]" : "SPEW WALL WATER  [T]"));
     text("water-state", std::string(waterFull ? "Safety valve closed. No particles discarded."
@@ -329,25 +356,35 @@ void Hud::update(float dt, float watts) {
                      : game.level().hint);
     const bool fluidLab = !fluidStatus.empty();
     text("objective-title",
-         settings.oceanLab ? "Ocean Island."
+         settings.neonNight ? "NOCTURNE."
+         : settings.oceanLab ? "Ocean Island."
          : largeWaterLab ? "Large Water Lab."
          : hamiltonianWater ? "Hamiltonian waves."
          : fluidRoom ? "Flood the chamber." : (fluidLab ? "GPU liquid lab." : "Bend the night."));
     text("objective-description",
-         settings.oceanLab ? "An island, open water, and a changing sky."
+         settings.neonNight ? "Roll through the rain-wet alley and its neon reflections."
+         : settings.oceanLab ? "An island, open water, and a changing sky."
          : largeWaterLab ? "24 × 28 metre Water Lab · 1.5 metre starting depth · boat and caustics."
          : hamiltonianWater ? "Nonlinear waves · boat wakes · ray-traced water and caustics."
          : fluidRoom  ? "Room-wide water · wall inlet · physically traced foam and bubbles."
          : fluidLab ? "GPU APIC / FLIP. Reconstructed water bends light, lasers and caustics."
                     : "Bring the green spectrum into the marked receiver.");
     text("shortcuts",
-         settings.oceanLab ? "Y: day / night · I: overview · Tab: view · Space / Ctrl: swim up / down · P: pause water · Esc: settings"
+         settings.neonNight ? "Tab: view · R: restart · U: details · F8: Frame Gen · Esc: settings"
+         : settings.oceanLab ? "Y: day / night · I: overview · Tab: view · Space / Ctrl: swim up / down · P: pause water · Esc: settings"
          : compact                     ? "Tab: view · Space / Ctrl: swim up / down · Right drag: look · Esc: settings"
          : !complexityStatus.empty() ? complexityStatus
          : hamiltonianWater ? "T: fill water · P: pause water · .: step · B: drain/reset · U: details · F8: Frame Gen"
          : fluidRoom ? "T: wall water · P: pause water · B: drain/reset · U: details · F8: Frame Gen"
          : fluidLab  ? "I: inspect pool · P: pause · .: step · B: reset · V/G: grid · N: surface · U: details"
                      : "L: laser color · U / H: hints &amp; details · Esc: pause · R: reset");
+    text("scene-label", settings.neonNight ? "NVMATRIXENGINE / NEON NIGHT" : "NVMATRIXENGINE / FLUID LAB");
+    text("details-label", settings.neonNight ? "NOCTURNE / ALLEY" : "SPECTRAL PLAYGROUND");
+    text("camera-help", settings.neonNight
+        ? "WASD rolls the ball. Space jumps. Right-drag looks, the wheel zooms, and Tab switches views."
+        : "Right-drag to look. Tab switches views. Hold Space to swim up; Ctrl to dive. Space jumps on land.");
+    visible("laser", !settings.neonNight);
+    visible("water-description", !settings.neonNight);
     text("water-description", settings.oceanLab
         ? "Explore the beach and board the boat from the pier. The offshore depth is six metres. T operates the pier inlet; B resets the water."
         : hamiltonianWater
@@ -365,6 +402,9 @@ void Hud::update(float dt, float watts) {
         : game.nearbyOptic() > 0
             ? "F: lock prism + top-down tuning  ·  E: pick up"
             : "WASD: roll  ·  Space: jump  ·  E: grab  ·  Right drag: orbit  ·  Wheel: zoom";
+    if (settings.neonNight)
+        prompt = game.held >= 0 ? "Left click / X: throw neon block  ·  E: release  ·  WASD: roll"
+            : "WASD: roll  ·  Space: jump  ·  E: grab block  ·  Right drag: look  ·  Wheel: zoom  ·  Esc: settings";
     if (settings.oceanLab)
         prompt = game.held >= 0 ? "Left click / X: throw  ·  E: release"
                                : "WASD: move  ·  Space: jump / swim up  ·  Ctrl: dive  ·  E: grab  ·  Right drag: look";

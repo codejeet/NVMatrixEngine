@@ -1,6 +1,8 @@
 #pragma once
 #include "game.h"
 namespace lab {
+struct Mesh;
+Level makeNeonLevel(const std::vector<Mesh> &renderMeshes);
 Level makePlayLevel(bool fluidRoom = false, bool boat = false, bool deepPool = false,
                     bool largeWaterLab = false, bool oceanLab = false);
 void runPlayTests();

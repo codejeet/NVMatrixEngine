@@ -1,0 +1,484 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v4.0.44",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0,
+        1
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "exterior_aircon_unit",
+      "translation": [
+        -0.5,
+        0,
+        0
+      ]
+    },
+    {
+      "mesh": 1,
+      "name": "exterior_aircon_unit_rusted",
+      "translation": [
+        0.5,
+        0,
+        0
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "exterior_aircon_unit_01",
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "name": "exterior_aircon_unit_02",
+      "normalTexture": {
+        "index": 3
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 4
+        },
+        "metallicRoughnessTexture": {
+          "index": 5
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "exterior_aircon_unit_rusted_01",
+      "normalTexture": {
+        "index": 6
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 7
+        },
+        "metallicRoughnessTexture": {
+          "index": 8
+        }
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "name": "exterior_aircon_unit_rusted_02",
+      "normalTexture": {
+        "index": 9
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 10
+        },
+        "metallicRoughnessTexture": {
+          "index": 11
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "exterior_aircon_unit",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1
+        }
+      ]
+    },
+    {
+      "name": "exterior_aircon_unit_rusted",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 3,
+          "material": 2
+        },
+        {
+          "attributes": {
+            "POSITION": 11,
+            "NORMAL": 12,
+            "TEXCOORD_0": 13
+          },
+          "indices": 7,
+          "material": 3
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    },
+    {
+      "sampler": 0,
+      "source": 5
+    },
+    {
+      "sampler": 0,
+      "source": 6
+    },
+    {
+      "sampler": 0,
+      "source": 7
+    },
+    {
+      "sampler": 0,
+      "source": 8
+    },
+    {
+      "sampler": 0,
+      "source": 9
+    },
+    {
+      "sampler": 0,
+      "source": 10
+    },
+    {
+      "sampler": 0,
+      "source": 11
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_01_nor_gl",
+      "uri": "textures/exterior_aircon_unit_01_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_01_diff",
+      "uri": "textures/exterior_aircon_unit_01_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_01_metal-exterior_aircon_unit_01_rough",
+      "uri": "textures/exterior_aircon_unit_01_arm_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_02_nor_gl",
+      "uri": "textures/exterior_aircon_unit_02_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_02_diff-exterior_aircon_unit_01_opacity",
+      "uri": "textures/exterior_aircon_unit_01_opacity_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_02_metal-exterior_aircon_unit_02_rough",
+      "uri": "textures/exterior_aircon_unit_02_arm_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_01_nor_gl",
+      "uri": "textures/exterior_aircon_unit_rusted_01_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_01_diff",
+      "uri": "textures/exterior_aircon_unit_rusted_01_diff_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_01_metal-exterior_aircon_unit_rusted_01_rough",
+      "uri": "textures/exterior_aircon_unit_rusted_01_arm_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_02_nor_gl",
+      "uri": "textures/exterior_aircon_unit_rusted_02_nor_gl_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_02_diff-exterior_aircon_unit_rusted_02_opacity",
+      "uri": "textures/exterior_aircon_unit_rusted_02_opacity_1k.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "name": "exterior_aircon_unit_rusted_02_metal-exterior_aircon_unit_rusted_02_rough",
+      "uri": "textures/exterior_aircon_unit_rusted_02_arm_1k.jpg"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 6778,
+      "max": [
+        0.4072735011577606,
+        0.6078314781188965,
+        0.15819303691387177
+      ],
+      "min": [
+        -0.392697811126709,
+        -0.32006561756134033,
+        -0.21596616506576538
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 6778,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 6778,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 28305,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 63,
+      "max": [
+        0.25292447209358215,
+        0.5876679420471191,
+        0.06807062774896622
+      ],
+      "min": [
+        -0.37436529994010925,
+        0.12634438276290894,
+        -0.09422696381807327
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 63,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 63,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5123,
+      "count": 174,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5126,
+      "count": 6778,
+      "max": [
+        0.4072735011577606,
+        0.6078314781188965,
+        0.15819303691387177
+      ],
+      "min": [
+        -0.392697811126709,
+        -0.32006561756134033,
+        -0.21596616506576538
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 6778,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 10,
+      "componentType": 5126,
+      "count": 6778,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 11,
+      "componentType": 5126,
+      "count": 63,
+      "max": [
+        0.25292447209358215,
+        0.5876679420471191,
+        0.06807062774896622
+      ],
+      "min": [
+        -0.37436529994010925,
+        0.12634438276290894,
+        -0.09422696381807327
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 12,
+      "componentType": 5126,
+      "count": 63,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 13,
+      "componentType": 5126,
+      "count": 63,
+      "type": "VEC2"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 81336,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 81336,
+      "byteOffset": 81336,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 54224,
+      "byteOffset": 162672,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 56610,
+      "byteOffset": 216896,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 756,
+      "byteOffset": 273508,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 756,
+      "byteOffset": 274264,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 504,
+      "byteOffset": 275020,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 348,
+      "byteOffset": 275524,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 81336,
+      "byteOffset": 275872,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 81336,
+      "byteOffset": 357208,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 54224,
+      "byteOffset": 438544,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 756,
+      "byteOffset": 492768,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 756,
+      "byteOffset": 493524,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 504,
+      "byteOffset": 494280,
+      "target": 34962
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 494784,
+      "uri": "exterior_aircon_unit.bin"
+    }
+  ]
+}

@@ -1,0 +1,449 @@
+{
+  "date": "2026-09-18",
+  "scope": "engine-wide",
+  "implementation": "Restored static-CDF, stratified RIS; temporal-adaptive sampler removed",
+  "default": {
+    "mode": "ris",
+    "paths": 1,
+    "fullLightSamples": 2,
+    "importedCandidates": 4,
+    "surfaceBounces": 4,
+    "russianRoulette": true
+  },
+  "method": {
+    "adapter": "NVIDIA GeForce RTX 5090",
+    "frames": 240,
+    "warmupFrames": 32,
+    "output": [
+      1920,
+      1080
+    ],
+    "internal": [
+      1280,
+      720
+    ],
+    "dlss": "Quality Ray Reconstruction",
+    "frameGeneration": "off",
+    "ser": "off",
+    "atomics": "fixed",
+    "view": "stationary Neon entrance"
+  },
+  "measurements": [
+    {
+      "name": "reference",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "scope": "engine-wide",
+        "mode": "reference",
+        "paths": 1,
+        "lightSamples": 2,
+        "lightCandidates": 4,
+        "bounces": 4,
+        "russianRoulette": true
+      },
+      "adaptiveCacheBytes": 0,
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-reference",
+        "--path-samples=1",
+        "--light-samples=2",
+        "--path-bounces=4",
+        "--light-candidates=4",
+        "--light-sampling=reference",
+        "--russian-roulette=on",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 5.6902,
+          "p95Ms": 6.3329,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 5.546,
+          "p95Ms": 6.1991,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0285,
+          "p95Ms": 0.0309,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0071,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 3.9825,
+          "p95Ms": 4.723,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0119,
+          "p95Ms": 0.0145,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8611,
+          "p95Ms": 1.2293,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 4.973,
+          "p95Ms": 5.6723,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0062,
+          "p95Ms": 0.0884,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0004,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0142,
+          "p95Ms": 0.0145,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0161,
+          "p95Ms": 0.0164,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 175.74,
+      "rawReportSha256": "5f4ac9844721076020204617ab81d391e220091325851235bfac5c2ed186eb4d"
+    },
+    {
+      "name": "ris",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "scope": "engine-wide",
+        "mode": "ris",
+        "paths": 1,
+        "lightSamples": 2,
+        "lightCandidates": 4,
+        "bounces": 4,
+        "russianRoulette": true
+      },
+      "adaptiveCacheBytes": 0,
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-ris",
+        "--path-samples=1",
+        "--light-samples=2",
+        "--path-bounces=4",
+        "--light-candidates=4",
+        "--light-sampling=ris",
+        "--russian-roulette=on",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 4.3164,
+          "p95Ms": 4.9788,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 4.1538,
+          "p95Ms": 4.8052,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0285,
+          "p95Ms": 0.0309,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.007,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 2.3658,
+          "p95Ms": 3.2804,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0111,
+          "p95Ms": 0.0143,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8588,
+          "p95Ms": 1.2304,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 3.5418,
+          "p95Ms": 4.2531,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0062,
+          "p95Ms": 0.0884,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0004,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0142,
+          "p95Ms": 0.0145,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0161,
+          "p95Ms": 0.0164,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 231.67,
+      "rawReportSha256": "5b402ce671bc8abf614770a68a2c6b4921b17820dc2fb1c78a63bf88114b273a"
+    }
+  ],
+  "historicalComparison": {
+    "priorFastNeonMs": 4.06,
+    "revertedNeeATMs": 5.7951,
+    "note": "Historical runs on the same adapter and view; new measurement above determines restored performance."
+  },
+  "validation": {
+    "nodeTestsPassed": 243,
+    "transportVariantsCompiled": 6,
+    "gpuRuns": [
+      {
+        "name": "fast-options-neon",
+        "frames": 96,
+        "sampling": {
+          "scope": "engine-wide",
+          "mode": "ris",
+          "paths": 1,
+          "lightSamples": 2,
+          "lightCandidates": 4,
+          "bounces": 4,
+          "russianRoulette": true
+        },
+        "adaptiveCacheBytes": 0,
+        "rawReportSha256": "5fbb16f00f577d13d0939dd8e8a369775f2c73f6b0ab7bd8b8037b90a08b55de"
+      },
+      {
+        "name": "fast-options-water",
+        "frames": 96,
+        "sampling": {
+          "scope": "engine-wide",
+          "mode": "ris",
+          "paths": 1,
+          "lightSamples": 2,
+          "lightCandidates": 4,
+          "bounces": 4,
+          "russianRoulette": true
+        },
+        "adaptiveCacheBytes": 0,
+        "rawReportSha256": "dc477eb04fc779bdb53edd1f8dcddbd001ad789e955ac2dd3a707457b526e660"
+      },
+      {
+        "name": "fast-options-ocean",
+        "frames": 96,
+        "sampling": {
+          "scope": "engine-wide",
+          "mode": "ris",
+          "paths": 1,
+          "lightSamples": 2,
+          "lightCandidates": 4,
+          "bounces": 4,
+          "russianRoulette": true
+        },
+        "adaptiveCacheBytes": 0,
+        "rawReportSha256": "15f87fddcd114c2ec9886b781553f7fca7c3571d5c63ca81354317c49d41bb6e"
+      },
+      {
+        "name": "fast-water-launcher",
+        "frames": 8,
+        "sampling": {
+          "scope": "engine-wide",
+          "mode": "ris",
+          "paths": 1,
+          "lightSamples": 2,
+          "lightCandidates": 4,
+          "bounces": 4,
+          "russianRoulette": true
+        },
+        "adaptiveCacheBytes": 0,
+        "rawReportSha256": "74a331c423136a0d0d6faad7b01d24040e12d32898b3438e8634561de16b3438"
+      },
+      {
+        "name": "fast-neon-launcher",
+        "frames": 8,
+        "sampling": {
+          "scope": "engine-wide",
+          "mode": "ris",
+          "paths": 1,
+          "lightSamples": 2,
+          "lightCandidates": 4,
+          "bounces": 4,
+          "russianRoulette": true
+        },
+        "adaptiveCacheBytes": 0,
+        "rawReportSha256": "535770296e4b7574f5a6e6c585c0bbbfba954c29ecc00816911d37ccfa014065"
+      }
+    ],
+    "finiteCaptures": true,
+    "highBudgetQuality": {
+      "guides": {
+        "2": {
+          "maxAbs": 0.0,
+          "meanAbs": 0.0
+        },
+        "3": {
+          "maxAbs": 0.0,
+          "meanAbs": 0.0
+        },
+        "4": {
+          "maxAbs": 0.0,
+          "meanAbs": 0.0
+        },
+        "5": {
+          "maxAbs": 0.0,
+          "meanAbs": 0.0
+        }
+      },
+      "all": {
+        "referenceMeanRgb": [
+          0.21498690330645054,
+          0.1232913100326979,
+          0.17925124586563107
+        ],
+        "risMeanRgb": [
+          0.21548777179644762,
+          0.12361905469896506,
+          0.17995504083846314
+        ],
+        "relativeMeanRgbChange": [
+          0.0023297628008675905,
+          0.002658294945363438,
+          0.003926304497541098
+        ]
+      },
+      "floor": {
+        "referenceMeanRgb": [
+          0.059125745262419635,
+          0.023171104032131067,
+          0.04378303949623942
+        ],
+        "risMeanRgb": [
+          0.060574147112211166,
+          0.023724451336235113,
+          0.045175606591543946
+        ],
+        "relativeMeanRgbChange": [
+          0.02449697409077964,
+          0.023880920966766504,
+          0.031806085446035214
+        ]
+      }
+    },
+    "qualityLimit": "Single noisy frame per mode, eight paths/eight light samples. Mean agreement is a sanity check, not a convergence proof."
+  },
+  "sourceSha256": {
+    "engine/src/experience.h": "2f4dfa1638732c413bfc6c7fe78dd9d1347f7f57ba5e4050e48a8443a81fad39",
+    "engine/src/renderer.cpp": "7001987663594c523dc79a96609f4902f60cef2903b744229dbd2532bff22344",
+    "engine/src/renderer.h": "6de64c639efefaca8e9f208d6c8bf67dce9495a7e8827f2209b94746ce311d80",
+    "engine/src/model_gpu.cpp": "aed366992cffda9ceba35249b3b0652be317086d09756625d0f90802b63ee0cf",
+    "engine/src/main.cpp": "bcf8a6b9b2ed785085d16758d88f53022c2df7eb5effbccb2a534cf28214e6e3",
+    "engine/src/hud.cpp": "05a6b924f48838ae6147234a7ca48778c5934ce4b0186a0c724a53b2837c6ebe",
+    "engine/ui/lab.rml": "f1ec1e88ce11419a3501241bf16989fffc4f401e598a6a550ca6f3c6e179bcea",
+    "engine/compile-shaders.ps1": "ecb6ba04e5464fc75e7de0d63f1a4554b56e253dd7380fc380b4e6a0fa5a9e81",
+    "engine/profile-neon.ps1": "8d9d04272b0c5fad505eb4567492b2fb8b69821d01f45c26abee60eaeb9b534a",
+    "engine/shaders/transport.hlsl": "3a41a3e2c1c7bbf2c6af1e2896080d7ea8cac3a96e22e49516953a0d681ebd7d",
+    "engine/shaders/model-nee.hlsli": "aa91e342383b8d276c00fbb6d05b5974bfe8274d56f1593f2e4c01e248bac83e",
+    "engine/shaders/model-path.hlsli": "7c3f4db47b33aa2c98af14beef71bf23183f9cf49ae2ccdfb8dc88f3fd68aa63",
+    "engine/shaders/model-light.hlsli": "0d60ea51fbe8f53aab11776fc02c0723286f3fde6a54f5f4d4afb33332d6109d",
+    "engine/shaders/model-emitter.hlsli": "6d1992fc20652a216ff9cb3cef51077d1350c17e0c2c905e15418dbf075e102e",
+    "engine/shaders/common.hlsli": "d0a9d224cc4a0d1f46fc9b9cb92178bb18fbac9c819c8508fd8c116087ad6484"
+  },
+  "executableSha256": "dae7d93dd7439fa855e78fa03137046f49534c42851a393364627861d3e1cf25"
+}

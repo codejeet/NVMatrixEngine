@@ -7,6 +7,11 @@ function Get-Pinned($url, $file, $hash) {
   if (!(Test-Path $file)) { Invoke-WebRequest $url -OutFile $file -UseBasicParsing }
   if ((Get-FileHash $file -Algorithm SHA256).Hash.ToLowerInvariant() -ne $hash) { throw "Checksum mismatch: $file" }
 }
+Get-Pinned 'https://codeload.github.com/assimp/assimp/tar.gz/refs/tags/v5.4.3' "$deps/assimp-5.4.3.tar.gz" '66dfbaee288f2bc43172440a55d0235dfc7bf885dda6435c038e8000e79582cb'
+if (!(Test-Path "$deps/assimp-5.4.3/CMakeLists.txt")) {
+  tar -xzf "$deps/assimp-5.4.3.tar.gz" -C $deps
+  if ($LASTEXITCODE) { throw 'Assimp extraction failed.' }
+}
 Get-Pinned 'https://api.nuget.org/v3-flatcontainer/microsoft.direct3d.d3d12/1.619.5/microsoft.direct3d.d3d12.1.619.5.nupkg' "$deps/agility-1.619.5.zip" '0e9bcf32aac9a79343ede9b21e4864950ee54577e3d8e19bfcdf002bb4e9bfd6'
 Get-Pinned 'https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2607/dxc_2026_07_29.zip' "$deps/dxc-1.9.2607.zip" 'a1dfb116ba3eeae6a1582291b53a8e7bf65ad760676bd3194685c8f7367cd241'
 Get-Pinned 'https://codeload.github.com/NVIDIA-RTX/RTXDI-Library/tar.gz/f12037fa8e97ebc08e9e3edfd2de528ed1772a4b' "$deps/rtxdi-f12037fa.tar.gz" '4f38eed1afafb9632c2d4bee6ab68d4a472b2e1b7fffe9757f92a199bea9f36d'

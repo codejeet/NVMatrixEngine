@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "hud.h"
 #include "orbit.h"
+#include "startup.h"
 #include <shellapi.h>
 #include <windowsx.h>
 #include <algorithm>
@@ -18,6 +19,7 @@ lab::OrbitInput orbitInput;
 Game *activeGame = nullptr;
 lab::Hud *activeHud = nullptr;
 lab::Renderer *activeRenderer = nullptr;
+lab::StartupScreen *activeStartup = nullptr;
 uint32_t viewWidth = 1280, viewHeight = 720;
 XMFLOAT3 dragPoint{};
 bool onPlane(int x, int y, XMFLOAT3 &point) {
@@ -45,6 +47,9 @@ int mouseX = 0, mouseY = 0;
 float azimuth = .48f, elevation = .40f, angle = DirectX::XM_PI / 6;
 uint32_t pendingWidth = 0, pendingHeight = 0;
 LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM w, LPARAM l) {
+    LRESULT startupResult = 0;
+    if (activeStartup && activeStartup->message(msg, w, l, startupResult))
+        return startupResult;
     // F10 is delivered as a system key by Windows; retain Alt/menu shortcuts.
     if (w == VK_F10 && !(l & (1LL << 29)) && (msg == WM_SYSKEYDOWN || msg == WM_SYSKEYUP))
         msg = msg == WM_SYSKEYDOWN ? WM_KEYDOWN : WM_KEYUP;
@@ -455,12 +460,18 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             if (std::wstring_view(argv[i]).starts_with(L"--frames=") ||
                 std::wstring_view(argv[i]) == L"--self-test")
                 automation = true;
+        const auto launchFolder = std::filesystem::current_path();
         std::filesystem::path folder = executableFolder();
         std::filesystem::current_path(folder);
         std::ofstream("NVMatrixEngine.log", std::ios::trunc)
             << "NVMatrixEngine | Native DXR Fluid Lab | Research preview\n";
         for (int i = 1; i < argc; ++i) {
             std::wstring wide = argv[i];
+            if (wide.starts_with(L"--model=")) {
+                if (wide.size() == 8) throw std::runtime_error("--model requires a .gltf, .glb or .obj path");
+                options.models.push_back(std::filesystem::absolute(launchFolder / wide.substr(8)));
+                continue;
+            }
             std::string arg;
             for (wchar_t c : wide) {
                 if (c > 127)
@@ -469,8 +480,52 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             }
             // Keep independent subsystem options outside MSVC's bounded
             // nesting depth for the older monolithic else-if parser.
+            if (arg == "--scene=neon-night" || arg == "--neon-controls-test") {
+                options.neonNight = true;
+                options.neonControlsTest |= arg == "--neon-controls-test";
+                normalLens = true;
+                continue;
+            }
             if (arg == "--dlss-settings-test") {
                 dlssSettingsTest = true;
+                continue;
+            }
+            if (arg == "--sampling-controls-test") {
+                options.samplingControlsTest = true;
+                continue;
+            }
+            if (arg == "--model-anyhit-reference") {
+                options.modelAnyHitReference = true;
+                continue;
+            }
+            if (arg == "--neon-reference") {
+                options.sampling.mode = 0;
+                options.sampling.roulette = false;
+                continue;
+            }
+            if (arg.starts_with("--light-sampling=")) {
+                auto mode = arg.substr(17);
+                if (mode != "reference" && mode != "ris")
+                    throw std::runtime_error("Light sampling must be reference or ris (NEE-AT was reverted)");
+                options.sampling.mode = mode == "reference" ? 0u : 1u;
+                continue;
+            }
+            if (arg.starts_with("--russian-roulette=")) {
+                auto value = arg.substr(19);
+                if (value != "on" && value != "off")
+                    throw std::runtime_error("Russian roulette must be on or off");
+                options.sampling.roulette = value == "on";
+                continue;
+            }
+            if (arg.starts_with("--neon-path-samples=") || arg.starts_with("--neon-light-samples=") ||
+                arg.starts_with("--neon-bounces=") || arg.starts_with("--neon-light-candidates=") ||
+                arg.starts_with("--path-samples=") || arg.starts_with("--light-samples=") ||
+                arg.starts_with("--path-bounces=") || arg.starts_with("--light-candidates=")) {
+                auto count = number(arg.substr(arg.find('=') + 1), 1, 8);
+                if (arg.find("path-samples=") != std::string::npos) options.sampling.paths = count;
+                else if (arg.find("light-samples=") != std::string::npos) options.sampling.lights = count;
+                else if (arg.find("light-candidates=") != std::string::npos) options.sampling.candidates = count;
+                else options.sampling.bounces = count;
                 continue;
             }
             if (arg == "--lambertian-reference") {
@@ -495,6 +550,21 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             }
             if (arg == "--normal-lens") {
                 normalLens = true;
+                continue;
+            }
+            if (arg.starts_with("--model-scale=") || arg.starts_with("--model-x=") ||
+                arg.starts_with("--model-y=") || arg.starts_with("--model-z=")) {
+                const auto text = arg.substr(arg.find('=') + 1);
+                size_t consumed = 0;
+                const float x = std::stof(text, &consumed);
+                if (consumed != text.size() || !std::isfinite(x))
+                    throw std::runtime_error("Model placement requires a finite number");
+                if (arg.starts_with("--model-scale=")) {
+                    if (x <= 0) throw std::runtime_error("--model-scale must be positive");
+                    options.modelScale = x;
+                } else if (arg[8] == 'x') options.modelPosition.x = x;
+                else if (arg[8] == 'y') options.modelPosition.y = x;
+                else options.modelPosition.z = x;
                 continue;
             }
             if (arg == "--fluid-narrow-band") {
@@ -953,6 +1023,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             else
                 throw std::runtime_error("Unknown lab argument: " + arg);
         }
+        if (options.samplingControlsTest && (options.frames != 96 || options.fixture))
+            throw std::runtime_error("Sampling controls test requires --frames=96 and a gameplay scene");
+        if (options.neonNight) {
+            if (options.fixture || options.fluid || options.animate || options.temporalTest || options.orbitTest || options.gameplayTest)
+                throw std::runtime_error("Neon Night is a playable alley; remove optical/fluid/legacy gameplay fixtures");
+            if (options.neonControlsTest && options.frames != 180)
+                throw std::runtime_error("Neon controls test requires --frames=180");
+            options.water = options.lasers = options.haze = false;
+            options.models.insert(options.models.begin(), folder / "assets/neon-night/neon-night.gltf");
+        }
         if (selfTest) {
             lab::runPlayTests();
             runAudioTests(folder / "assets/audio");
@@ -1160,7 +1240,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             throw std::runtime_error("Register lab window failed");
         RECT rect{0, 0, LONG(options.width), LONG(options.height)};
         AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
-        window = CreateWindowW(wc.lpszClassName, L"NVMatrixEngine • Fluid Lab",
+        window = CreateWindowW(wc.lpszClassName, options.neonNight ? L"NOCTURNE | NVMatrixEngine" : L"NVMatrixEngine • Fluid Lab",
                                WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left,
                                rect.bottom - rect.top, nullptr, nullptr, instance, nullptr);
         if (!window)
@@ -1170,21 +1250,24 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             rawMouse = RegisterRawInputDevices(&mouse, 1, sizeof(mouse)) != FALSE;
             logLine(rawMouse ? "Orbit: raw mouse input" : "Orbit: legacy mouse fallback");
         }
+        lab::StartupScreen startup(window, options.neonNight ? L"Neon Night" : L"NVMatrixEngine");
+        activeStartup = &startup;
         ShowWindow(window, SW_SHOW);
+        UpdateWindow(window);
         {
-            lab::Renderer renderer(window, folder, options);
+            lab::Renderer renderer(window, folder, options, &startup);
             // This explicit UI fixture exercises Float -> Sink -> Float. The
             // actual Water Lab default is solid glass / Sink.
             if (options.experienceTest)
                 renderer.experience.ballFloats = true;
             if (underwaterView)
                 renderer.experience.firstPerson = true;
-            activeRenderer = &renderer;
             std::unique_ptr<Game> game;
             std::unique_ptr<lab::Hud> hud;
             if (!options.fixture) {
-                game = std::make_unique<Game>(std::vector<Level>{
-                    lab::makePlayLevel(options.fluidRoom, options.boat, options.fluidDeepPool, options.largeWaterLab, options.oceanLab)});
+                startup.run(L"Building player collisions", [&] {
+                    game = std::make_unique<Game>(std::vector<Level>{renderer.playLevel()});
+                });
                 if (options.oceanLab) {
                     game->azimuth = 1.25f;
                     game->elevation = .30f;
@@ -1199,18 +1282,19 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                     game->elevation = .28f;
                     game->distance = 5.5f;
                 }
+                startup.phase(L"Preparing controls");
                 hud = std::make_unique<lab::Hud>(renderer.uiDevice(), window, folder, *game,
                                                  renderer.experience, automation);
                 hud->rendererStatus = options.restirPt
                                           ? "RTXDI ReSTIR PT: opaque diffuse GI · photon caustics · DLSS-RR"
                                           : "Baseline diffuse GI · photon caustics · DLSS-RR";
+                if (options.neonNight)
+                    hud->rendererStatus = "Imported PBR materials · emissive area lights · DLSS Ray Reconstruction";
                 hud->hamiltonianWater = options.hamiltonian.enabled;
                 hud->largeWaterLab = options.largeWaterLab;
                 if (options.hamiltonian.enabled)
                     hud->rendererStatus = "Hamiltonian HOS-" + std::to_string(options.hamiltonian.order) +
                                           " waves + local 3D flow · " + hud->rendererStatus;
-                activeGame = game.get();
-                activeHud = hud.get();
                 if (options.fluidColliderTest) {
                     game->place(0, {2.7f, .72f, -3.7f});
                     game->place(1, {3.65f, 1.2f, -3.1f}, XM_PI / 4);
@@ -1225,6 +1309,15 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                         game->beginTuning();
                 }
             }
+            startup.phase(L"Opening scene");
+            startup.finish();
+            activeStartup = nullptr;
+            activeRenderer = &renderer;
+            activeGame = game.get();
+            activeHud = hud.get();
+            SetWindowTextW(window, options.neonNight ? L"NOCTURNE | NVMatrixEngine" : L"NVMatrixEngine | Fluid Lab");
+            logLine("Startup: ready in " + std::to_string(std::chrono::duration<double>(
+                std::chrono::steady_clock::now() - applicationStart).count()) + " s");
             auto previousTime = std::chrono::steady_clock::now();
             XMFLOAT3 testStart{};
             XMFLOAT3 boatTestStart{};
@@ -1245,7 +1338,9 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 send(WM_KEYDOWN, w);
                 send(WM_KEYUP, w);
             };
-            pendingWidth = pendingHeight = 0;
+            // Preserve user resizes received while background setup was running.
+            if (pendingWidth == options.width && pendingHeight == options.height)
+                pendingWidth = pendingHeight = 0;
             auto pumpMessages = [&] {
                 MSG msg;
                 while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -1321,6 +1416,150 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                              MAKELPARAM(options.width + (f == 180 ? 1 : 0),
                                         options.height + (f == 180 ? 1 : 0)));
                     applyResize();
+                }
+                if (options.samplingControlsTest) {
+                    auto &s = renderer.experience.sampling;
+                    switch (renderer.frame) {
+                    case 10: key(VK_ESCAPE); break;
+                    case 12:
+                        require(game->paused && hud->testVisible("pause"), "Sampling menu did not open");
+                        hud->testClick("light-sampling"); break;
+                    case 14:
+                        require(s.mode == 0, "Reference sampling menu option failed");
+                        hud->testValue("path-samples", 2); hud->testValue("light-samples", 3);
+                        hud->testValue("light-candidates", 5); hud->testValue("path-bounces", 5);
+                        hud->testClick("russian-roulette"); break;
+                    case 16:
+                        require(s.paths == 2 && s.lights == 3 && s.candidates == 5 && s.bounces == 5 && !s.roulette,
+                                "Engine-wide sampling controls did not apply"); break;
+                    case 20: hud->testClick("light-sampling"); break;
+                    case 24: require(s.mode == 1, "RIS sampling menu option failed"); break;
+                    case 28: hud->testClick("light-sampling"); break;
+                    case 30: require(s.mode == 0, "Reference re-selection failed"); break;
+                    case 32: hud->testClick("light-sampling"); break;
+                    case 36:
+                        hud->testValue("path-samples", 1); hud->testValue("light-samples", 2);
+                        hud->testValue("light-candidates", 4); hud->testValue("path-bounces", 4);
+                        hud->testClick("russian-roulette"); break;
+                    case 44: case 48: hud->testClick("flashlight"); break;
+                    case 52: hud->testClick("dlss-balanced"); break;
+                    case 60: hud->testClick("dlss-quality"); break;
+                    case 64: key(VK_ESCAPE); break;
+                    case 80: key('R'); break;
+                    case 95:
+                        require(s == lab::SamplingSettings{} && !game->paused, "Sampling test did not restore defaults");
+                        logLine("PASS: engine-wide reference/RIS, sample budgets, roulette, flashlight, resize and restart");
+                        break;
+                    }
+                }
+                if (options.neonControlsTest) {
+                    auto &g = *game;
+                    switch (renderer.frame) {
+                    case 10:
+                        require(g.grounded(), "Neon player did not settle on imported pavement");
+                        testStart = g.playerPosition();
+                        send(WM_KEYDOWN, 'W');
+                        break;
+                    case 42: key(VK_SPACE); break;
+                    case 50: send(WM_KEYUP, 'W'); break;
+                    case 56:
+                        require(g.playerPosition().z > testStart.z + .8f && g.jumps == 1,
+                                "Neon keyboard movement/jump failed");
+                        key(VK_TAB);
+                        break;
+                    case 60:
+                        require(g.firstPerson, "Neon Tab did not switch to first person");
+                        key(VK_TAB);
+                        break;
+                    case 90:
+                        key(VK_ESCAPE);
+                        require(g.paused, "Neon Esc did not pause");
+                        testStart = g.playerPosition();
+                        break;
+                    case 92:
+                        require(hud->testVisible("pause"), "Neon settings overlay is hidden");
+                        require(!hud->testVisible("receiver") && !hud->testVisible("water-settings"),
+                                "Neon HUD retained receiver/liquid controls");
+                        hud->testClick("dlss-balanced");
+                        break;
+                    case 94:
+                        require(renderer.dlssQuality() == 1 && renderer.streamlineState().renderWidth < options.width,
+                                "Neon DLSS quality setting did not apply");
+                        hud->testClick("lens");
+                        hud->testValue("lens-fov", 120);
+                        break;
+                    case 98:
+                        require(renderer.experience.lens.fisheye && renderer.experience.lens.diagonalDegrees == 120,
+                                "Neon lens/FOV controls failed");
+                        hud->testClick("flashlight");
+                        require(renderer.experience.flashlight, "Neon flashlight setting failed");
+                        break;
+                    case 100: case 102: case 104:
+                        hud->testClick("environment");
+                        require(renderer.experience.environment == (renderer.frame - 98) / 2,
+                                "Neon lighting setting failed");
+                        break;
+                    case 105:
+                        require(g.playerPosition().x == testStart.x && g.playerPosition().z == testStart.z,
+                                "Neon player moved while the settings menu was open");
+                        break;
+                    case 106:
+                        hud->testClick("environment");
+                        hud->testClick("flashlight");
+                        break;
+                    case 108:
+                        hud->testClick("lens");
+                        hud->testValue("lens-fov", 90);
+                        hud->testClick("dlss-quality");
+                        break;
+                    case 110: hud->testClick("view"); break;
+                    case 112:
+                        require(g.firstPerson, "Neon menu view setting failed");
+                        hud->testClick("view");
+                        break;
+                    case 114:
+                        hud->testClick("resume");
+                        require(!g.paused, "Neon Resume button failed");
+                        break;
+                    case 120: key('R'); break;
+                    case 121:
+                        require(std::abs(g.playerPosition().z + 3) < .01f && std::abs(g.azimuth - XM_PI) < 1e-5f,
+                                "Neon restart lost player spawn or camera direction");
+                        break;
+                    case 130: key(VK_ESCAPE); break;
+                    case 135:
+                        key(VK_ESCAPE);
+                        require(!g.paused, "Neon Esc did not resume");
+                        break;
+                    case 148:
+                        // FPS samples use a 500 ms wall-clock window, reset by
+                        // the DLSS change at frame 108. Fast GPUs can reach the
+                        // assertion before that window elapses. Leave one HUD
+                        // update after the wait; do not change real play pacing.
+                        Sleep(550);
+                        break;
+                    case 150:
+                        require(hud->testText("render-fps").find("--") == std::string::npos &&
+                                hud->testText("output-fps").find("--") == std::string::npos,
+                                "Neon FPS counters never updated");
+                        orbitStart = g.azimuth;
+                        send(WM_RBUTTONDOWN, MK_RBUTTON, MAKELPARAM(300,300));
+                        send(WM_MOUSEMOVE, MK_RBUTTON, MAKELPARAM(380,300));
+                        break;
+                    case 154:
+                        send(WM_RBUTTONUP, 0, MAKELPARAM(380,300));
+                        require(std::abs(g.azimuth - orbitStart) > .1f, "Neon orbit input failed");
+                        orbitStart = g.distance;
+                        send(WM_MOUSEWHEEL, MAKEWPARAM(0,WHEEL_DELTA));
+                        require(g.distance != orbitStart, "Neon wheel zoom failed");
+                        break;
+                    case 165: key('R'); break;
+                    case 179:
+                        require(!g.won && !g.gateOpen && !g.paused && !g.firstPerson && renderer.dlssQuality() == 0,
+                                "Neon controls did not return to playable state");
+                        logLine("PASS: Neon keyboard rolling/jump, orbit/zoom, Tab, FPS, Esc pause/resume, DLSS, lens/FOV, lighting, flashlight and restart");
+                        break;
+                    }
                 }
                 renderer.beginSimulation();
                 // A ready display event can win the wait while input is queued.
@@ -2159,6 +2398,18 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 }
                 renderer.endSimulation();
                 renderer.render(rotation, cameraAzimuth, elevation, game.get(), hud.get(), dt);
+                if (options.samplingControlsTest && options.capture &&
+                    (renderer.frame == 18 || renderer.frame == 26 || renderer.frame == 34 || renderer.frame == 62)) {
+                    const auto prefix = folder / (name + "-sampling-" + std::to_string(renderer.frame));
+                    renderer.capture(prefix);
+                    renderer.report(prefix.string() + ".json");
+                }
+                if (options.neonControlsTest && options.capture &&
+                    (renderer.frame == 96 || renderer.frame == 105 || renderer.frame == 132)) {
+                    const auto prefix = folder / (name + "-menu-" + std::to_string(renderer.frame));
+                    renderer.capture(prefix);
+                    renderer.report(prefix.string() + ".json");
+                }
                 if (dlssSettingsTest && options.capture &&
                     (renderer.frame == 32 || renderer.frame == 80 || renderer.frame == 128 ||
                      renderer.frame == 176 || renderer.frame == 182)) {
@@ -2219,8 +2470,9 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 // The HUD already owns live FPS. Repainting the OS caption every
                 // 15 frames adds periodic main-thread work during smooth orbit.
                 if (renderer.frame == 15)
-                    SetWindowTextW(window, L"NVMatrixEngine | Fluid Lab | WASD: roll · "
-                                           L"F: tune · Esc: pause");
+                    SetWindowTextW(window, options.neonNight
+                        ? L"NOCTURNE | WASD: roll · Space: jump · Right drag: look · Esc: settings"
+                        : L"NVMatrixEngine | Fluid Lab | WASD: roll · F: tune · Esc: pause");
                 const auto wholeFrameEnd = std::chrono::steady_clock::now();
                 renderer.finishFrameProfile(
                     std::chrono::duration<double, std::milli>(wholeFrameEnd - wholeFrameStart).count(),
@@ -2252,7 +2504,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
         }
         DestroyWindow(window);
         return 0;
+    } catch (const lab::StartupCancelled &) {
+        activeStartup = nullptr;
+        activeGame = nullptr;
+        activeHud = nullptr;
+        activeRenderer = nullptr;
+        logLine("Startup: canceled before gameplay");
+        if (window) DestroyWindow(window);
+        return 0;
     } catch (const std::exception &e) {
+        activeStartup = nullptr;
         activeGame = nullptr;
         activeHud = nullptr;
         activeRenderer = nullptr;

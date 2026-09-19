@@ -1,7 +1,7 @@
 param(
   [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineHgi/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
-  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.3-preview',
+  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.4-preview',
   [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
   [switch]$AllowUnverifiedFrameGeneration,
   [switch]$SkipValidation
@@ -36,6 +36,10 @@ $nvidia = @('sl.interposer.dll','sl.common.dll','sl.dlss_d.dll','sl.dlss.dll',
 $payload = @('NVMatrixFluidLab.exe','WinPixEventRuntime.dll','D3D12/D3D12Core.dll',
   'assets/CIE_xyz_1931_2deg.csv','assets/ocean/day.hdr','assets/ocean/night.hdr','assets/ocean/README.md',
   'ui/lab.rml','ui/lab.rcss','ui/Poppins-Regular.ttf','shaders/ui.hlsl') + $nvidia
+$neonFiles = @(Get-ChildItem "$PSScriptRoot/assets/neon-night" -Recurse -File | ForEach-Object {
+  'assets/neon-night/' + $_.FullName.Substring((Get-Item "$PSScriptRoot/assets/neon-night").FullName.Length + 1).Replace('\','/')
+})
+$payload += $neonFiles
 $payload += @(Get-ChildItem "$runtime/shaders" -Filter '*.dxil' -File | ForEach-Object { "shaders/$($_.Name)" })
 if (@($payload | Where-Object { $_ -like '*.dxil' }).Count -lt 30) { throw 'Compile the renderer shaders first.' }
 foreach ($cue in @('tick','rotate','dock','grab','throw','jump','unlock','click','victory')) { $payload += "assets/audio/$cue.wav" }
@@ -46,7 +50,7 @@ foreach ($relative in $payload) {
   }
 }
 if (!$SkipValidation) {
-  foreach ($relative in @('ui/lab.rml','ui/lab.rcss','assets/ocean/day.hdr','assets/ocean/night.hdr','assets/ocean/README.md')) {
+  foreach ($relative in (@('ui/lab.rml','ui/lab.rcss','assets/ocean/day.hdr','assets/ocean/night.hdr','assets/ocean/README.md') + $neonFiles)) {
     if ((Get-FileHash "$PSScriptRoot/$relative").Hash -ne (Get-FileHash "$runtime/$relative").Hash) { throw "Stale runtime asset: $relative" }
   }
   if ((Get-FileHash "$runtime/assets/CIE_xyz_1931_2deg.csv").Hash.ToLowerInvariant() -ne 'fa663e3535a7e0763a745993a1f0a192eb0275ac46ad2d1befd7626841e713c1') { throw 'CIE dataset differs from its licensed source.' }
@@ -77,7 +81,8 @@ function Copy-Payload([string]$Source,[string]$Relative) {
 foreach ($relative in $payload) { Copy-Payload "$runtime/$relative" $relative }
 foreach ($file in $vc) { Copy-Payload "$crt/$file" $file }
 foreach ($file in @('Streamline-LICENSE.txt','NVAPI-LICENSE.txt','RTXDI-LICENSE.txt','Bullet-LICENSE.txt',
-  'RmlUi-LICENSE.txt','FreeType-LICENSE.txt','miniaudio-LICENSE.txt','Font-LICENSE.txt','PIX-LICENSE.txt','PIX-ThirdPartyNotices.txt')) {
+  'RmlUi-LICENSE.txt','FreeType-LICENSE.txt','miniaudio-LICENSE.txt','Font-LICENSE.txt','PIX-LICENSE.txt','PIX-ThirdPartyNotices.txt',
+  'Assimp-LICENSE.txt','RapidJSON-LICENSE.txt','zlib-LICENSE.txt','stb-image-LICENSE.txt')) {
   Copy-Payload "$runtime/$file" "licenses/$file"
 }
 Copy-Payload "$deps/external/ngx-sdk/license.txt" 'licenses/NVIDIA-RTX-SDK-LICENSE.txt'
@@ -92,8 +97,12 @@ foreach ($file in Get-ChildItem "$repo/release" -File | Where-Object { $_.Extens
   if (!$cudaEnabled -and $file.Name -in @('Play CUDA Water Lab.cmd','Play Deep Pool.cmd','Play Narrow Band Deep Pool.cmd')) { continue }
   Copy-Payload $file.FullName $file.Name
 }
-foreach ($file in @('README.md','HAMILTONIAN_WATER.md','OCEAN_LAB.md')) { Copy-Payload "$PSScriptRoot/$file" "engine/$file" }
+foreach ($file in @('README.md','HAMILTONIAN_WATER.md','OCEAN_LAB.md','MODEL_LOADING.md','NEON_NIGHT.md','NEON_PERFORMANCE.md','RTXPT_COMPARISON.md','RENDER_SAMPLING.md','neon-performance.json','rtxpt-performance.json','sampling-validation.json','profile-neon.ps1')) { Copy-Payload "$PSScriptRoot/$file" "engine/$file" }
+Copy-Payload "$PSScriptRoot/Play Neon Night.cmd" 'engine/Play Neon Night.cmd'
 Copy-Payload "$PSScriptRoot/assets/ocean/README.md" 'engine/assets/ocean/README.md'
+Copy-Payload "$PSScriptRoot/assets/neon-night/README.md" 'engine/assets/neon-night/README.md'
+Copy-Payload "$PSScriptRoot/assets/neon-night/assets.json" 'engine/assets/neon-night/assets.json'
+Copy-Payload "$PSScriptRoot/neon-night-validation.json" 'engine/neon-night-validation.json'
 Copy-Payload "$repo/release/NOTES.md" 'release/NOTES.md'
 foreach ($file in Get-ChildItem "$repo/docs" -Recurse -File | Where-Object { $_.Extension -in '.md','.png','.gif' }) {
   $relative = $file.FullName.Substring($repo.Length + 1).Replace('\','/')

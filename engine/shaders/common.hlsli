@@ -18,6 +18,8 @@ cbuffer Frame : register(b0) {
     float4 OpticalParameters; // dt, reprojection tolerance, variance scale, receiver irradiance scale
     float4 Lighting, FlashlightOrigin, FlashlightDirection;
     uint4 CameraState;
+    uint4 Sampling; // base camera paths, full light samples, candidates, surface bounces
+    uint4 SamplingState; // mode (reference/RIS), roulette, reserved, reserved
 };
 #include "fluid/field.hlsli"
 RaytracingAccelerationStructure Scene : register(t0);

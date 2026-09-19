@@ -10,7 +10,7 @@ NVMatrixEngine couples **APIC/FLIP fluid simulation** with **DirectX Raytracing 
 
 The flagship **Water Lab** is a playable, room-scale pool: open the wall inlet, roll or dive as a sinking glass ball, propel a buoyant boat, and watch animated water redirect light onto the white grid floor. Source, a portable Windows demo, real engine videos, numerical tests and implementation notes are included.
 
-[Download Water Lab v0.1.3](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.3-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
+[Download Water Lab v0.1.4](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.4-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
 
 ![NVMatrixEngine Water Lab: path-traced water, glass and spectral illumination](docs/screenshots/water-room.png)
 
@@ -36,12 +36,18 @@ The renderer traces from **both the camera and the lights**, combining eye-path 
 
 That is a hybrid, two-sided transport architecture—not a claim that general bidirectional path tracing with vertex connection/MIS, or **ReSTIR BDPT**, is complete. The optional **ReSTIR PT** mode is implemented for multi-bounce diffuse indirect lighting from opaque primary surfaces. It does not yet reuse GI behind refractive camera prefixes. [Algorithm details and scope](docs/ARCHITECTURE.md#light-transport).
 
+**Engine-wide rendering defaults:** fast RIS light sampling, one base camera path, two full light samples, four imported-light candidates, four surface bounces, and Russian roulette. Adjust them under **Esc → Path tracing**. [Settings and prior measurements](engine/RENDER_SAMPLING.md).
+
+**Neon Night:** launch `engine/Play Neon Night.cmd` or `NVMatrixFluidLab.exe --scene=neon-night` for a playable wet neon alley with imported CC0 props, PBR materials, the rolling ball, FPS display and Esc settings. [Scene and credits](engine/NEON_NIGHT.md).
+
 ## Engine development
 
 The engine integrates **real-time liquid rendering**, **GPU particle-grid simulation**, **refractive caustics**, and interactive rigid-body gameplay. Water participates in reflections, underwater views and light transport. These entry points explain how the engine's simulation and renderer work together.
 
 | Engine subsystem | Start here |
 | --- | --- |
+| How do I load glTF, GLB or OBJ objects with PBR textures? | [Model loading and material support](engine/MODEL_LOADING.md) |
+| Where is the neon alley scene? | [Neon Night: launch, assets and rendering](engine/NEON_NIGHT.md) |
 | How do APIC/FLIP transfers and incompressible pressure projection map to GPU compute? | [Fluid solver architecture](docs/ARCHITECTURE.md#liquid-solver), [MAC implementation](engine/src/fluid/fluid_mac.cpp), [HLSL kernels](engine/shaders/fluid/) |
 | How can a ray tracer intersect a particle-reconstructed liquid without meshing? | [Anisotropic reconstruction](engine/shaders/fluid/reconstruction.hlsl), [procedural DXR intersection](engine/shaders/fluid/intersection.hlsli), [scalar-field representation](docs/ARCHITECTURE.md#surface-representation-and-intersection) |
 | How are dynamic water and glass caustics computed? | [Spectral photon transport](engine/shaders/transport.hlsl), [photon sampling](engine/shaders/photon-sampling.hlsli), [water optics](engine/WATER_OPTICS.md) |
@@ -87,7 +93,7 @@ https://github.com/user-attachments/assets/74b52c64-3163-4d68-ab98-331f22f1a4bf
 
 ### Try it
 
-1. Download the ZIP from the [v0.1.3 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.3-preview).
+1. Download the ZIP from the [v0.1.4 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.4-preview).
 2. Extract the **entire** folder to a writable location; do not run inside the ZIP.
 3. Open **Play Water Lab.cmd**, or double-click `NVMatrixFluidLab.exe` for the default water room.
 4. Press **Esc** for DLSS RR Quality/Balanced/Performance, frame generation, lighting, lens, buoyancy, water quality, and music settings.
@@ -114,7 +120,7 @@ In the indoor labs, the glass ball starts as **solid glass in Sink mode (2,500 k
 ## Hardware and performance
 
 - Windows 11 x64 and a high-end NVIDIA RTX GPU are the intended platform.
-- Development runs use an **RTX 5090**. The v0.1.3 package is rebuilt and validated on that development machine. Other GPUs are not certified by this preview.
+- Development runs use an **RTX 5090**. The v0.1.4 package uses the existing optimized build; release tests were skipped at the maintainer's request. Other GPUs are not certified by this preview.
 - DLSS feature availability is queried at runtime. Frame generation depends on GPU, driver, OS configuration, and supported presentation mode; it does not accelerate simulation or raw rendering.
 - Both normal and fisheye lenses support FG. The HUD reports actual presentations so you can see whether extra frames are being generated. See [validation scope](docs/VALIDATION.md).
 - This portable release uses DX12 fluid simulation. Optional CUDA experiments remain available in source builds.

@@ -2,6 +2,7 @@
 #include "ocean_environment.h"
 #include "gpu_diagnostics.h"
 #include "hud.h"
+#include "startup.h"
 #include "water.h"
 #include "watercraft.h"
 #include <nvapi.h>
@@ -111,6 +112,18 @@ Renderer::Buffer Renderer::buffer(uint64_t size, D3D12_HEAP_TYPE type, D3D12_RES
                                   D3D12_RESOURCE_STATES state) {
     return gpu::buffer(device.Get(), size, type, flags, state);
 }
+Renderer::Buffer Renderer::staticBuffer(const void *data, uint64_t size) {
+    auto staging = buffer(size, D3D12_HEAP_TYPE_UPLOAD);
+    memcpy(staging.mapped, data, size);
+    auto result = buffer(size, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE,
+                         D3D12_RESOURCE_STATE_COPY_DEST);
+    begin();
+    commands->CopyBufferRegion(result.resource.Get(), 0, staging.resource.Get(), 0, size);
+    transition(commands.Get(), result.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+               D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    submit(false); // submit waits for completion before staging is released.
+    return result;
+}
 ComPtr<ID3D12Resource> Renderer::texture(uint32_t w, uint32_t h, DXGI_FORMAT format,
                                          D3D12_RESOURCE_FLAGS flags) {
     ComPtr<ID3D12Resource> r;
@@ -132,7 +145,7 @@ ComPtr<ID3D12Resource> Renderer::texture(uint32_t w, uint32_t h, DXGI_FORMAT for
           "Create lab texture");
     return r;
 }
-Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options &opts)
+Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options &opts, StartupScreen *startup)
     : options(opts), folder(dir), window(window) {
     try {
         if (options.frames > 32)
@@ -205,10 +218,25 @@ Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options 
             throw std::runtime_error("Fence event failed");
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        hd.NumDescriptors = 32;
+        hd.NumDescriptors = 32 + asset::maxTextures;
         hd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&heap)), "Descriptor heap");
         descriptorSize = device->GetDescriptorHandleIncrementSize(hd.Type);
+        hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        hd.NumDescriptors = 18;
+        check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&modelSamplerHeap)), "Model sampler heap");
+        const auto samplerSize = device->GetDescriptorHandleIncrementSize(hd.Type);
+        const D3D12_TEXTURE_ADDRESS_MODE address[]{D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_MIRROR};
+        for (uint32_t i = 0; i < 18; ++i) {
+            D3D12_SAMPLER_DESC s{};
+            s.Filter = i < 9 ? D3D12_FILTER_MIN_MAG_MIP_LINEAR : D3D12_FILTER_MIN_MAG_MIP_POINT;
+            s.AddressU = address[i % 3]; s.AddressV = address[(i % 9) / 3]; s.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+            s.MaxLOD = D3D12_FLOAT32_MAX; s.MaxAnisotropy = 1; s.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+            auto handle = modelSamplerHeap->GetCPUDescriptorHandleForHeapStart();
+            handle.ptr += SIZE_T(i) * samplerSize;
+            device->CreateSampler(&s, handle);
+        }
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         hd.NumDescriptors = 4;
         hd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
@@ -230,13 +258,25 @@ Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options 
             buffer(256, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
         D3D12_QUERY_HEAP_DESC query{};
         query.Type = D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
-        query.Count = 8;
+        query.Count = 12;
         check(device->CreateQueryHeap(&query, IID_PPV_ARGS(&queries)), "Timing queries");
         check(queue->GetTimestampFrequency(&frequency), "Timing frequency");
         timingReadback =
             buffer(256, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
-        pipelines();
-        loadScene();
+        // Window/DLSS setup remains on its owning thread. Only independent,
+        // expensive work runs on a worker while the UI pumps loading messages.
+        // pipelines() also enables/disables the NVAPI thread-local extension
+        // slot on that same worker, including for FP32 atomics and SER.
+        if (startup) {
+            logLine("Startup: preparing lighting on a worker");
+            startup->run(L"Preparing lighting", [&] { pipelines(); });
+            logLine("Startup: loading models and textures on a worker");
+            startup->run(L"Loading models and textures", [&] { loadScene(); });
+            startup->phase(L"Preparing the scene");
+        } else {
+            pipelines();
+            loadScene();
+        }
         transportAnchors.resize(sceneObjects.size());
         for (const auto &mesh : meshes) {
             float radius2 = 0;
@@ -253,13 +293,20 @@ Renderer::Renderer(HWND window, const std::filesystem::path &dir, const Options 
         experience.deepPool = options.fluidDeepPool;
         experience.largeWaterLab = options.largeWaterLab;
         experience.oceanLab = options.oceanLab;
+        experience.neonNight = options.neonNight;
+        experience.sampling = previousSampling = options.sampling;
         if (options.oceanLab) {
             experience.environment = options.oceanNight ? 1 : 0;
             experience.ballFloats = true;
         }
         experience.simulationHz = options.fluidSimulationHz;
-        if (options.fluid)
-            createFluid();
+        if (options.fluid) {
+            // CUDA contexts are thread-local; retain their existing owner.
+            if (startup && options.fluidBackend != "cuda")
+                startup->run(L"Preparing water simulation", [&] { createFluid(); });
+            else
+                createFluid();
+        }
         checkDebug();
     } catch (...) {
         // Constructor failures still shut Streamline down before member devices/proxies.
@@ -445,8 +492,10 @@ void Renderer::checkDebug() {
 void Renderer::pipelines() {
     D3D12_DESCRIPTOR_RANGE ranges[] = {{D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 12, 0, 0, 0},
                                        {D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 31, 1, 0},
-                                       {D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2, 12, 0, 0}};
-    D3D12_ROOT_PARAMETER params[21]{};
+                                       {D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2, 12, 0, 0},
+                                       {D3D12_DESCRIPTOR_RANGE_TYPE_SRV, asset::maxTextures, 0, 2, 0},
+                                       {D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 18, 0, 2, 0}};
+    D3D12_ROOT_PARAMETER params[26]{};
     params[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
     for (int i = 1; i < 5; ++i) {
         params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
@@ -478,7 +527,17 @@ void Renderer::pipelines() {
     params[19].Descriptor.ShaderRegister = 8;
     params[20].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     params[20].Descriptor.ShaderRegister = 9;
-    D3D12_ROOT_SIGNATURE_DESC rd{21, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    params[21].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    params[21].Descriptor.ShaderRegister = 10;
+    params[22].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    params[22].Descriptor.ShaderRegister = 11;
+    params[23].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    params[23].DescriptorTable = {1, &ranges[3]};
+    params[24].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    params[24].DescriptorTable = {1, &ranges[4]};
+    params[25].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    params[25].Descriptor.ShaderRegister = 12;
+    D3D12_ROOT_SIGNATURE_DESC rd{26, params, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     check(D3D12SerializeRootSignature(&rd, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
           "Serialize transport root");
@@ -492,7 +551,7 @@ void Renderer::pipelines() {
     D3D12_GLOBAL_ROOT_SIGNATURE gr{root.Get()};
     D3D12_RAYTRACING_SHADER_CONFIG shader{16, 8};
     D3D12_RAYTRACING_PIPELINE_CONFIG recursion{1};
-    D3D12_HIT_GROUP_DESC hg{L"SurfaceHit", D3D12_HIT_GROUP_TYPE_TRIANGLES, nullptr, L"Closest", nullptr};
+    D3D12_HIT_GROUP_DESC hg{L"SurfaceHit", D3D12_HIT_GROUP_TYPE_TRIANGLES, L"ModelAnyHit", L"Closest", nullptr};
     D3D12_HIT_GROUP_DESC fluidHg{L"FluidHit", D3D12_HIT_GROUP_TYPE_PROCEDURAL_PRIMITIVE, nullptr,
                                  L"FluidClosest", L"FluidIntersection"};
     D3D12_HIT_GROUP_DESC secondaryHg{L"WhitewaterHit", D3D12_HIT_GROUP_TYPE_PROCEDURAL_PRIMITIVE, nullptr,
@@ -508,10 +567,17 @@ void Renderer::pipelines() {
     bool extension = hitMode == 1 || floatAtomics;
     if (extension && NvAPI_D3D12_SetNvShaderExtnSlotSpaceLocalThread(device.Get(), 31, 1) != NVAPI_OK)
         throw std::runtime_error("Enable NVAPI shader extension failed");
+    const auto compileStart = std::chrono::steady_clock::now();
+    logLine("Startup: building ray-tracing pipeline " + std::to_string(hitMode) + "/" +
+            std::to_string(floatAtomics ? 1 : 0));
     HRESULT result = device->CreateStateObject(&state, IID_PPV_ARGS(&transport.state));
     if (extension)
         NvAPI_D3D12_SetNvShaderExtnSlotSpaceLocalThread(device.Get(), 0xffffffff, 0);
+    if (FAILED(result))
+        checkDebug();
     check(result, "Create transport raygen pipeline");
+    logLine("Startup: ray-tracing pipeline ready in " + std::to_string(
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - compileStart).count()) + " s");
     ComPtr<ID3D12StateObjectProperties> props;
     check(transport.state.As(&props), "Raygen properties");
     stackBytes = props->GetPipelineStackSize();
@@ -546,7 +612,7 @@ void Renderer::pipelines() {
         pr[i].DescriptorTable = {1, &sr[i]};
     }
     pr[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-    pr[3].Constants = {0, 0, 4};
+    pr[3].Constants = {0, 0, 5};
     D3D12_ROOT_SIGNATURE_DESC pd{4, pr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     blob.Reset();
     error.Reset();
@@ -581,6 +647,16 @@ void Renderer::pipelines() {
     auto distortionCs = bytes(folder / "shaders/FGDistortion.dxil");
     fg.CS = {distortionCs.data(), distortionCs.size()};
     check(device->CreateComputePipelineState(&fg, IID_PPV_ARGS(&fgPrepareDistortion)), "FG lens distortion PSO");
+    if (options.neonNight) {
+        auto createBloom = [&](const char *name, ComPtr<ID3D12PipelineState> &pso) {
+            auto shader = bytes(folder / "shaders" / (std::string(name) + ".dxil"));
+            fg.CS = {shader.data(), shader.size()};
+            check(device->CreateComputePipelineState(&fg, IID_PPV_ARGS(&pso)), "Bloom PSO");
+        };
+        createBloom("BloomDownsample", bloomDownsample);
+        createBloom("BloomHorizontal", bloomHorizontal);
+        createBloom("BloomVertical", bloomVertical);
+    }
 }
 void Renderer::createSwapchain() {
     DXGI_SWAP_CHAIN_DESC1 sc{};
@@ -820,11 +896,26 @@ XMFLOAT3 Renderer::displayRay(float x, float y) const {
                                                   XMVectorScale(XMLoadFloat3(&previousCamera.up), sy)))));
     return d;
 }
+Level Renderer::playLevel() const {
+    return options.neonNight ? makeNeonLevel(meshes)
+        : makePlayLevel(options.fluidRoom, options.boat, options.fluidDeepPool, options.largeWaterLab, options.oceanLab);
+}
 void Renderer::loadScene() {
     meshes = options.fixture ? makeScene()
                              : makePlayScene(options.water, options.flatWater,
                                              options.fluid && !options.fluidSolverOnly && !options.fluidRoom,
                                              options.fluidRoom, options.boat, options.fluidDeepPool, options.largeWaterLab, options.oceanLab);
+    if (options.neonNight) meshes.clear();
+    proceduralMeshCount = meshes.size();
+    loadModels();
+    if (options.neonNight) {
+        if (meshes.empty()) throw std::runtime_error("Neon Night has no imported geometry");
+        // Keep world/ball at the indices used by the common player controller.
+        meshes.insert(meshes.begin() + 1, makePlayerMesh());
+        meshes.insert(meshes.begin() + 2, makeNeonBlockMesh(4));
+        meshes.insert(meshes.begin() + 3, makeNeonBlockMesh(5));
+        proceduralMeshCount = 4;
+    }
     sceneObjects.resize(meshes.size() + (options.fluid && !options.fluidSolverOnly ? 1 : 0) +
                         (options.fluidRoom && options.whitewater ? 1 : 0));
     if (sceneObjects.size() > meshes.size()) {
@@ -842,21 +933,33 @@ void Renderer::loadScene() {
     size_t total = 0;
     for (auto &m : meshes)
         total += m.vertices.size();
-    vertices = buffer(total * sizeof(Vertex), D3D12_HEAP_TYPE_UPLOAD);
+    // Ray hits repeatedly fetch these immutable attributes. Keep them in local
+    // GPU memory; an upload heap would serve every fetch across PCIe.
+    auto vertexStaging = buffer(total * sizeof(Vertex), D3D12_HEAP_TYPE_UPLOAD);
+    size_t vertexOffset = 0;
+    for (const auto &mesh : meshes) {
+        memcpy(static_cast<Vertex *>(vertexStaging.mapped) + vertexOffset, mesh.vertices.data(),
+               mesh.vertices.size() * sizeof(Vertex));
+        vertexOffset += mesh.vertices.size();
+    }
+    vertices = buffer(total * sizeof(Vertex), D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE,
+                      D3D12_RESOURCE_STATE_COPY_DEST);
     objects = buffer(sceneObjects.size() * sizeof(Object), D3D12_HEAP_TYPE_UPLOAD);
     instances = buffer(sceneObjects.size() * sizeof(D3D12_RAYTRACING_INSTANCE_DESC), D3D12_HEAP_TYPE_UPLOAD);
     uint32_t offset = 0;
     begin();
+    commands->CopyBufferRegion(vertices.resource.Get(), 0, vertexStaging.resource.Get(), 0, total * sizeof(Vertex));
+    transition(commands.Get(), vertices.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+               D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
     for (size_t i = 0; i < meshes.size(); ++i) {
         const auto &m = meshes[i];
-        memcpy(static_cast<Vertex *>(vertices.mapped) + offset, m.vertices.data(),
-               m.vertices.size() * sizeof(Vertex));
         XMStoreFloat4x4(&sceneObjects[i].world, XMMatrixIdentity());
         sceneObjects[i].previous = sceneObjects[i].world;
         sceneObjects[i].info = {offset, uint32_t(m.vertices.size()), 0, 0};
         D3D12_RAYTRACING_GEOMETRY_DESC geo{};
         geo.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-        geo.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+        geo.Flags = m.opaque && (!options.modelAnyHitReference || m.vertices.front().material < asset::materialBase)
+            ? D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE : D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
         geo.Triangles.VertexBuffer = {vertices.resource->GetGPUVirtualAddress() + offset * sizeof(Vertex),
                                       sizeof(Vertex)};
         geo.Triangles.VertexCount = uint32_t(m.vertices.size());
@@ -939,7 +1042,10 @@ void Renderer::buildTlas() {
         memcpy(out[i].Transform, &transposed, sizeof(out[i].Transform));
         out[i].InstanceID = UINT(i);
         out[i].InstanceMask = meshes[i].mask;
-        out[i].Flags = D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE;
+        // DXR's default winding accepts dot(cross(b-a,c-a), rayDirection)<0,
+        // matching ModelAnyHit. FRONT_COUNTERCLOCKWISE would invert it.
+        out[i].Flags = (meshes[i].doubleSided || options.modelAnyHitReference) ? D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE
+                                           : D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
         out[i].AccelerationStructure = blas[i].resource->GetGPUVirtualAddress();
     }
     if (fluidSurface) {
@@ -1045,6 +1151,15 @@ void Renderer::targets() {
     device->CreateShaderResourceView(guides[7].Get(), &srv, cpu(14));
     srv.Format = DXGI_FORMAT_R32_FLOAT;
     device->CreateShaderResourceView(guides[2].Get(), &srv, cpu(15));
+    srv.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    device->CreateShaderResourceView(nullptr, &srv, cpu(22));
+    if (options.neonNight) for (uint32_t i = 0; i < 2; ++i) {
+        bloom[i] = texture((options.width + 3) / 4, (options.height + 3) / 4, srv.Format);
+        device->CreateShaderResourceView(bloom[i].Get(), &srv, cpu(22 + i));
+        D3D12_UNORDERED_ACCESS_VIEW_DESC u{};
+        u.Format = srv.Format; u.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+        device->CreateUnorderedAccessView(bloom[i].Get(), nullptr, &u, cpu(24 + i));
+    }
     fgHudless.Reset();
     fgUi.Reset();
     fgDepth.Reset();
@@ -1118,8 +1233,8 @@ void Renderer::resize(uint32_t w, uint32_t h) {
     targets();
 }
 void Renderer::bind() {
-    ID3D12DescriptorHeap *heaps[] = {heap.Get()};
-    commands->SetDescriptorHeaps(1, heaps);
+    ID3D12DescriptorHeap *heaps[] = {heap.Get(), modelSamplerHeap.Get()};
+    commands->SetDescriptorHeaps(2, heaps);
     commands->SetComputeRootSignature(root.Get());
     commands->SetComputeRootConstantBufferView(0, uniforms.resource->GetGPUVirtualAddress());
     commands->SetComputeRootShaderResourceView(1, tlas.resource->GetGPUVirtualAddress());
@@ -1159,6 +1274,11 @@ void Renderer::bind() {
                                                        : cieData.resource->GetGPUVirtualAddress());
     commands->SetComputeRootShaderResourceView(20, oceanEnvironment.resource
         ? oceanEnvironment.resource->GetGPUVirtualAddress() : cieData.resource->GetGPUVirtualAddress());
+    commands->SetComputeRootShaderResourceView(21, modelMaterials.resource->GetGPUVirtualAddress());
+    commands->SetComputeRootShaderResourceView(22, modelAttributes.resource->GetGPUVirtualAddress());
+    commands->SetComputeRootDescriptorTable(23, gpu(32));
+    commands->SetComputeRootDescriptorTable(24, modelSamplerHeap->GetGPUDescriptorHandleForHeapStart());
+    commands->SetComputeRootShaderResourceView(25, modelLights.resource->GetGPUVirtualAddress());
 }
 void Renderer::dispatch(uint32_t raygen, uint32_t w, uint32_t h) {
     commands->SetPipelineState1(transport.state.Get());
@@ -1188,6 +1308,10 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     dlss.marker(sl::PCLMarker::eRenderSubmitStart);
     // Present two genuine frames before interpolation to establish history and
     // keep first-frame RR creation out of the interpolation pacing interval.
+    if (!(experience.sampling == previousSampling)) {
+        reset = true;
+        previousSampling = experience.sampling;
+    }
     Lens lens = experience.lens;
     if (options.fixture || options.opticalView || (fluid && fluid->debugVisible) ||
         (fluidComplexity && fluidComplexity->debugMode))
@@ -1226,7 +1350,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     if (game) {
         const auto poses = game->poses();
         if (poses.size() + (options.water ? 1 : 0) + (fluidSurface && !options.fluidRoom ? 1 : 0) !=
-            meshes.size())
+            proceduralMeshCount)
             throw std::runtime_error("Physics/DXR body mismatch");
         for (size_t i = 0; i < poses.size(); ++i)
             sceneObjects[i].world = poses[i];
@@ -1235,13 +1359,14 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         // facet silhouettes, spurious motion vectors and atlas invalidations.
         auto &ball = sceneObjects[1].world;
         XMStoreFloat4x4(&ball, XMMatrixTranslation(ball._41, ball._42, ball._43));
-        angle = std::atan2(sceneObjects[2].world._31, sceneObjects[2].world._11);
-        c.play = {1, game->charge, game->elapsed, fluid && fluid->emitter.enabled ? 1.f : 0.f};
+        if (!options.neonNight)
+            angle = std::atan2(sceneObjects[2].world._31, sceneObjects[2].world._11);
+        c.play = {options.neonNight ? 0.f : 1.f, game->charge, game->elapsed, fluid && fluid->emitter.enabled ? 1.f : 0.f};
         c.sensor = {game->level().receiver.x, game->level().receiver.y, game->level().receiver.z,
                     game->level().receiverHalf.z};
         reset = reset || game->resetHistory;
         game->resetHistory = false;
-    } else
+    } else if (!options.neonNight)
         sceneObjects[1].world = prismTransform(angle);
     lastPrismAngle = angle;
     c.dimensions = {renderWidth, renderHeight, frame, options.photons};
@@ -1282,6 +1407,12 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     }
     c.cameraState = {game && game->firstPerson ? 1u : 0u, 0, 0, 0};
     c.cameraState.w = options.fluidDeepPool ? 1u : (options.largeWaterLab ? 2u : 0u);
+    if (options.neonNight) {
+        c.cameraState.w = 4;
+        const float ambient[] = {.3f, .05f, 2.f, 0.f};
+        c.lighting = {0, experience.environment == 3 ? 0.f : 1.f, ambient[experience.environment % 4], 0};
+        c.optics.w = c.medium.w = 0;
+    }
     if (options.oceanLab) {
         c.cameraState.w = 3;
         c.lighting = {0, 0, 1, 4.f + float(experience.environment % 2)};
@@ -1341,6 +1472,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
             object.previous = object.world;
     memcpy(objects.mapped, sceneObjects.data(), sceneObjects.size() * sizeof(Object));
     begin();
+    commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 8);
     if (fluid) {
         if (fluidSurface && game) {
             std::vector<FluidCollider> colliders;
@@ -1527,6 +1659,9 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         options.opticalView | (options.opticalUniform ? 256u : 0u) | (options.retracePrimary ? 512u : 0u) |
             (options.lambertianReference ? 1024u : 0u) | (options.waterVisibilityReference ? 2048u : 0u)};
     c.opticalParameters = {delta, .015f, .0008f, .25f};
+    const auto &sampling = experience.sampling;
+    c.sampling = {sampling.paths, sampling.lights, sampling.candidates, sampling.bounces};
+    c.samplingState = {sampling.mode, sampling.roulette ? 1u : 0u, 0, 0};
     if (options.oceanSwimTest) c.opticalControls.w |= 4096u;
     if (optical && optical->world)
         c.opticalControls.x |= 8u;
@@ -1592,8 +1727,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
                   reset, frame);
     gpu::stamp(timeline, gpu::SubmissionStage::RRRecorded);
     commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 5);
-    XMFLOAT4 lensConstants{float(options.width), float(options.height), lens.fisheye ? 1.f : 0.f,
-                           lens.diagonalDegrees * XM_PI / 360};
+    const float lensConstants[]{float(options.width), float(options.height), lens.fisheye ? 1.f : 0.f,
+                                 lens.diagonalDegrees * XM_PI / 360, options.neonNight ? .10f : 0.f};
     if (fgDepth) {
         ID3D12DescriptorHeap *fgHeaps[] = {heap.Get()};
         commands->SetDescriptorHeaps(1, fgHeaps);
@@ -1610,7 +1745,7 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
         commands->SetComputeRootSignature(presentRoot.Get());
         commands->SetPipelineState(fgPrepareDistortion.Get());
         commands->SetComputeRootDescriptorTable(2, gpu(21));
-        commands->SetComputeRoot32BitConstants(3, 4, &lensConstants, 0);
+        commands->SetComputeRoot32BitConstants(3, 5, lensConstants, 0);
         commands->Dispatch((options.width + 7) / 8, (options.height + 7) / 8, 1);
         uav(commands.Get(), fgDistortion.Get());
         fgDistortionFov = lens.diagonalDegrees;
@@ -1619,8 +1754,34 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     for (int i = 0; i < 7; ++i)
         transition(commands.Get(), guides[i].Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
                    D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 9);
+    if (options.neonNight) {
+        ID3D12DescriptorHeap *bloomHeaps[] = {heap.Get()};
+        commands->SetDescriptorHeaps(1, bloomHeaps);
+        commands->SetComputeRootSignature(presentRoot.Get());
+        transition(commands.Get(), guides[7].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+                   D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+        const uint32_t w = (options.width + 3) / 4, h = (options.height + 3) / 4;
+        auto bloomPass = [&](ID3D12PipelineState *pso, uint32_t input, uint32_t output) {
+            commands->SetPipelineState(pso);
+            commands->SetComputeRootDescriptorTable(0, gpu(input));
+            commands->SetComputeRootDescriptorTable(2, gpu(output));
+            commands->Dispatch((w + 7) / 8, (h + 7) / 8, 1);
+        };
+        bloomPass(bloomDownsample.Get(), 14, 24);
+        transition(commands.Get(), bloom[0].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+        bloomPass(bloomHorizontal.Get(), 22, 25);
+        transition(commands.Get(), bloom[0].Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        transition(commands.Get(), bloom[1].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+        bloomPass(bloomVertical.Get(), 23, 24);
+        transition(commands.Get(), bloom[1].Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        transition(commands.Get(), bloom[0].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        transition(commands.Get(), guides[7].Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    } else {
     transition(commands.Get(), guides[7].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
                D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    }
+    commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 10);
     lastBuffer = swapchain->GetCurrentBackBufferIndex();
     auto bb = backbuffers[lastBuffer].Get();
     transition(commands.Get(), bb, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -1629,7 +1790,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     commands->SetGraphicsRootSignature(presentRoot.Get());
     commands->SetPipelineState(present.Get());
     commands->SetGraphicsRootDescriptorTable(0, gpu(14));
-    commands->SetGraphicsRoot32BitConstants(3, 4, &lensConstants, 0);
+    commands->SetGraphicsRootDescriptorTable(1, gpu(22));
+    commands->SetGraphicsRoot32BitConstants(3, 5, lensConstants, 0);
     D3D12_VIEWPORT vp{0, 0, float(options.width), float(options.height), 0, 1};
     D3D12_RECT rect{0, 0, LONG(options.width), LONG(options.height)};
     commands->RSSetViewports(1, &vp);
@@ -1646,6 +1808,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     commands->OMSetRenderTargets(1, &sceneRtv, FALSE, nullptr);
     commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commands->DrawInstanced(3, 1, 0, 0);
+    if (options.neonNight)
+        transition(commands.Get(), bloom[0].Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     if (fluid) {
         transition(commands.Get(), guides[2].Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
                    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -1706,7 +1870,8 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     commands->CopyBufferRegion(statsReadback.resource.Get(), 0, stats.resource.Get(), 0, sizeof(counters));
     transition(commands.Get(), stats.resource.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE,
                D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-    commands->ResolveQueryData(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, 8, timingReadback.resource.Get(),
+    commands->EndQuery(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 11);
+    commands->ResolveQueryData(queries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, 12, timingReadback.resource.Get(),
                                0);
     if (optical)
         optical->recordReadback(commands.Get());
@@ -1730,12 +1895,16 @@ void Renderer::render(float angle, float azimuth, float elevation, Game *game, H
     if (optical)
         optical->collect(frequency);
     void *mapped;
-    D3D12_RANGE range{0, 64};
+    D3D12_RANGE range{0, 96};
     check(timingReadback.resource->Map(0, &range, &mapped), "Read timestamps");
     auto times = static_cast<uint64_t *>(mapped);
     std::array<double, 11> sample{};
     for (int i = 0; i < 5; ++i)
         sample[i] = double(times[i + 1] - times[i]) * 1000 / frequency;
+    if (options.profileLatency) {
+        auto ms = [&](int end, int start) { return double(times[end] - times[start]) * 1000 / frequency; };
+        gpuFrameBreakdown.push_back({double(frame), ms(11,8), ms(0,8), ms(9,5), ms(10,9), ms(11,10), ms(3,2)});
+    }
     if (options.frames && frame >= 32)
         ptTimings.push_back({options.restirPt ? double(times[7] - times[6]) * 1000 / frequency : 0,
                              options.restirPt ? double(times[3] - times[7]) * 1000 / frequency : 0});
@@ -1877,7 +2046,7 @@ void Renderer::report(const std::filesystem::path &path) {
         << ", \"outputWidth\": " << options.width << ", \"outputHeight\": " << options.height
         << ",\n  \"photonsPerFrame\": " << options.photons << ", \"historyLength\": " << options.history
         << ", \"warmupFrames\": 32, \"sampleCount\": " << samples.size() << ",\n  \"medianMs\": [";
-    for (int i = 0; i < 11; ++i)
+    for (int i = 0; i < 10; ++i)
         out << (i ? ", " : "") << medians[i];
     out << "],\n  \"prismAngle\": " << lastPrismAngle << ",\n  \"transportHash\": \"" << lastHash
         << "\",\n  \"timingColumns\": "
@@ -1904,6 +2073,30 @@ void Renderer::report(const std::filesystem::path &path) {
     if (latency) {
         out << ",\n  \"latency\":";
         latency->report(out);
+    }
+    out << ",\n  \"sampling\":{\"scope\":\"engine-wide\",\"mode\":\""
+        << (experience.sampling.mode ? "ris" : "reference")
+        << "\",\"paths\":" << experience.sampling.paths << ",\"lightSamples\":" << experience.sampling.lights
+        << ",\"lightCandidates\":" << experience.sampling.candidates << ",\"bounces\":" << experience.sampling.bounces
+        << ",\"russianRoulette\":" << (experience.sampling.roulette ? "true" : "false") << '}';
+    out << ",\n  \"neeAT\":{\"enabled\":false,\"allocatedBytes\":0}";
+    out << ",\n  \"neonSampling\":{\"paths\":" << experience.sampling.paths
+        << ",\"lightSamples\":" << experience.sampling.lights << ",\"bounces\":" << experience.sampling.bounces
+        << ",\"lightCandidates\":" << experience.sampling.candidates
+        << ",\"resampledLighting\":" << (experience.sampling.mode ? "true" : "false")
+        << ",\"russianRoulette\":" << (experience.sampling.roulette ? "true" : "false")
+        << ",\"inlineVisibility\":false"
+        << "},\n  \"modelAnyHitReference\":" << (options.modelAnyHitReference ? "true" : "false");
+    if (options.profileLatency) {
+        out << ",\n  \"gpuFrameBreakdown\":{\"units\":\"milliseconds\",\"columns\":[\"frameIndex\",\"totalGpu\","
+               "\"setupAndAcceleration\",\"postRRPreparation\",\"bloom\",\"presentationAndHud\",\"camera\"],\"rows\":[";
+        for (size_t i = 0; i < gpuFrameBreakdown.size(); ++i) {
+            out << (i ? ",[" : "[");
+            for (size_t j = 0; j < gpuFrameBreakdown[i].size(); ++j)
+                out << (j ? "," : "") << gpuFrameBreakdown[i][j];
+            out << ']';
+        }
+        out << "]}";
     }
     out << ",\n  \"uiGeometryUploads\":{\"created\":" << uiGeometryUploads[0]
         << ",\"reused\":" << uiGeometryUploads[1] << ",\"cachedBytes\":" << uiGeometryUploads[2]

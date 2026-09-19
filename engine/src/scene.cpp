@@ -6,6 +6,12 @@
 #include <algorithm>
 #include <cmath>
 namespace lab {
+namespace {
+XMFLOAT3 sphere(float u, float v) {
+    return {.68f * std::sin(v) * std::cos(u), .68f * std::cos(v),
+            .68f * std::sin(v) * std::sin(u)};
+}
+}
 bool transportMoved(const XMFLOAT4X4 &now, const XMFLOAT4X4 &anchor, float radius) {
     float translation2 = 0, rotation2 = 0;
     for (int j = 0; j < 3; ++j) {
@@ -63,6 +69,42 @@ XMFLOAT4X4 prismTransform(float angle) {
     XMStoreFloat4x4(&result, XMMatrixRotationY(angle) * XMMatrixTranslation(0, 1.65f, 0));
     return result;
 }
+Mesh makePlayerMesh() {
+    Mesh mesh; mesh.mask = 4;
+    auto tri = [](Mesh &m, XMFLOAT3 a, XMFLOAT3 b, XMFLOAT3 c, uint32_t material) {
+        for (auto p : {a, b, c}) m.vertices.push_back({p, material, {}, ~0u, 0});
+    };
+    // Glass rolling avatar. Closed sphere, smooth shading normals reconstructed in raygen.
+    for (int y = 0; y < 32; ++y)
+        for (int x = 0; x < 64; ++x) {
+            float u = XM_2PI * x / 64, v = XM_PI * y / 32, un = XM_2PI * (x + 1) / 64,
+                  vn = XM_PI * (y + 1) / 32;
+            if (y > 0)
+                tri(mesh, sphere(u, v), sphere(un, v), sphere(un, vn), 2);
+            if (y < 31)
+                tri(mesh, sphere(u, v), sphere(un, vn), sphere(u, vn), 2);
+        }
+    // Enforce outward normals (important for entering/exiting dielectric medium tracking).
+    auto &s = mesh.vertices;
+    for (size_t i = 0; i < s.size(); i += 3) {
+        auto a = XMLoadFloat3(&s[i].position), b = XMLoadFloat3(&s[i + 1].position),
+             c = XMLoadFloat3(&s[i + 2].position);
+        if (XMVectorGetX(XMVector3Dot(XMVector3Cross(b - a, c - a), a + b + c)) < 0)
+            std::swap(s[i + 1], s[i + 2]);
+    }
+    return mesh;
+}
+Mesh makeNeonBlockMesh(uint32_t material) {
+    Mesh mesh; mesh.mask = 1;
+    XMFLOAT3 v[8];
+    for (int i = 0; i < 8; ++i)
+        v[i] = {i & 1 ? .38f : -.38f, i & 2 ? .38f : -.38f, i & 4 ? .38f : -.38f};
+    const int faces[6][4] = {{0,4,6,2},{1,3,7,5},{0,1,5,4},{2,6,7,3},{0,2,3,1},{4,5,7,6}};
+    for (const auto &f : faces)
+        for (int index : {f[0],f[1],f[2],f[0],f[2],f[3]})
+            mesh.vertices.push_back({v[index], material, {}, ~0u, 0});
+    return mesh;
+}
 std::vector<Mesh> makePlayScene(bool water, bool flat, bool glassPit, bool fluidRoom, bool boat,
                                 bool deepPool, bool largeWaterLab, bool oceanLab) {
     auto fixture = makeScene();
@@ -105,30 +147,9 @@ std::vector<Mesh> makePlayScene(bool water, bool flat, bool glassPit, bool fluid
             tri(m, v[f[0]], v[f[2]], v[f[3]], material);
         }
     };
-    // Glass rolling avatar. Closed sphere, smooth shading normals reconstructed in raygen.
-    auto sphere = [](float u, float v) {
-        return XMFLOAT3{.68f * std::sin(v) * std::cos(u), .68f * std::cos(v),
-                        .68f * std::sin(v) * std::sin(u)};
-    };
-    for (int y = 0; y < 32; ++y)
-        for (int x = 0; x < 64; ++x) {
-            float u = XM_2PI * x / 64, v = XM_PI * y / 32, un = XM_2PI * (x + 1) / 64,
-                  vn = XM_PI * (y + 1) / 32;
-            if (y > 0)
-                tri(meshes[1], sphere(u, v), sphere(un, v), sphere(un, vn), 2);
-            if (y < 31)
-                tri(meshes[1], sphere(u, v), sphere(un, vn), sphere(u, vn), 2);
-        }
-    // Enforce outward normals (important for entering/exiting dielectric medium tracking).
-    auto &s = meshes[1].vertices;
-    for (size_t i = 0; i < s.size(); i += 3) {
-        auto a = XMLoadFloat3(&s[i].position), b = XMLoadFloat3(&s[i + 1].position),
-             c = XMLoadFloat3(&s[i + 2].position);
-        if (XMVectorGetX(XMVector3Dot(XMVector3Cross(b - a, c - a), a + b + c)) < 0)
-            std::swap(s[i + 1], s[i + 2]);
-    }
-    box(meshes[3], {0, 0, 0}, {.38f, .38f, .38f}, 4);
-    box(meshes[4], {0, 0, 0}, {.38f, .38f, .38f}, 5);
+    meshes[1] = makePlayerMesh();
+    meshes[3] = makeNeonBlockMesh(4);
+    meshes[4] = makeNeonBlockMesh(5);
     box(meshes[5], {0, 0, 0}, {1.48f, 1.4f, .16f}, 3);
     for (float x : {-1.35f, 1.35f})
         box(meshes[5], {x, 0, -.17f}, {.025f, 1.35f, .025f}, 5);

@@ -37,8 +37,8 @@ DiffuseLightSample diffuseLightSample(Hit h,float3 n,float3 sigma,uint candidate
         s.irradiance=flood.power/(4*flood.halfSize.x*flood.halfSize.y)*max(dot(n,s.direction),0)*exp(-Medium.x*distance);
         return s;
     } else {
-        if(!Play.x||Lighting.y<=0)return s;
-        uint object=3+(candidate-5)%2;
+        if((!Play.x&&CameraState.w!=4)||Lighting.y<=0)return s;
+        uint object=(CameraState.w==4?2:3)+(candidate-5)%2;
         if(object==h.object)return s;
         Object obj=Objects[object];
         float3 local=mul(h.p-obj.world[3].xyz,transpose((float3x3)obj.world));
@@ -57,7 +57,7 @@ DiffuseLightSample diffuseLightSample(Hit h,float3 n,float3 sigma,uint candidate
         if(distance<=EPS*4)return s;
         float cosineLight=max(dot(mul(ln,(float3x3)obj.world),-delta/distance),0);
         float pdf=areaWeight[axis]/(sum*.76*.76);
-        power=(object==3?float3(5,.12,2.8):float3(.08,3.8,5))*cosineLight/(pdf*areaSamples);
+        power=((candidate-5)%2==0?float3(5,.12,2.8):float3(.08,3.8,5))*cosineLight/(pdf*areaSamples);
         sigma=Medium.xxx;s.hint=object;
     }
     s.distance=length(delta);
@@ -88,9 +88,8 @@ float3 diffuseLightPair(Hit h,float3 n,float3 reflectance,DiffuseLightSample a,D
     if(selectB&&!occluded(h.p+n*EPS*2,b.direction,255,b.hint,b.distance-EPS*4))result+=b.irradiance/pb;
     return result;
 }
-float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 reflectance=1) {
-    if(CameraState.w==3) {
-        float3 irradiance=0;
+float3 oceanSlabIrradiance(Hit h) {
+    float3 irradiance=0;
         if(h.material==18&&h.chart==0xffffffff) {
             // Outside the simulation the ocean is a flat optical slab. Its
             // refracted sunlight has an analytic solution; the inner domain
@@ -115,6 +114,12 @@ float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 refle
             }
             return irradiance;
         }
+    return irradiance;
+}
+float3 referenceDirectLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 reflectance=1) {
+    if(CameraState.w==3) {
+        float3 irradiance=modelEmitterIrradiance(h,n,rng,areaSamples);
+        irradiance+=oceanSlabIrradiance(h);
         uint samples=max(2,areaSamples);
         for(uint i=0;i<samples;++i) {
             float3 direction;float pdf;
@@ -147,7 +152,7 @@ float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 refle
             irradiance+=torch.irradiance;
         return irradiance;
     }
-    float3 result=laserIrradiance(h,n);
+    float3 result=laserIrradiance(h,n)+modelEmitterIrradiance(h,n,rng,areaSamples);
     // Higher optical budgets request full visibility as well as more area
     // samples. Parent RNG consumption is fixed in all modes, including replay.
     // Measured triangle-only visibility is too cheap to amortize thinning.
@@ -167,7 +172,7 @@ float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 refle
         if(diffuseLightWeight(s.irradiance,reflectance)>0&&
            !occluded(h.p+n*EPS*2,s.direction,255,s.hint,s.distance-EPS*4))result+=s.irradiance;
     }
-    if(Play.x&&Lighting.y>0)for(uint i=0;i<areaSamples;++i)
+    if((Play.x||CameraState.w==4)&&Lighting.y>0)for(uint i=0;i<areaSamples;++i)
         result+=diffuseLightPair(h,n,reflectance,
             diffuseLightSample(h,n,sigma,5+2*i,seed,areaSamples),
             diffuseLightSample(h,n,sigma,6+2*i,seed,areaSamples),reference,offset);

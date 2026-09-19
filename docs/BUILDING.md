@@ -14,6 +14,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File engine/setup.ps1
 
 The setup scripts fetch dependencies into ignored `shared/.deps`: Streamline 2.12.0, NVAPI, DX12 Agility 1.619.5, DXC 1.9.2607, RTXDI Library at `f12037fa`, PIX, Bullet 3.25, RmlUi 6.3, FreeType 2.14.1, miniaudio 0.11.25 and CIE observer data. See the scripts for complete pinned identifiers/checksums. Dependencies retain their licenses; the public repo does not vendor their SDK caches.
 
+Model loading additionally uses Assimp 5.4.3 and its bundled stb_image, RapidJSON and zlib. Only the glTF and OBJ importers are enabled. See [model loading](../engine/MODEL_LOADING.md) for usage and portable importer tests.
+
 ## DX12-only build
 
 ```powershell
@@ -52,6 +54,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File engine/package-release.ps1 -
 
 Packaging uses an explicit runtime allowlist, checks NVIDIA/VC runtime signatures, includes dependency notices, writes per-file SHA-256 hashes, and refuses to overwrite an existing archive. It does not include source caches, PDBs, logs, developer captures, credentials or unrelated executables. By default it tests an extracted, relocated copy before producing the final archive. Release acceptance is documented in [VALIDATION.md](VALIDATION.md).
 
-Add `-SkipValidation` to package the existing build without source/runtime consistency checks, vendor signature checks, extraction checks or test runs. This mode can copy the runtime while the demo remains open. It still requires a clean committed checkout and all packaging inputs, writes the manifest and archive checksum, and marks the verification sidecar `validationStatus: "skipped"` with an empty list of checks. Version 0.1.2 uses this explicitly requested mode; its release notes disclose that no fresh package validation ran.
+Add `-SkipValidation` to package the existing build without source/runtime consistency checks, vendor signature checks, extraction checks or test runs. This mode can copy the runtime while the demo remains open. It still requires a clean committed checkout and all packaging inputs, writes the manifest and archive checksum, and marks the verification sidecar `validationStatus: "skipped"` with an empty list of checks. Versions 0.1.2 and 0.1.4 use this explicitly requested mode; their release notes disclose that no fresh package validation ran.
 
 The first preview used the explicit `-AllowUnverifiedFrameGeneration` packaging exception described in the validation notes. Without it, packaging rejects an FG run that produces no extra presentations. Do not silently treat that exception as FG certification.
+
+Neon Night is bundled with the source and copied into the runtime by CMake. After compiling shaders and building, run `Play Neon Night.cmd` or `NVMatrixFluidLab.exe --scene=neon-night`. [Scene setup and licensed assets](../engine/NEON_NIGHT.md).

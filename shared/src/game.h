@@ -33,6 +33,7 @@ struct Sensor {
 struct Level {
     std::string name, objective, hint;
     XMFLOAT3 color, receiver, receiverHalf, source, direction, ballStart;
+    XMFLOAT3 cameraStart{.42f, .56f, 9.5f}; // orbit azimuth, elevation, distance
     uint32_t reflections, transmissions;
     XMFLOAT4 launch; // spectral packet, spatial radius, aperture samples, monochromatic wavelength
     std::vector<Sensor> sensors;

@@ -6,6 +6,32 @@
 #include <cmath>
 #include <stdexcept>
 namespace lab {
+Level makeNeonLevel(const std::vector<Mesh> &renderMeshes) {
+    if (renderMeshes.size() < 4 || renderMeshes[1].mask != 4)
+        throw std::runtime_error("Neon Night requires the player at render instance 1");
+    Level level{};
+    level.name = "NOCTURNE / Neon Night";
+    level.objective = "Explore the rain-wet alley and its neon reflections.";
+    level.hint = "WASD rolls the glass ball. Space jumps. Right-drag looks; the wheel zooms. "
+                 "E grabs/releases a neon block; left click or X throws it. "
+                 "Tab switches view, R restarts, and Esc opens settings.";
+    level.ballStart = {-.25f, .72f, -3.f};
+    level.cameraStart = {XM_PI, .18f, 5.5f};
+    level.meshes.resize(4); // Game::poses: static world, avatar, pink/cyan blocks.
+    level.props = {{{-1.65f, .40f, -.3f}, {.38f,.38f,.38f}, 0, 3, 0, 0, {}, {}},
+                   {{1.55f, .40f, 4.5f}, {.38f,.38f,.38f}, 0, 4, 0, 0, {}, {}}};
+    for (size_t i = 0; i < renderMeshes.size(); ++i) {
+        const auto &mesh = renderMeshes[i];
+        if (mesh.vertices.size() % 3)
+            throw std::runtime_error("Incomplete Neon Night collision triangles");
+        if (i >= 1 && i <= 3) continue;
+        for (const auto &v : mesh.vertices) level.terrain.push_back(v.position);
+    }
+    // All imported transforms are baked in. Bullet and DXR use the same road,
+    // walls, steps and props, including the camera's existing collision sweep.
+    if (level.terrain.empty()) throw std::runtime_error("Neon Night has no collision geometry");
+    return level;
+}
 Level makePlayLevel(bool fluidRoom, bool boat, bool deep, bool largeWaterLab, bool oceanLab) {
     Level l{};
     l.name = "Spectral playground";

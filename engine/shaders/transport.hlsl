@@ -22,6 +22,7 @@ struct PAYLOAD_ATTRIBUTE Payload {
     uint object PAYLOAD_ACCESS;
     uint bary PAYLOAD_ACCESS;
 };
+#include "model-material.hlsli"
 #include "fluid/intersection.hlsli"
 #include "fluid/whitewater-intersection.hlsli"
 #include "fluid/foam-field.hlsli"
@@ -39,7 +40,8 @@ Payload trace(float3 origin,float3 direction,uint mask,uint hint,float limit=100
     // Visibility needs ANY occluder, not the closest surface or its attributes.
     // An accepted hit leaves object=0 because closest-hit is skipped; Miss writes
     // 0xffffffff. Procedural liquid/whitewater intersections still run normally.
-    uint flags=RAY_FLAG_FORCE_OPAQUE|(visibility?(RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH|RAY_FLAG_SKIP_CLOSEST_HIT_SHADER):0);
+    uint flags=RAY_FLAG_CULL_BACK_FACING_TRIANGLES|
+        (visibility?(RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH|RAY_FLAG_SKIP_CLOSEST_HIT_SHADER):0);
     Payload p; p.t=limit; p.object=visibility?0:0xffffffff; p.primitive=0; p.bary=0;
 #if HIT_MODE == 2
     dx::HitObject h=dx::HitObject::TraceRay(Scene,flags,mask,0,0,0,ray,p);
@@ -57,9 +59,9 @@ Payload trace(float3 origin,float3 direction,uint mask,uint hint,float limit=100
 bool occluded(float3 origin,float3 direction,uint mask,uint hint,float limit) {
     return trace(origin,direction,mask,hint,limit,true).object!=0xffffffff;
 }
-struct Hit { float3 p,n,local; float2 uv; uint chart,material,object; float foam; };
+struct Hit { float3 p,n,local; float2 uv; uint chart,material,object; float foam; float3 view,geometric; float emitterPdf; ModelSurface model; };
 Hit surface(Payload p,float3 o,float3 d,float cone=0) {
-    Hit h=(Hit)0; h.p=o+d*p.t; h.object=p.object;
+    Hit h=(Hit)0; h.p=o+d*p.t; h.object=p.object; h.view=-d;
     Object obj=Objects[p.object];
     if(obj.info.z==8){h.local=h.p;h.n=liquidNormal(h.p);h.material=8;h.chart=0xffffffff;
         h.foam=foamCoverage(h.p,cone/max(.2,abs(dot(h.n,d))));return h;}
@@ -78,6 +80,34 @@ Hit surface(Payload p,float3 o,float3 d,float cone=0) {
     float2 bary=float2(dot(v,e)*ff-dot(v,f)*ef,dot(v,f)*ee-dot(v,e)*ef)/den;
     h.uv=a.uv+(b.uv-a.uv)*bary.x+(c.uv-a.uv)*bary.y;
     h.n=normalize(mul(normalize(cross(e,f)),(float3x3)obj.world));
+    if(a.material>=MODEL_MATERIAL_BASE) {
+        h.geometric=h.n;
+        ModelMaterial m=ModelMaterials[a.material-MODEL_MATERIAL_BASE];
+        ModelAttributes va=ModelVertices[a.pad],vb=ModelVertices[b.pad],vc=ModelVertices[c.pad];
+        h.emitterPdf=va.normal.w;
+        float3 weights=float3(1-bary.x-bary.y,bary);
+        float4 uv=va.uv*weights.x+vb.uv*weights.y+vc.uv*weights.z;
+        float4 color=va.color*weights.x+vb.color*weights.y+vc.color*weights.z;
+        float3 smooth=va.normal.xyz*weights.x+vb.normal.xyz*weights.y+vc.normal.xyz*weights.z;
+        if(dot(smooth,smooth)>1e-12)h.n=normalize(mul(smooth,(float3x3)obj.world));
+        float4 tangent=va.tangent*weights.x+vb.tangent*weights.y+vc.tangent*weights.z;
+        float3 t=mul(tangent.xyz,(float3x3)obj.world);t-=h.n*dot(t,h.n);
+        float3 fallback,bitangent;basis(h.n,fallback,bitangent);
+        t=dot(t,t)>1e-12?normalize(t):fallback;
+        bitangent=cross(h.n,t)*(tangent.w<0?-1:1);
+        // Ray-cone footprint in each UV set, including grazing-angle expansion.
+        float4 du=vb.uv-va.uv,dv=vc.uv-va.uv;
+        // Separate U/V gradients preserve detail on long rectangular signs.
+        // An area-only density times max(texture width,height) over-blurred them.
+        float4 footprint=max(cone,0)/max(.1,abs(dot(h.n,d)))*
+            sqrt(max(0,(du*du*ff-2*du*dv*ef+dv*dv*ee)/max(den,1e-20)));
+        if(m.textures[3].image!=0xffffffff) {
+            float3 map=modelTexture(m.textures[3],uv,footprint).xyz*2-1;map.xy*=m.factors.z;
+            float3 mapped=t*map.x+bitangent*map.y+h.n*map.z;
+            if(dot(mapped,mapped)>1e-12)h.n=normalize(mapped);
+        }
+        h.model=modelSurface(m,uv,color,footprint);
+    }
     if(a.material==2)h.n=normalize(mul(normalize(h.local),(float3x3)obj.world));
     if(a.material==18&&h.p.y>.001) {
         float dx=oceanTerrainHeight(h.p.x+.05,h.p.z)-oceanTerrainHeight(h.p.x-.05,h.p.z);
@@ -275,7 +305,15 @@ void addPower(uint address,float value,bool dynamic) {
     if(dynamic)NvInterlockedAddFp32(FluidPhotonSum,address,value);
     else NvInterlockedAddFp32(PhotonSum,address,value);
 #else
-    uint add=uint(round(value*Atlas.w)),old=dynamic?FluidPhotonSum.Load(address):PhotonSum.Load(address),found;
+    // Focused ocean photons carry much less power than a whole-ocean sample.
+    // Stochastic rounding preserves that energy on the integer fallback, where
+    // rounding every small Gaussian tap to nearest would erase the caustic.
+    uint add=uint(round(value*Atlas.w));
+    if(CameraState.w==3) {
+        float rounding=float(hash(address^hash(DispatchRaysIndex().x+Dimensions.z*0x517cc1b7))>>8)*(1.0/16777216.0);
+        add=uint(floor(value*Atlas.w+rounding));
+    }
+    uint old=dynamic?FluidPhotonSum.Load(address):PhotonSum.Load(address),found;
     // Saturating CAS prevents wrap even if future scenes violate the host bound.
     for(;;) {
         uint sum=old+min(add,0xffffffff-old);
@@ -329,6 +367,32 @@ float3 sobol(uint i,uint frame) {
     }
     return float3((x^hash(frame*3+1))>>8,(y^hash(frame*3+2))>>8,(z^hash(frame*3+3))>>8)*(1.0/16777216.0);
 }
+float oceanBallAperture(Source s,uint index,uint count,float2 sample,inout float2 aperture,inout float2 spacing) {
+    // A 256 m aperture gives the 0.68 m avatar fewer than one spatial sample
+    // per frame. Reserve a quarter of the EXISTING wavelength bundles for its
+    // projected footprint; the other three quarters still cover the ocean.
+    uint focused=count/4;
+    if(!focused||s.d.y>=-.01)return 1;
+    float3 ball=Objects[1].world[3].xyz;
+    if(ball.y>=s.o.y)return 1;
+    float2 slope=s.d.xz/s.d.y;
+    float2 center=ball.xz+slope*(s.o.y-ball.y)-s.o.xz;
+    float2 radius=.72*sqrt(1+slope*slope);
+    float2 lo=max(-s.halfSize,center-radius),hi=min(s.halfSize,center+radius);
+    if(any(hi<=lo))return 1;
+    float2 extent=hi-lo;
+    float area=4*s.halfSize.x*s.halfSize.y,focusArea=extent.x*extent.y;
+    if(index<focused)aperture=lerp(lo,hi,sample);
+    bool inside=all(aperture>=lo)&&all(aperture<=hi);
+    float uniformCount=count-focused;
+    // Balance both proposals, including uniform samples landing in the focus
+    // patch. This changes sample density, not the sun's irradiance or spectrum.
+    float density=uniformCount/area+(inside?float(focused)/focusArea:0);
+    // Differentials must follow the new spatial density too: retaining the
+    // multi-metre launch footprint would smear the ball's focused light.
+    spacing=inside?extent/sqrt(density*focusArea):2*s.halfSize/sqrt(uniformCount);
+    return float(count)/(area*density);
+}
 [shader("raygeneration")]
 void PhotonRaygen() {
     uint index=DispatchRaysIndex().x;Stats.InterlockedAdd(0,1);
@@ -349,7 +413,7 @@ void PhotonRaygen() {
     Source s=source(light);if(s.power<=0||!count)return;
     // Correlated eight-wavelength bundles share water-flood aperture samples.
     // Each lane traces its own spectral IOR and Fresnel events. Uniform spectral
-    // marginals and power/count normalization are unchanged; no RGB desaturation.
+    // marginals are unchanged; spatial importance weights are applied below.
     uint bundle=FluidState.x&&light==3&&count%8==0?8u:1u;
     uint spatialIndex=local/bundle,lane=local%bundle;
     uint rng=hash((bundle>1?spatialIndex:index)+Dimensions.z*0x517cc1b7);
@@ -364,9 +428,13 @@ void PhotonRaygen() {
     float nm=s.nm>0?s.nm:380+400*min(sample.z+random(rng)*(1.0/16777216.0),.99999999);
     float2 aperture=(sample.xy*2-1)*s.halfSize;
     if(s.nm>0)aperture=sqrt(sample.x)*s.halfSize.x*float2(cos(2*PI*sample.y),sin(2*PI*sample.y));
-    float3 o=s.o+s.right*aperture.x+s.up*aperture.y,d=s.d;
     float cell=s.nm>0?sqrt(PI):2;
-    uint3 op=packDifferentials(s.right*(cell*s.halfSize.x/sqrt(float(count)/bundle)),s.up*(cell*s.halfSize.y/sqrt(float(count)/bundle)));
+    float2 spacing=cell*s.halfSize/sqrt(float(count)/bundle);
+    float apertureWeight=1;
+    if(CameraState.w==3&&Play.x&&light==3)
+        apertureWeight=oceanBallAperture(s,spatialIndex,count/bundle,sample.xy,aperture,spacing);
+    float3 o=s.o+s.right*aperture.x+s.up*aperture.y,d=s.d;
+    uint3 op=packDifferentials(s.right*spacing.x,s.up*spacing.y);
     uint3 dp=0;
     if(light==4) {
         float cosine=lerp(1,FlashlightDirection.w,sample.x),sine=sqrt(max(0,1-cosine*cosine));
@@ -375,7 +443,7 @@ void PhotonRaygen() {
         float spread=sqrt(2*PI*(1-FlashlightDirection.w)/count);
         op=0;dp=packDifferentials(dx*spread,dy*spread);
     }
-    float energy=s.power/count;uint band=min(uint((nm-380)/25),15u),medium=ambientMedium(o);
+    float energy=s.power/count*apertureWeight;uint band=min(uint((nm-380)/25),15u),medium=ambientMedium(o);
     ledger(20,energy);
     Payload p;
     if(s.nm>0)p=trace(o,d,255,band);
@@ -392,7 +460,9 @@ void PhotonRaygen() {
         if(p.object==0xffffffff){ledger(23,energy);return;}
         float before=energy;energy*=exp(-extinction(medium,nm)*p.t);ledger(22,before-energy);
         Hit h=surface(p,o,d);
-        dynamic=dynamic||(FluidState.x&&h.material==8);
+        // The ocean avatar's caustic moves just like water caustics. Reuse their
+        // short motion history instead of clearing it on every body movement.
+        dynamic=dynamic||(FluidState.x&&(h.material==8||(CameraState.w==3&&h.material==2)));
         float3 ox,oy,ddx,ddy;unpackDifferentials(op,ox,oy);unpackDifferentials(dp,ddx,ddy);
         ox=intersectDifferential(ox,ddx,h.n,d,p.t);oy=intersectDifferential(oy,ddy,h.n,d,p.t);
         if(!glass(h)) {
@@ -440,7 +510,9 @@ void PhotonRaygen() {
     ledger(25,energy);Stats.InterlockedAdd(16,1);
 }
 #include "lasers.hlsli"
+#include "model-emitter.hlsli"
 #include "direct-light.hlsli"
+#include "model-light.hlsli"
 float groundNoise(float2 p) {
     float2 q=floor(p),f=frac(p);f=f*f*(3-2*f);
     float4 v=frac(sin(float4(dot(q,float2(127.1,311.7)),dot(q+float2(1,0),float2(127.1,311.7)),
@@ -448,6 +520,7 @@ float groundNoise(float2 p) {
     return lerp(lerp(v.x,v.y,f.x),lerp(v.z,v.w,f.x),f.y);
 }
 float3 baseColor(Hit h,float2 footprint=0) {
+    if(h.material>=MODEL_MATERIAL_BASE)return h.model.base*(1-h.model.metallic)*.96*h.model.occlusion;
     if(h.material==18) {
         float grain=.96+.04*groundNoise(h.p.xz*2);
         float wet=1-smoothstep(6.1,6.55,h.p.y);
@@ -466,6 +539,7 @@ float3 baseColor(Hit h,float2 footprint=0) {
     return h.material==3?float3(.12,.16,.21):float3(.5,.5,.5);
 }
 float3 emission(Hit h) {
+    if(h.material>=MODEL_MATERIAL_BASE)return h.model.emission+(h.model.unlit?h.model.base:0);
     if(CameraState.w==3&&oceanLanternMaterial(h.material))return oceanLayer()?oceanLanternRadiance():0;
     if(!Lighting.y)return 0;
     if(h.material==14)return Play.w?float3(.1,3.5,1.0):float3(.2,.5,.65);
@@ -487,7 +561,7 @@ float3 emission(Hit h) {
     return 0;
 }
 bool explicitlySampledEmitter(Hit h) {
-    return (Play.x&&(h.object==3||h.object==4)) || (CameraState.w==3&&oceanLanternMaterial(h.material));
+    return h.emitterPdf>0 || (CameraState.w==4?(h.object==2||h.object==3):(Play.x&&(h.object==3||h.object==4))) || (CameraState.w==3&&oceanLanternMaterial(h.material));
 }
 float3 sky(float3 d) {
     if(CameraState.w==3)return oceanSky(d);
@@ -504,7 +578,14 @@ float2 cameraReceiverFootprint(Payload payload,Hit h,float3 direction,float opti
     y=intersectDifferential(y*diameter,0,h.n,direction,0);
     return (abs(uvDifferential(payload,x))+abs(uvDifferential(payload,y)))/Atlas.z;
 }
+float3 directLight(Hit h,float3 n,inout uint rng,uint areaSamples=1,float3 reflectance=1) {
+    uint samples=max(areaSamples,Sampling.y);
+    if(!SamplingState.x)return referenceDirectLight(h,n,rng,samples,reflectance);
+    float3 irradiance=modelResampledDirect(h,n,h.view,rng,samples,false,false);
+    return irradiance+(CameraState.w==3?oceanSlabIrradiance(h):laserIrradiance(h,n));
+}
 float3 endpoint(Hit h,float3 n,inout uint rng,float2 footprint=0,uint areaSamples=1) {
+    if(h.material>=MODEL_MATERIAL_BASE)return emission(h)+(h.model.unlit?0:modelDirect(h,n,h.view,rng,areaSamples));
     opticalRecordReceiver(h.uv,h.chart);
     float3 albedo=baseColor(h,footprint);
     float3 caustics=causticIrradiance(h.uv,h.chart);
@@ -569,6 +650,7 @@ float3 dielectricView(float3 origin,float3 direction,bool primaryGlass,Payload p
     if(pending)Stats.InterlockedAdd(52,pending);
     return result;
 }
+#include "model-path.hlsli"
 #include "restir-pt.hlsli"
 [shader("raygeneration")]
 void CameraRaygen() {
@@ -592,8 +674,10 @@ void CameraRaygen() {
         Motion[pixel]=(prev.xy/prev.w-now.xy/now.w)*float2(.5,-.5)*Dimensions.xy;
         Depth[pixel]=max(.05,dot(primary.p-o,CameraForward.xyz));
         NormalRoughness[pixel]=float4(n,glass(primary)?.015:(Play.x&&primary.chart==0&&CameraState.w!=3?.025:1));
+        if(primary.material>=MODEL_MATERIAL_BASE)NormalRoughness[pixel].w=primary.model.roughness;
         uint pixelSamples=opticalBegin(pixel,primary.p,old,n,NormalRoughness[pixel].w,p.object,primary.material,
             Objects[p.object].info.z==8?p.primitive:0xffffffff);
+        pixelSamples=max(pixelSamples,Sampling.x);
         if(Objects[p.object].info.z==8&&(FluidState.w>>8)) {
             uint mode=FluidState.w>>8;
             uint id=hash(p.primitive);float3 color=float3(id&255,(id>>8)&255,(id>>16)&255)/255;
@@ -604,7 +688,15 @@ void CameraRaygen() {
                 color=lerp(float3(1,.3,.05),float3(.05,.4,1),blend);}
             Noisy[pixel]=float4(color,1);Albedo[pixel]=1;NormalRoughness[pixel].w=1;opticalEndCamera(pixel);return;
         }
-        if(glass(primary)) {
+        if(primary.material>=MODEL_MATERIAL_BASE) {
+            Albedo[pixel]=float4(primary.model.base*(1-primary.model.metallic)*.96,1);
+            SpecularAlbedo[pixel]=float4(modelF0(primary.model),1);
+            float distance;
+            radiance=modelPath(primary,rng,pixelSamples,distance);
+            SpecularDistance[pixel]=min(distance,200);
+            uint medium=ambientMedium(o);
+            radiance=radiance*exp(-extinctionRgb(medium)*p.t)+beamRadiance(o,d,p.t,medium);
+        } else if(glass(primary)) {
             uint next;float ni,nt;interfaceMedia(primary,d,550,next,ni,nt);
             float F=fresnel(abs(dot(n,d)),ni,nt); SpecularAlbedo[pixel]=float4(F.xxx,1);
             // Keep the wet-film specular guide while exposing the foam's
@@ -635,7 +727,7 @@ void CameraRaygen() {
             for(uint sampleIndex=0;sampleIndex<pixelSamples;++sampleIndex){
             throughput=albedo/float(pixelSamples);
             o=primary.p+n*EPS*2; d=diffuseDirection(n,rng);
-            for(uint bounce=0;bounce<2;++bounce) {
+            for(uint bounce=0;bounce+1<Sampling.w;++bounce) {
                 Payload secondary=trace(o,d,255,bounce+1);
                 throughput*=exp(-extinctionRgb(ambientMedium(o))*secondary.t);
                 if(secondary.object==0xffffffff) {
@@ -652,7 +744,10 @@ void CameraRaygen() {
                 // Area lights were already explicitly sampled at the previous
                 // diffuse vertex. Do not count their BSDF-hit emission a second time.
                 if(explicitlySampledEmitter(h))radiance-=throughput*emission(h);
-                throughput*=a; o=h.p+normal*EPS*2; d=diffuseDirection(normal,rng);
+                throughput*=a;
+                if(SamplingState.y&&bounce>=1){float survival=clamp(max(throughput.x,max(throughput.y,throughput.z))*pixelSamples,.05,.95);
+                    if(random(rng)>=survival)break;throughput/=survival;}
+                o=h.p+normal*EPS*2; d=diffuseDirection(normal,rng);
             }
             }}
             float3 cameraDirection=normalize(primary.p-CameraPosition.xyz);

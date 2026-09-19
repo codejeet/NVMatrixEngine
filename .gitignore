@@ -15,6 +15,7 @@ dist/
 *.zip
 *.ppm
 lab-error.txt
+engine/profiles/
 .env
 .env.*
 !.env.example

@@ -5,10 +5,10 @@ title: "NVMatrixEngine: Real-Time Game Engine with GPU Fluids and Path-Traced Ca
 authors:
   - name: "codejeet"
     website: "https://github.com/codejeet"
-version: 0.1.3-preview
-date-released: "2026-09-17"
+version: 0.1.4-preview
+date-released: "2026-09-19"
 repository-code: "https://github.com/codejeet/NVMatrixEngine"
-url: "https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.3-preview"
+url: "https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.4-preview"
 abstract: >-
   Native C++20 DirectX 12/DXR game engine coupling GPU APIC/FLIP liquid
   simulation, a staggered MAC pressure grid, anisotropic particle surface

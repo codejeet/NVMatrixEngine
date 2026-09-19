@@ -1,0 +1,805 @@
+{
+  "date": "2026-09-18",
+  "scene": "Neon Night",
+  "method": {
+    "frames": 240,
+    "warmupFrames": 32,
+    "stationaryEntranceCamera": true,
+    "frameGeneration": "off",
+    "dlss": "Quality Ray Reconstruction",
+    "ser": "off",
+    "atomics": "fixed",
+    "p95": "nearest rank",
+    "beforeContent": "Playable ball, original 1K signs, no neon blocks",
+    "afterContent": "Playable ball, fresh 4K signs with corrected mip footprints, two dynamic neon blocks",
+    "qualityUnchanged": "2 camera paths, 4 imported emitter samples per bounce, 4 maximum bounces; one direct sample per dynamic block per bounce",
+    "rawData": "profile-neon.ps1 writes full per-frame reports, logs, summary.json and timings.csv to a dated output folder"
+  },
+  "before": [
+    {
+      "name": "neon-before-1280",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1280,
+        720
+      ],
+      "internal": [
+        853,
+        480
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 2,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "frameGenerationEnabled": false,
+      "renderFpsFromMedian": 35.03,
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 28.5452,
+          "p95Ms": 29.5603,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 28.3294,
+          "p95Ms": 29.3034,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 26.9939,
+          "p95Ms": 27.9398,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.5126,
+          "p95Ms": 0.5148,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0287,
+          "p95Ms": 0.0293,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0069,
+          "p95Ms": 0.0072,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0069,
+          "p95Ms": 0.0073,
+          "samples": 208
+        }
+      },
+      "rawReportSha256": "ab4ee16809155c279b3ec6bcb5d1f35c07df2f9235e07cbd467f6c9a24967a79"
+    },
+    {
+      "name": "neon-before-1920",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 2,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "frameGenerationEnabled": false,
+      "renderFpsFromMedian": 20.63,
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 48.4792,
+          "p95Ms": 49.1543,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 48.313,
+          "p95Ms": 48.9685,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 46.613,
+          "p95Ms": 47.2124,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.86,
+          "p95Ms": 0.8634,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0286,
+          "p95Ms": 0.0293,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0071,
+          "p95Ms": 0.0075,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.014,
+          "p95Ms": 0.0145,
+          "samples": 208
+        }
+      },
+      "rawReportSha256": "b4f9b1d34cc7e3833cdb191923d06bd10f95c336ecc45fc075c389f842d39401"
+    }
+  ],
+  "after": [
+    {
+      "name": "configured",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1280,
+        720
+      ],
+      "internal": [
+        853,
+        480
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 2,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1280",
+        "--height=720",
+        "--name=neon-profile-configured",
+        "--neon-path-samples=2",
+        "--neon-light-samples=4",
+        "--neon-bounces=4",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 10.5798,
+          "p95Ms": 11.5575,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 10.4037,
+          "p95Ms": 11.3493,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0283,
+          "p95Ms": 0.0294,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.007,
+          "p95Ms": 0.0073,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 9.139,
+          "p95Ms": 10.0878,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0073,
+          "p95Ms": 0.0088,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.5149,
+          "p95Ms": 0.5172,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 9.7548,
+          "p95Ms": 10.6747,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0063,
+          "p95Ms": 0.0885,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0001,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0103,
+          "p95Ms": 0.0108,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0118,
+          "p95Ms": 0.0123,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 94.52,
+      "rawReportSha256": "1f08bf96f2fca1766819b513252c7f1580d784854d28ced34a55324a233c3e27",
+      "peakLocalUsageMiB": 1232.21
+    },
+    {
+      "name": "anyhit-reference",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 2,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "anyHitReference": true,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-anyhit-reference",
+        "--neon-path-samples=2",
+        "--neon-light-samples=4",
+        "--neon-bounces=4",
+        "--model-anyhit-reference",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 22.6332,
+          "p95Ms": 24.5534,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 22.4081,
+          "p95Ms": 24.4041,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0284,
+          "p95Ms": 0.0292,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.007,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 20.6637,
+          "p95Ms": 22.4254,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0143,
+          "p95Ms": 0.0147,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8675,
+          "p95Ms": 0.8714,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 21.6504,
+          "p95Ms": 23.4628,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0064,
+          "p95Ms": 0.0883,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0001,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0157,
+          "p95Ms": 0.0159,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0163,
+          "p95Ms": 0.0166,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 44.18,
+      "rawReportSha256": "f79b4679812bc172f083c5d32f51656713c87cbf903c6b617bd4276d1f2dd2f0",
+      "peakLocalUsageMiB": 1362.96
+    },
+    {
+      "name": "hardware",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 2,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-hardware",
+        "--neon-path-samples=2",
+        "--neon-light-samples=4",
+        "--neon-bounces=4",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 19.9891,
+          "p95Ms": 21.9288,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 19.813,
+          "p95Ms": 21.6884,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0285,
+          "p95Ms": 0.0293,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0071,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 18.1174,
+          "p95Ms": 19.797,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0142,
+          "p95Ms": 0.0146,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8623,
+          "p95Ms": 0.8658,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 19.1004,
+          "p95Ms": 20.8312,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0064,
+          "p95Ms": 0.0881,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0001,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0141,
+          "p95Ms": 0.0144,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0164,
+          "p95Ms": 0.0168,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 50.03,
+      "rawReportSha256": "6680677de7e453a3799ff65467fb10d7e224b5705854165e54095ba63069dfee",
+      "peakLocalUsageMiB": 1362.96
+    },
+    {
+      "name": "one-path",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 1,
+        "lightSamples": 4,
+        "bounces": 4
+      },
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-one-path",
+        "--neon-path-samples=1",
+        "--neon-light-samples=4",
+        "--neon-bounces=4",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 10.455,
+          "p95Ms": 11.1268,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 10.3131,
+          "p95Ms": 10.9735,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0282,
+          "p95Ms": 0.0295,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0071,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 8.7072,
+          "p95Ms": 9.3672,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0133,
+          "p95Ms": 0.0151,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8617,
+          "p95Ms": 0.865,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 9.6969,
+          "p95Ms": 10.3288,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0064,
+          "p95Ms": 0.0888,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0001,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0142,
+          "p95Ms": 0.0145,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0162,
+          "p95Ms": 0.0164,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 95.65,
+      "rawReportSha256": "b0fa2dacfdb05e2f800c6027bfb1fc262ad48e02f070b3a3eb66718b1c4cbe03",
+      "peakLocalUsageMiB": 1362.96
+    },
+    {
+      "name": "one-path-two-lights",
+      "adapter": "NVIDIA GeForce RTX 5090",
+      "output": [
+        1920,
+        1080
+      ],
+      "internal": [
+        1280,
+        720
+      ],
+      "dlssMode": "quality",
+      "frames": 240,
+      "warmupFrames": 32,
+      "sampling": {
+        "paths": 1,
+        "lightSamples": 2,
+        "bounces": 4
+      },
+      "anyHitReference": false,
+      "frameGeneration": {
+        "supported": true,
+        "loaded": false,
+        "enabled": false,
+        "multiplier": 1,
+        "maximumMultiplier": 6,
+        "minimumDimension": 100,
+        "status": 0,
+        "reflex": true,
+        "presentedFrames": 240,
+        "extraPresents": 0,
+        "distortionTagged": false,
+        "distortionFrames": 0,
+        "frameTokens": 240,
+        "simulationMarkers": 240,
+        "submissionMarkers": 240,
+        "presentMarkers": 240
+      },
+      "transportHash": "5425252430109900991",
+      "arguments": [
+        "--scene=neon-night",
+        "--quality=quality",
+        "--frame-gen=off",
+        "--ser=off",
+        "--atomics=fixed",
+        "--profile-latency",
+        "--frames=240",
+        "--width=1920",
+        "--height=1080",
+        "--name=neon-profile-one-path-two-lights",
+        "--neon-path-samples=1",
+        "--neon-light-samples=2",
+        "--neon-bounces=4",
+        "--capture"
+      ],
+      "metrics": {
+        "wholeFrame": {
+          "medianMs": 8.3326,
+          "p95Ms": 9.0241,
+          "samples": 208
+        },
+        "rendererFrame": {
+          "medianMs": 8.2042,
+          "p95Ms": 8.8724,
+          "samples": 208
+        },
+        "photons": {
+          "medianMs": 0.0285,
+          "p95Ms": 0.0302,
+          "samples": 208
+        },
+        "atlasEma": {
+          "medianMs": 0.0071,
+          "p95Ms": 0.0074,
+          "samples": 208
+        },
+        "camera": {
+          "medianMs": 6.6259,
+          "p95Ms": 7.2795,
+          "samples": 208
+        },
+        "composite": {
+          "medianMs": 0.0132,
+          "p95Ms": 0.0168,
+          "samples": 208
+        },
+        "dlssRR": {
+          "medianMs": 0.8613,
+          "p95Ms": 1.2128,
+          "samples": 208
+        },
+        "totalGpu": {
+          "medianMs": 7.626,
+          "p95Ms": 8.2638,
+          "samples": 208
+        },
+        "setupAndAcceleration": {
+          "medianMs": 0.0064,
+          "p95Ms": 0.089,
+          "samples": 208
+        },
+        "postRRPreparation": {
+          "medianMs": 0.0001,
+          "p95Ms": 0.0004,
+          "samples": 208
+        },
+        "bloom": {
+          "medianMs": 0.0142,
+          "p95Ms": 0.0146,
+          "samples": 208
+        },
+        "presentationAndHud": {
+          "medianMs": 0.0162,
+          "p95Ms": 0.0166,
+          "samples": 208
+        }
+      },
+      "renderFpsFromMedian": 120.01,
+      "rawReportSha256": "f710eba321b04a91a3fc89834674cd7a5b23d5c9bc86489734cff306d88893bc",
+      "peakLocalUsageMiB": 1362.96
+    }
+  ],
+  "traversalGuideComparison": {
+    "output": [
+      1920,
+      1080
+    ],
+    "frames": 240,
+    "comparisons": {
+      "2": {
+        "maxAbsoluteDifference": 0.0,
+        "meanAbsoluteDifference": 0.0,
+        "fractionAbove0.001": 0.0,
+        "finite": true
+      },
+      "3": {
+        "maxAbsoluteDifference": 0.0,
+        "meanAbsoluteDifference": 0.0,
+        "fractionAbove0.001": 0.0,
+        "finite": true
+      },
+      "4": {
+        "maxAbsoluteDifference": 0.0,
+        "meanAbsoluteDifference": 0.0,
+        "fractionAbove0.001": 0.0,
+        "finite": true
+      },
+      "5": {
+        "maxAbsoluteDifference": 0.0,
+        "meanAbsoluteDifference": 0.0,
+        "fractionAbove0.001": 0.0,
+        "finite": true
+      }
+    }
+  },
+  "checks": {
+    "nodeTestsPassed": 243,
+    "portableImporterPassed": true,
+    "transportVariantsCompiled": 6,
+    "nativeNeonPickupThrowRestartPassed": true,
+    "nativeRollingPassed": true,
+    "nativeCameraWatercraftPassed": true,
+    "d3d12DebugLayerEnabled": false,
+    "neonControlsGpuTestPassed": true,
+    "gltfGlbObjGpuRegressionPassed": true,
+    "gameplayRestirPbrGpuRegressionPassed": true,
+    "allCapturedGuidesFinite": true,
+    "engineFolderLauncherPassed": true,
+    "defaultGraphicsLauncherPassed": true,
+    "waterLabGpuRegressionFrames": 16
+  },
+  "sourceSha256": {
+    "engine/src/renderer.cpp": "0a50b663e47671000bd9e8ebdac778cabdfe476b4f4ca96efa62aeea8133c912",
+    "engine/src/model_gpu.cpp": "85165d134f8da4bbd92b3e9bca72283ac351068dc84ccac23fc7f8a388b2980c",
+    "engine/shaders/model-material.hlsli": "990766eb7660c2cd516b17bb659d8c99828d57aee0e0a684f13533c66edb0939",
+    "engine/shaders/transport.hlsl": "d2830e2d36b9069d6ed6d07996f0af660fe700a3660bf9a879488a52e505b7f9",
+    "engine/tools/build_neon_scene.py": "d976c80ea33aeffcfaa9b422e7ffef3520f5db422e34b28edaf46057d79f2eb1",
+    "engine/profile-neon.ps1": "bbd88b24a81982c5f691eb0a1a91138c0ff0448b04ef3e4a567842807923b953"
+  }
+}

@@ -1,16 +1,20 @@
-NVMatrixEngine 0.1.3-preview - Water Labs and Ocean Island
+NVMatrixEngine 0.1.4-preview - Water Labs, Ocean Island and Neon Night
 https://github.com/codejeet/NVMatrixEngine
 
 Extract the entire ZIP into a writable folder. Choose a launcher:
   Play Water Lab.cmd             Small indoor lab, legacy DX12 water
   Play Large Water Lab.cmd       Larger indoor lab, Hamiltonian water
   Play Extra Large Water Lab.cmd Outdoor ocean and island, Hamiltonian water
+  Play Neon Night.cmd            Rain-wet neon alley with imported PBR props
 
 Windows 11 x64 and a compatible high-end NVIDIA RTX GPU/driver are required.
 Developed on RTX 5090; other hardware is not certified. No installer, admin
 rights or CUDA Toolkit are needed. This package uses the DX12 fluid backend.
 
-Esc: settings. WASD: move. Space: jump / hold underwater to swim upward.
+Neon Night: WASD rolls the ball, Space jumps, right-drag looks, wheel zooms,
+Tab switches view, R restarts, and Esc opens settings. Assets are bundled for offline use; see engine/NEON_NIGHT.md.
+
+Water labs: Esc: settings. WASD: move. Space: jump / hold underwater to swim upward.
 Right drag: look. Wheel: zoom. Tab: first person. Ctrl: dive.
 E: interact / board nearby boat / exit boat. Boat W/S: thrust, A/D: steer.
 T: water inlet. I: inspect inlet / ocean overview. Y: ocean day/night.
@@ -26,14 +30,17 @@ Indoor labs start with a solid sinking glass ball. The ocean starts with a
 lighter hollow ball. Settings can switch Sink/Float; reset preserves the choice.
 Hold Space underwater to swim upward even in Sink mode.
 
-Balanced DLSS and automatic frame generation are selected where supported.
+Water launchers select Balanced DLSS; Neon Night selects Quality.
+Automatic frame generation is selected where supported.
 Both normal and fisheye lenses support FG. Settings offers DLSS RR Quality,
 Balanced and Performance without resetting water. Render FPS and actual DLSS
 output FPS are separate. Generated frames do not accelerate fluid simulation.
-FG initialization is checked; see the release verification report for whether
-additional generated presentations were observed on the test machine.
+Release tests were skipped for 0.1.4. No fresh frame-generation output
+verification was performed; the adjacent verification report records this.
 
 Change lighting, flashlight, ball mode, music volume and water quality in Esc.
+Path tracing defaults to fast RIS, 1 base path, 2 light samples, 4 imported-light
+candidates, 4 surface bounces and Russian roulette. Esc exposes these settings.
 Applying water quality resets the water. Filling stops at capacity.
 Optional launchers also include Hamiltonian small water and ReSTIR PT lighting.
 

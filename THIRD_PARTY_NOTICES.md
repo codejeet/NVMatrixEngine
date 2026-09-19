@@ -16,6 +16,9 @@ Runtime and source dependencies retain their own copyrights and licenses. Setup 
 | RmlUi 6.3 | Native markup/style UI; `RmlUi-LICENSE.txt` |
 | FreeType 2.14.1 | Font rasterization; `FreeType-LICENSE.txt` |
 | miniaudio 0.11.25 | Audio playback; `miniaudio-LICENSE.txt` |
+| Assimp 5.4.3 | Static glTF/GLB/OBJ import; `Assimp-LICENSE.txt` |
+| stb_image 2.29 (bundled with Assimp) | Model texture decoding; `stb-image-LICENSE.txt` (header includes the license) |
+| RapidJSON and zlib (bundled with Assimp) | Importer dependencies; `RapidJSON-LICENSE.txt`, `zlib-LICENSE.txt` |
 | Poppins font | UI typography; `Font-LICENSE.txt` |
 | Poly Haven sky HDRIs | CC0 day/night environments; [sources and attribution](engine/assets/ocean/README.md) |
 
@@ -28,3 +31,5 @@ The unmodified `assets/CIE_xyz_1931_2deg.csv` is licensed **CC BY-SA 4.0**, as r
 ## Soundtrack
 
 The demo's five custom music tracks were provided by the project owner: AFTERIMAGE, the untitled September 2026 instrumental, Velvet Circuit, Chrome Honey, and Resurgence Loop. They and the custom event cues are included for demo playback, not separately licensed as a music library. Startup music selection is randomized. These assets remain reserved to their respective rights holders.
+
+- **Poly Haven Neon Night assets** — seven CC0 model sets and three CC0 PBR texture sets. Bundled unmodified source files, creator credits, download URLs and SHA-256 hashes are in [engine/assets/neon-night](engine/assets/neon-night/README.md). [License](https://polyhaven.com/license). Original scene architecture/sign designs are project content.

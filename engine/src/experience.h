@@ -33,7 +33,14 @@ struct Lens {
         y *= scale;
     }
 };
+struct SamplingSettings {
+    // 0 independent reference, 1 fast per-hit resampling.
+    uint32_t mode = 1, paths = 1, lights = 2, candidates = 4, bounces = 4;
+    bool roulette = true;
+    bool operator==(const SamplingSettings &) const = default;
+};
 struct ExperienceSettings {
+    SamplingSettings sampling;
     Lens lens;
     // Indoor: 0 neon, 1 overhead only, 2 white studio, 3 blackout. Ocean: 0 day, 1 night.
     uint32_t environment = 0;
@@ -41,7 +48,7 @@ struct ExperienceSettings {
     uint32_t particleCapacity = 500000;
     float cellSize = .16f, simulationHz = 120;
     bool deepPool = false, largeWaterLab = false;
-    bool oceanLab = false;
+    bool oceanLab = false, neonNight = false;
     bool rebuildWater = false;
 };
 } // namespace lab
