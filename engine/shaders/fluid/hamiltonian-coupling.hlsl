@@ -178,10 +178,11 @@ void transferWater(float3 p,float3 velocity,int count) {
         p.positionRadius.xyz+=p.velocityFlags.xyz*h+.5*GravityDt.xyz*h*h;
         p.velocityFlags.xyz+=GravityDt.xyz*h;
         for(uint sweep=0;sweep<2;++sweep)for(uint s=0;s<Collision.x;++s) {
-            FluidCollider c=Colliders[s];float phi=colliderPhi(c,p.positionRadius.xyz);
+            float e=max(.0001,DomainMinCell.w*.01),clearance=p.positionRadius.w+2*e;
+            FluidCollider c=Colliders[s];float phi=colliderPhi(c,p.positionRadius.xyz,clearance);
             if(phi>=p.positionRadius.w)continue;
-            float3 n;float e=max(.0001,DomainMinCell.w*.01);
-            for(uint a=0;a<3;++a){float3 q=0;q[a]=e;n[a]=colliderPhi(c,p.positionRadius.xyz+q)-colliderPhi(c,p.positionRadius.xyz-q);}
+            float3 n;
+            for(uint a=0;a<3;++a){float3 q=0;q[a]=e;n[a]=colliderPhi(c,p.positionRadius.xyz+q,clearance)-colliderPhi(c,p.positionRadius.xyz-q,clearance);}
             n=dot(n,n)>1e-15?normalize(n):float3(0,1,0);
             p.positionRadius.xyz+=n*(p.positionRadius.w-phi);
             float3 wall=colliderVelocity(c,p.positionRadius.xyz),relative=p.velocityFlags.xyz-wall;
@@ -198,7 +199,7 @@ void transferWater(float3 p,float3 velocity,int count) {
         }
         float height=wavePlane(p.positionRadius.xz,0).x;
         bool blocked=false;
-        for(uint s=0;s<Collision.x&&!blocked;++s)blocked=colliderPhi(Colliders[s],p.positionRadius.xyz)<p.positionRadius.w-1e-5;
+        for(uint s=0;s<Collision.x&&!blocked;++s)blocked=colliderPhi(Colliders[s],p.positionRadius.xyz,p.positionRadius.w)<p.positionRadius.w-1e-5;
         if(!blocked&&p.positionRadius.y-p.positionRadius.w<=height) {
             transferWater(p.positionRadius.xyz,p.velocityFlags.xyz,1);
             if(waveEdge(p.positionRadius.xz)>=WaveCoupling.y) {
@@ -236,7 +237,7 @@ void transferWater(float3 p,float3 velocity,int count) {
     }else if(edge>=WaveCoupling.y)return;
     float height=wavePlane(p.xz,0).x;
     if(p.y>height-DomainMaxRadius.w)return;
-    for(uint s=0;s<Collision.x;++s)if(colliderPhi(Colliders[s],p)<DomainMaxRadius.w)return;
+    for(uint s=0;s<Collision.x;++s)if(colliderPhi(Colliders[s],p,DomainMaxRadius.w)<DomainMaxRadius.w)return;
     uint slot;InterlockedAdd(Stats[1],1,slot);
     if(slot>=Stats[0]){InterlockedAdd(Stats[3],1);return;}
     uint id=FreeIds[slot];FluidParticle particle=(FluidParticle)0;

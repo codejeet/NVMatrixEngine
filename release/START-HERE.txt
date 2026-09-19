@@ -1,4 +1,4 @@
-NVMatrixEngine 0.1.4-preview - Water Labs, Ocean Island and Neon Night
+NVMatrixEngine 0.1.5-preview - Water Labs, Ocean Island and Neon Night
 https://github.com/codejeet/NVMatrixEngine
 
 Extract the entire ZIP into a writable folder. Choose a launcher:
@@ -22,7 +22,9 @@ P: pause water. Period: one step. B: reset water. U: HUD details. F8: frame gen.
 
 The ocean spans 256 x 256 metres with 6 m offshore water depth. It uses fixed
 1 m fluid cells and a 2 m wave grid. Dynamic cell sizing around rigid bodies
-has been removed. The beach, pier, night lanterns, powered boat and simulated
+has been removed. Broad swells use a 1.8 m height scale and a 48 m minimum
+initial wavelength. Hull particle contact rejects empty collision-box space.
+The beach, pier, night lanterns, powered boat and simulated
 foam, bubbles and spray remain. Calm regions use Hamiltonian waves; complex
 flow and body interactions activate 3D fluid regions without changing cell size.
 
@@ -35,7 +37,7 @@ Automatic frame generation is selected where supported.
 Both normal and fisheye lenses support FG. Settings offers DLSS RR Quality,
 Balanced and Performance without resetting water. Render FPS and actual DLSS
 output FPS are separate. Generated frames do not accelerate fluid simulation.
-Release tests were skipped for 0.1.4. No fresh frame-generation output
+Release tests were skipped for 0.1.5. No fresh frame-generation output
 verification was performed; the adjacent verification report records this.
 
 Change lighting, flashlight, ball mode, music volume and water quality in Esc.

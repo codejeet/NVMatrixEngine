@@ -13,7 +13,7 @@ uint demandedLod(uint id){if(!InteriorControl.y)return 0;
     return InteriorImportance[(b.z*ImportanceGrid.y+b.y)*ImportanceGrid.x+b.x].state.x;
 }
 bool safeSolid(uint id){float3 c=coarseCenter(id);float radius=length(float3(1,1,1))*DomainMinCell.w+3*DomainMinCell.w;
-    for(uint i=0;i<Collision.x;++i)if(colliderPhi(Colliders[i],c)<radius)return false;
+    for(uint i=0;i<Collision.x;++i)if(colliderPhi(Colliders[i],c,radius)<radius)return false;
     return true;
 }
 bool occupiedByParticles(uint id){uint3 base=interiorCoord(id,Grid.xyz)*2;

@@ -49,7 +49,7 @@ float energy(FluidParticle p){float D=Solver.z>0?0:.25*DomainMinCell.w*DomainMin
     return .5*particleWeight(p)*(dot(p.velocityFlags.xyz,p.velocityFlags.xyz)+D*(dot(p.apic0.xyz,p.apic0.xyz)+dot(p.apic1.xyz,p.apic1.xyz)+dot(p.apic2.xyz,p.apic2.xyz)));}
 bool clearPosition(float3 p,float radius){
     if(any(p<DomainMinCell.xyz+radius)||any(p>DomainMaxRadius.xyz-radius))return false;
-    for(uint i=0;i<Collision.x;++i)if(colliderPhi(Colliders[i],p)<radius)return false;
+    for(uint i=0;i<Collision.x;++i)if(colliderPhi(Colliders[i],p,radius)<radius)return false;
     return true;
 }
 [numthreads(16,1,1)]void ResampleClear(uint id:SV_DispatchThreadID){ResampleCounts[id]=0;}

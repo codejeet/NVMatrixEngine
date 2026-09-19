@@ -1,6 +1,6 @@
 # Runtime captures
 
-Captured from the standalone NVMatrixEngine build with `engine/capture-portfolio.ps1` on RTX 5090, Windows 11. Output: 1600×900, DLSS Ray Reconstruction Quality, frame generation off, default 65,536 photons/frame and default solver settings. The bounded runs advance the same live GPU solver used by the interactive demo; they are not offline path-traced stills.
+The original indoor captures below were captured from the standalone NVMatrixEngine build with `engine/capture-portfolio.ps1` on RTX 5090, Windows 11. Output: 1600×900, DLSS Ray Reconstruction Quality, frame generation off, default 65,536 photons/frame and default solver settings. The bounded runs advance the same live GPU solver used by the interactive demo; they are not offline path-traced stills.
 
 | File | Scene / capture frame |
 | --- | --- |
@@ -9,7 +9,7 @@ Captured from the standalone NVMatrixEngine build with `engine/capture-portfolio
 | `deep-pool.png` | Larger/deeper pool, DX12 baseline; frame 96 |
 | `underwater.png` | First-person beneath 1.4 m water, 400k particles and live inlet; frame 180 |
 
-PNG files are lossless conversions of the application's PPM capture with no retouching, compositing or AI generation. The HUD FPS in a bounded capture is not a controlled benchmark and should not be used as one.
+Those PNG files are lossless conversions of the application's PPM capture with no retouching, compositing or AI generation. The HUD FPS in a bounded capture is not a controlled benchmark and should not be used as one.
 
 `hamiltonian-water.png` was captured separately with `engine/test-hamiltonian.ps1`:
 RTX 5090, 960×540 output, DLSS RR Balanced, frame generation off, HOS-2 with
@@ -40,3 +40,27 @@ PPM-to-PNG conversions. [Scene and physical limits](../../engine/OCEAN_LAB.md),
 swimming and powered-voyage fixture, at the same rendering settings. The wake
 uses the 128² Hamiltonian grid and simulated secondary foam/bubbles/spray.
 The 1 m 3D grid still limits bow detail; this is not a paper-quality comparison.
+
+## Ocean boat release 0.1.5
+
+`ocean-boat.png` is the README image for **v0.1.5-preview**, captured from the
+updated Windows engine on **2026-09-19 UTC** with an RTX 5090. It shows the powered
+boat, rolling-ball player, simulated ocean, island and pier.
+
+```powershell
+NVMatrixFluidLab.exe --water-lab=extra-large --normal-lens --boat --quality=quality --frame-gen=off --width=1600 --height=900 --name=release015-ocean-boat
+```
+
+The scene used the Ocean preset's **1.8 m amplitude scale, 13 m/s spectrum wind
+speed and 48 m minimum initial wavelength**, with the hull-contact clearance fix.
+The boat was boarded with **R**, then **E**, and backed away from the pier with
+**S**; the camera was adjusted using the normal mouse controls.
+
+The PNG is a direct **1600 × 900 client-area capture** from the live interactive
+engine, saved without resizing, retouching, compositing or AI generation.
+DLSS Ray Reconstruction was set to **Quality**, with **frame generation off**.
+This documentation capture is not a benchmark; release tests and package
+validation were skipped. [Release validation](../VALIDATION.md).
+
+Captured executable SHA-256:
+`acb12bfc73f253a53f00241e1b202e6426cedc6de2ed9fb205138cf1261cb24a`.

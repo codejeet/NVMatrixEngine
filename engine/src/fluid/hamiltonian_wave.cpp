@@ -18,7 +18,7 @@ HamiltonianWave::HamiltonianWave(ID3D12Device *device, const std::filesystem::pa
     settings.coupling = {config.relaxation, 4 * d.gridCellSize, 1 / d.simulationRate, config.amplitude};
     settings.local = {d.minimum.x, d.minimum.z, d.maximum.x, d.maximum.z};
     settings.grid = {resolution, fftSize, layers, config.order};
-    settings.spectrum = {config.windSpeed, config.extendOpticalSurface ? 1.f : 0.f, 0, 0};
+    settings.spectrum = {config.windSpeed, config.extendOpticalSurface ? 1.f : 0.f, config.minimumWavelength, 0};
     // Match FluidSystem's rest lattice, including its rounded vertical count.
     const float lx = d.maximum.x - d.minimum.x - 2 * d.particleRadius;
     const float lz = d.maximum.z - d.minimum.z - 2 * d.particleRadius;
@@ -387,6 +387,7 @@ void HamiltonianWave::collect() {
 void HamiltonianWave::report(std::ostream &out) const {
     out << "{\"enabled\":true,\"hosOrder\":" << config.order << ",\"epsilon\":" << config.epsilon
         << ",\"amplitudeMetres\":" << config.amplitude << ",\"relaxationPerSecond\":" << config.relaxation
+        << ",\"windSpeedMetresPerSecond\":" << config.windSpeed << ",\"minimumWavelengthMetres\":" << config.minimumWavelength
         << ",\"resolution\":" << resolution << ",\"fftResolution\":" << fftSize
         << ",\"depthLayers\":" << layers << ",\"steps\":" << steps
         << ",\"meanDepthMetres\":" << depth() << ",\"fillLimitMetres\":" << fillLimit()

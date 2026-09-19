@@ -1,7 +1,7 @@
 param(
   [string]$BuildDir = "$env:LOCALAPPDATA/NVMatrixEngineHgi/build",
   [string]$OutputDir = "$env:USERPROFILE/Downloads",
-  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.4-preview',
+  [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]{0,63}$')][string]$Version = '0.1.5-preview',
   [string]$CudaToolkit = 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1',
   [switch]$AllowUnverifiedFrameGeneration,
   [switch]$SkipValidation

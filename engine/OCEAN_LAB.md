@@ -41,15 +41,33 @@ resolved flow complexity retain the existing independent-region policy.
 
 The larger wave grid is 128² (2 m spacing), with a 256² even-extension FFT and eight depth
 velocity layers. A wind-weighted initial spectrum uses finite-depth dispersion;
-the preset uses 11 m/s wind for its initial spectrum, HOS-2 with full nonlinear
-coefficient, and a 0.8 m wave amplitude scale (approximately 1.6 m significant
-wave height). Sixty-four irregular modes are normalized by spectral energy,
-so adding wave components does not flatten the sea. It does not continually
-inject wind energy. The parent simulation grid uses 1 m cells by default.
+the preset uses 13 m/s wind for its initial spectrum, HOS-2 with full nonlinear
+coefficient, and a 1.8 m wave amplitude scale (approximately 3.6 m significant
+wave height). The initial spectrum excludes wavelengths below 48 m and smoothly
+tapers wavelengths from 48 to 72 m, producing broad swells with larger vertical
+excursions. Its 64 candidate modes are normalized by retained spectral energy,
+so removing short waves does not flatten the swells. The cutoff only selects
+the initial spectrum; nonlinear wave evolution and local wakes remain physical.
+It does not continually inject wind energy or change the simulation clock. Both
+`--water-lab=ocean` and `--water-lab=extra-large` use this preset, including the
+Extra Large Water Lab launcher. To restore the gentler swell, append
+`--wave-wind-speed=11 --wave-amplitude=0.8 --wave-min-wavelength=0` to the launcher command.
+The larger amplitude allowance applies to wind spectra whose minimum wavelength
+is at least eight times the water depth; other wave configurations retain their
+existing 15%-of-depth amplitude limit.
+The parent simulation grid uses 1 m cells by default.
 Cell size stays fixed around the boat, dock and other rigid bodies. Calm distant
 water uses Hamiltonian waves; body interactions and excited flow use the existing
 3D activity regions on that fixed grid. The experimental dynamic contact grid
 has been removed from this release.
+
+Hull contact queries include particle radius and the collision-normal sampling
+halo when rejecting the mesh SDF's padded bounds. Ocean particle radius exceeds
+the hull bake's two-voxel padding; treating the bounds' cheap distance as a contact
+surface pushed particles around empty parts of the tapered hull's box. Only
+queries whose clearance overlaps that box sample the exterior mesh distance;
+distant particles retain the fast rejection. Seeding, detached water and secondary
+particles use the same clearance rule, without extra solver passes or substeps.
 
 Water uses 9.81 m/s² gravity, 1,025 kg/m³ density, spectral absorption and Fresnel
 reflection/refraction. The ocean adds an approximate 0.006 salinity correction

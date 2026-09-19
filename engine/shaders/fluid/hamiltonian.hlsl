@@ -42,6 +42,13 @@ float stateFilter(uint i) {
             float2 m=float2(1+seed%24,1+(seed>>8)%23),k=3.141592653589793*m/WaveDomain.zw;
             float km=length(k),alignment=dot(k/km,normalize(float2(.9,.4)));
             float a=exp(-.5/pow(km*L,2))*abs(alignment)/(km*km)*exp(-.5*km*km*.01);
+            if(WaveSpectrum.z>0) {
+                // Remove short initial waves, tapering over 1..1.5 times the
+                // minimum wavelength. Normalize the retained energy below so
+                // selecting coarse swells does not flatten their height.
+                float cutoffK=6.283185307179586/max(.001,WaveSpectrum.z);
+                a*=1-smoothstep(cutoffK/1.5,cutoffK,km);
+            }
             float phase=float(seed>>16)*(6.283185307179586/65536);
             float spatial=cos(m.x*3.141592653589793*uv.x)*cos(m.y*3.141592653589793*uv.y);
             float omega=sqrt(WavePhysics.z*g0(km));

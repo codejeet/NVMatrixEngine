@@ -147,7 +147,7 @@ double4 invalidQ(){return double4(asdouble(0,0x7ff80000u),0,0,0);}
         float3 p=origin+(float3(i&3,(i>>2)&3,i>>4)+.5)*(.5*h);
         bool valid=all(p>=DomainMinCell.xyz+r)&&all(p<=DomainMaxRadius.xyz-r);
         for(uint c=0;c<Collision.x&&valid;c++){
-            float phi=colliderPhi(Colliders[c],p);valid=isfinite(phi)&&phi>=r;
+            float phi=colliderPhi(Colliders[c],p,r);valid=isfinite(phi)&&phi>=r;
         }
         if(valid)Sites[id*64+count++]=float4(p,0);
     }

@@ -444,10 +444,13 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
                 std::wstring_view(argv[i]) == L"--water-lab=extra-large") {
                 options.oceanLab = options.fluidRoom = options.fluid = options.boat = true;
                 options.hamiltonian.enabled = true;
-                options.hamiltonian.amplitude = .8f;
+                options.hamiltonian.amplitude = 1.8f;
                 options.hamiltonian.epsilon = 1;
                 options.hamiltonian.resolution = 128;
-                options.hamiltonian.windSpeed = 11;
+                // Broad, tall swells: put the energy into vertical excursions
+                // of long waves instead of fast short-wave chop.
+                options.hamiltonian.windSpeed = 13;
+                options.hamiltonian.minimumWavelength = 48;
                 options.hamiltonian.extendOpticalSurface = true;
                 options.fluidParticles = lab::ocean::particles;
                 options.fluidCapacity = lab::ocean::capacity;
@@ -625,6 +628,16 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
             }
             if (arg.starts_with("--wave-amplitude=")) {
                 options.hamiltonian.amplitude = physical("--wave-amplitude=");
+                waveOptionsSet = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-wind-speed=")) {
+                options.hamiltonian.windSpeed = physical("--wave-wind-speed=");
+                waveOptionsSet = true;
+                continue;
+            }
+            if (arg.starts_with("--wave-min-wavelength=")) {
+                options.hamiltonian.minimumWavelength = physical("--wave-min-wavelength=");
                 waveOptionsSet = true;
                 continue;
             }

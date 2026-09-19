@@ -58,7 +58,7 @@ class HamiltonianWave {
         DirectX::XMUINT4 grid;
         DirectX::XMFLOAT4 fill; // horizontal/vertical transfer rates, pending mean rise/local volume
         DirectX::XMFLOAT4 mass; // particle volume, GPU mass-ledger snapshot, patch snapshot, reserved
-        DirectX::XMFLOAT4 spectrum; // wind speed, optical horizon continuation, reserved
+        DirectX::XMFLOAT4 spectrum; // wind speed, optical horizon continuation, minimum wavelength, reserved
     };
     HamiltonianConfig config;
     Constants settings{};

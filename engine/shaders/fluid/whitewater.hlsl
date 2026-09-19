@@ -112,10 +112,11 @@ void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
         p.previousType.w=kind;
         // Reuse actual scene SDFs. No bubbles/spray advect through rigid objects.
         for(uint i=0;i<uint(DomainMaximum.w);++i) {
-            FluidCollider c=Colliders[i];float d=colliderPhi(c,p.positionRadius.xyz);
+            float e=DomainMinimum.w*.01,clearance=p.positionRadius.w+2*e;
+            FluidCollider c=Colliders[i];float d=colliderPhi(c,p.positionRadius.xyz,clearance);
             if(d<p.positionRadius.w) {
-                float e=DomainMinimum.w*.01;float3 n;
-                [unroll]for(uint a=0;a<3;++a){float3 v=0;v[a]=e;n[a]=colliderPhi(c,p.positionRadius.xyz+v)-colliderPhi(c,p.positionRadius.xyz-v);}
+                float3 n;
+                [unroll]for(uint a=0;a<3;++a){float3 v=0;v[a]=e;n[a]=colliderPhi(c,p.positionRadius.xyz+v,clearance)-colliderPhi(c,p.positionRadius.xyz-v,clearance);}
                 n=dot(n,n)>1e-14?normalize(n):float3(0,1,0);
                 p.positionRadius.xyz+=n*(p.positionRadius.w-d);
                 p.velocityLife.xyz-=n*min(0,dot(p.velocityLife.xyz,n));
@@ -158,7 +159,7 @@ void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
             p.surfaceAge=float4(0,1,0,0);
             alive=true;born=true;
             for(uint collider=0;collider<uint(DomainMaximum.w);++collider)
-                if(colliderPhi(Colliders[collider],p.positionRadius.xyz)<p.positionRadius.w)alive=false;
+                if(colliderPhi(Colliders[collider],p.positionRadius.xyz,p.positionRadius.w)<p.positionRadius.w)alive=false;
             if(any(p.positionRadius.xyz<DomainMinimum.xyz)||any(p.positionRadius.xyz>DomainMaximum.xyz))alive=false;
             if(!alive)p=(Secondary)0;
         }
@@ -175,7 +176,7 @@ void WhitewaterUpdate(uint3 tid:SV_DispatchThreadID) {
         }
         bool blocked=false;
         for(uint collider=0;collider<uint(DomainMaximum.w)&&!blocked;++collider)
-            blocked=colliderPhi(Colliders[collider],p.positionRadius.xyz)<p.positionRadius.w-1e-5;
+            blocked=colliderPhi(Colliders[collider],p.positionRadius.xyz,p.positionRadius.w)<p.positionRadius.w-1e-5;
         // Collision projection can move an existing bubble out of its medium.
         // Expire it rather than trace a water/air cavity in open air for a frame.
         if(uint(p.previousType.w)==2&&!submerged(p.positionRadius.xyz,p.positionRadius.w))blocked=true;

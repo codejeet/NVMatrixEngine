@@ -1,5 +1,22 @@
 # Release validation
 
+## Version 0.1.5: broad swells and mesh contact clearance
+
+The Windows Release executable and affected collision, particle and Hamiltonian
+initialization shaders compiled successfully. Installed shader/executable copies
+were checked by hash, and the prior hull-contact shader set was preserved when
+installing the broad-swell update. A live ocean boat screenshot was captured for
+the README at 1600 × 900, DLSS RR Quality, frame generation off; see the
+[capture record](screenshots/README.md#ocean-boat-release-015).
+
+The screenshot is a scene illustration, not a performance measurement or a
+long-run stability or visual-artifact test. Release tests remain skipped at the
+maintainer's request. Packaging uses `-SkipValidation`, so the per-archive
+verification JSON records `validationStatus: "skipped"` and an empty checks list.
+No fresh vendor-signature, relocated-extraction or frame-generation-output
+validation is claimed. The ZIP includes a source-commit manifest and file hashes,
+with a separate archive SHA-256 checksum.
+
 ## Version 0.1.4: optimized rendering, release tests skipped
 
 This release packages the existing optimized executable and shaders after restoring

@@ -107,7 +107,9 @@ not download particles or spectra.
 | --- | --- | --- |
 | `--wave-order=2` or `3` | `2` | DNO truncation; HOS-2 matches the reference coupled solver's default |
 | `--wave-epsilon=0..1` | `0.2` | Nonlinearity; zero gives finite-depth Airy waves |
-| `--wave-amplitude=<metres>` | `0.035` | Combined peak bound of initial standing modes; at most 15% of water depth |
+| `--wave-amplitude=<metres>` | `0.035` (`1.8` in Ocean) | Standing-mode peak bound or wind-spectrum height scale; limit 15% of depth, 30% for wind waves with minimum wavelength at least eight depths |
+| `--wave-wind-speed=0..30` | `0` (`13` in Ocean) | Initial wind spectrum in m/s; higher positive values favor longer waves, zero selects standing modes |
+| `--wave-min-wavelength=<metres>` | `0` (`48` in Ocean) | Remove shorter initial wind waves, taper up to 1.5 times this wavelength and renormalize height; zero disables the cutoff |
 | `--wave-relaxation=0..100` | `10` | Reverse height-coupling rate per second; zero is the one-way ablation |
 
 `T` toggles filling; the wall button and `E` near the valve also work.

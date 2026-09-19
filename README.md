@@ -1,18 +1,16 @@
 # NVMatrixEngine — Real-Time Game Engine
 
-The [Hamiltonian wave/3D-flow path](engine/HAMILTONIAN_WATER.md) is the Large Water Lab default and optional in the small lab:
-launch with `--water-path=hamiltonian --normal-lens --boat`, or use
-**Play Hamiltonian Water Lab.cmd** in a built runtime.
-
 **A C++20 / DirectX 12 game engine with GPU liquid simulation, path-traced lighting and spectral caustics on NVIDIA RTX GPUs.**
 
 NVMatrixEngine couples **APIC/FLIP fluid simulation** with **DirectX Raytracing (DXR)**: a reconstructed liquid surface participates directly in path-traced reflection, refraction and light-side spectral photon mapping. It includes rigid-body gameplay, an interactive settings UI, audio, a staggered MAC pressure grid, anisotropic particle surface reconstruction, sparse procedural water geometry, DLSS Ray Reconstruction, and optional CUDA and ReSTIR PT modes.
 
-The flagship **Water Lab** is a playable, room-scale pool: open the wall inlet, roll or dive as a sinking glass ball, propel a buoyant boat, and watch animated water redirect light onto the white grid floor. Source, a portable Windows demo, real engine videos, numerical tests and implementation notes are included.
+Explore **Ocean Island**, a 256 × 256 metre ocean with broad Hamiltonian swells, a powered boat, an island and pier, and local 3D water simulation around interactions. The indoor **Water Lab** lets you open a wall inlet, roll or dive as a glass ball, and watch animated water redirect light onto the grid floor. Source, a portable Windows demo, real engine captures and implementation notes are included.
 
-[Download Water Lab v0.1.4](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.4-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
+[Download v0.1.5](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.5-preview) · [Engine development](#engine-development) · [Algorithms](docs/ARCHITECTURE.md) · [Build](docs/BUILDING.md) · [Roadmap](docs/ROADMAP.md)
 
-![NVMatrixEngine Water Lab: path-traced water, glass and spectral illumination](docs/screenshots/water-room.png)
+![Ocean Island: powered boat, simulated water and island scenery](docs/screenshots/ocean-boat.png)
+
+*Captured from the v0.1.5 engine at 1600 × 900 with DLSS RR Quality and frame generation off. [Capture details](docs/screenshots/README.md#ocean-boat-release-015).*
 
 This independently developed **game engine is in preview**. The source includes the native engine and the shared code needed by its demos. NVIDIA does not sponsor or endorse this project.
 
@@ -23,6 +21,7 @@ This independently developed **game engine is in preview**. The source includes 
 | Native rendering | Custom C++20 / DX12 / DXR renderer; camera and photon `DispatchRays` passes; capability-gated Shader Execution Reordering |
 | Light transport | Camera path tracing plus light-side spectral photon tracing; reflection, refraction, Fresnel, total internal reflection, dispersion, and texture-space caustics |
 | Water simulation | Affine Particle-In-Cell (APIC), optional Fluid-Implicit-Particle / Particle-In-Cell (FLIP/PIC), staggered marker-and-cell (MAC) velocities, pressure projection, moving solid boundaries, viscosity and surface-tension models |
+| Ocean waves and local flow | Nonlinear Hamiltonian spectral waves coupled in both directions to local APIC/FLIP regions; activity fades and unneeded regions retreat as the wake settles |
 | Continuous water geometry | Anisotropic particle reconstruction into a sparse brick scalar field; procedural AABB BLAS/TLAS; cell-wise root-refined DXR intersections |
 | Water optics | Animated dielectric boundaries, depth-dependent Beer–Lambert absorption, underwater views, and laser single scattering |
 | Reconstruction / presentation | DLSS Ray Reconstruction with super resolution, optional DLSS Frame Generation / Multi Frame Generation, and Reflex integration |
@@ -38,6 +37,8 @@ That is a hybrid, two-sided transport architecture—not a claim that general bi
 
 **Engine-wide rendering defaults:** fast RIS light sampling, one base camera path, two full light samples, four imported-light candidates, four surface bounces, and Russian roulette. Adjust them under **Esc → Path tracing**. [Settings and prior measurements](engine/RENDER_SAMPLING.md).
 
+**Ocean Island:** open **Play Extra Large Water Lab.cmd** for broad, slow swells, a beach island, palms, pier and a buoyant motorboat. Press **E** near the boat to board, **W/S** for thrust, **A/D** to steer, and **Y** for day/night. Version 0.1.5 raises the wave-height scale to **1.8 m** and removes wavelengths below **48 m** from the starting spectrum. Particle contact now accounts for clearance beyond the hull's baked collision volume, avoiding collisions with empty parts of its bounding box. [Ocean controls and limits](engine/OCEAN_LAB.md).
+
 **Neon Night:** launch `engine/Play Neon Night.cmd` or `NVMatrixFluidLab.exe --scene=neon-night` for a playable wet neon alley with imported CC0 props, PBR materials, the rolling ball, FPS display and Esc settings. [Scene and credits](engine/NEON_NIGHT.md).
 
 ## Engine development
@@ -47,6 +48,7 @@ The engine integrates **real-time liquid rendering**, **GPU particle-grid simula
 | Engine subsystem | Start here |
 | --- | --- |
 | How do I load glTF, GLB or OBJ objects with PBR textures? | [Model loading and material support](engine/MODEL_LOADING.md) |
+| How are ocean swells coupled to boat wakes and local 3D flow? | [Hamiltonian architecture](engine/HAMILTONIAN_WATER.md), [Ocean Island preset](engine/OCEAN_LAB.md) |
 | Where is the neon alley scene? | [Neon Night: launch, assets and rendering](engine/NEON_NIGHT.md) |
 | How do APIC/FLIP transfers and incompressible pressure projection map to GPU compute? | [Fluid solver architecture](docs/ARCHITECTURE.md#liquid-solver), [MAC implementation](engine/src/fluid/fluid_mac.cpp), [HLSL kernels](engine/shaders/fluid/) |
 | How can a ray tracer intersect a particle-reconstructed liquid without meshing? | [Anisotropic reconstruction](engine/shaders/fluid/reconstruction.hlsl), [procedural DXR intersection](engine/shaders/fluid/intersection.hlsli), [scalar-field representation](docs/ARCHITECTURE.md#surface-representation-and-intersection) |
@@ -60,6 +62,8 @@ The sparse rendering field is a **reconstructed scalar field**, not a guaranteed
 To discuss a result or report a numerical/rendering issue, [open an issue](https://github.com/codejeet/NVMatrixEngine/issues) with the commit/release, GPU, driver, launch arguments and bounded-run JSON. Public visibility is for review; reuse requires the permissions described in [COPYRIGHT.md](COPYRIGHT.md).
 
 ## Water Lab demo: path-traced water, caustics and underwater views
+
+![Water Lab: path-traced water, glass and spectral illumination](docs/screenshots/water-room.png)
 
 ### Live recordings
 
@@ -93,9 +97,9 @@ https://github.com/user-attachments/assets/74b52c64-3163-4d68-ab98-331f22f1a4bf
 
 ### Try it
 
-1. Download the ZIP from the [v0.1.4 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.4-preview).
+1. Download the ZIP from the [v0.1.5 preview release](https://github.com/codejeet/NVMatrixEngine/releases/tag/v0.1.5-preview).
 2. Extract the **entire** folder to a writable location; do not run inside the ZIP.
-3. Open **Play Water Lab.cmd**, or double-click `NVMatrixFluidLab.exe` for the default water room.
+3. Open **Play Extra Large Water Lab.cmd** for the ocean boat scene, or **Play Water Lab.cmd** for the indoor pool. Double-clicking `NVMatrixFluidLab.exe` opens the indoor water room.
 4. Press **Esc** for DLSS RR Quality/Balanced/Performance, frame generation, lighting, lens, buoyancy, water quality, and music settings.
 
 No installer, administrator access, CUDA Toolkit, Visual Studio, or SDK downloads are required to run the packaged demo. A current compatible NVIDIA graphics driver is required. This preview is unsigned; Windows may display a reputation warning. Only use release assets from this repository and verify the accompanying SHA-256 checksum if needed.
@@ -120,7 +124,7 @@ In the indoor labs, the glass ball starts as **solid glass in Sink mode (2,500 k
 ## Hardware and performance
 
 - Windows 11 x64 and a high-end NVIDIA RTX GPU are the intended platform.
-- Development runs use an **RTX 5090**. The v0.1.4 package uses the existing optimized build; release tests were skipped at the maintainer's request. Other GPUs are not certified by this preview.
+- Development runs use an **RTX 5090**. The v0.1.5 executable and affected shaders were rebuilt, and the ocean screenshot was captured from the updated engine. Release tests remain skipped at the maintainer's request. Other GPUs are not certified by this preview.
 - DLSS feature availability is queried at runtime. Frame generation depends on GPU, driver, OS configuration, and supported presentation mode; it does not accelerate simulation or raw rendering.
 - Both normal and fisheye lenses support FG. The HUD reports actual presentations so you can see whether extra frames are being generated. See [validation scope](docs/VALIDATION.md).
 - This portable release uses DX12 fluid simulation. Optional CUDA experiments remain available in source builds.
@@ -161,6 +165,6 @@ Built around original engine integration with NVIDIA Streamline/DLSS, NVAPI, RTX
 
 Public source is available for portfolio review; **an open-source license has not been granted**. See [COPYRIGHT.md](COPYRIGHT.md) and [third-party notices](THIRD_PARTY_NOTICES.md). Third-party components and the CIE dataset retain their own licenses. SDK caches and development credentials are not included in this repository.
 
-The new [Large Water Lab](engine/HAMILTONIAN_WATER.md#large-water-lab) keeps the Water Lab scene with four times the floor area and 1.5 m default depth. Launch [Play Large Water Lab.cmd](engine/Play%20Large%20Water%20Lab.cmd).
+The [Large Water Lab](engine/HAMILTONIAN_WATER.md#large-water-lab) keeps the Water Lab scene with four times the floor area and 1.5 m default depth. Launch [Play Large Water Lab.cmd](engine/Play%20Large%20Water%20Lab.cmd).
 
 For the outdoor scene, launch [Play Extra Large Water Lab.cmd](engine/Play%20Extra%20Large%20Water%20Lab.cmd): a 256 × 256 m Hamiltonian ocean with 6 m offshore depth, a beach island, palms, pier, boat, and HDRI day/night lighting (`Y`). [Controls, physical assumptions and limits](engine/OCEAN_LAB.md).

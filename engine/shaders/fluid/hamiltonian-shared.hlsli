@@ -8,7 +8,7 @@ cbuffer HamiltonianConstants : register(b3) {
     uint4 WaveGrid; // physical resolution, doubled FFT resolution, depth layers, HOS order
     float4 WaveFill; // horizontal/vertical transfer correction rates; pending mean rise/local volume on CPU
     float4 WaveMass; // particle volume, CPU snapshot of received particles and local transfers
-    float4 WaveSpectrum; // wind speed, optical horizon continuation, reserved
+    float4 WaveSpectrum; // wind speed, optical horizon continuation, minimum initial wavelength, reserved
 };
 #ifndef WAVE_DATA_REGISTER
 #define WAVE_DATA_REGISTER u38
